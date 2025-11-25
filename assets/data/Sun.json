@@ -1,0 +1,69 @@
+{
+    "name": "Sun",
+    "encyclopedia": {
+        "encyclopedia_table": {
+            "equatorial_diameter": {
+                "name": "Equatorial Diameter",
+                "value": "1.39 KM"
+            },
+            "mass": {
+                "name": "Mass",
+                "value": "1.99 X 10\u00b3\u00b3  KG"
+            },
+            "mean_distance_from_sun": {
+                "name": "Mean Distance from Sun",
+                "value": "260338 AL"
+            },
+            "rotation_period": {
+                "name": "Rotation Period",
+                "value": "25 DAYS"
+            },
+            "orbital_period": {
+                "name": "Orbital Period",
+                "value": "225 M YEARS"
+            },
+            "surface_gravity": {
+                "name": "Surface Gravity",
+                "value": "274 M/S\u00b2"
+            },
+            "surface_temperature": {
+                "name": "Surface Temperature",
+                "value": "5 778K"
+            },
+            "planet_description": {
+                "name": "Short Description",
+                "value": "The Sun is the star located at the center of our Solar System. Its mass accounts for 99.86% of the total mass of the Solar System."
+            }
+        },
+        "composition": {
+            "title": "Composition",
+            "text": "Approximately three-quarters of its mass is composed of hydrogen, with the rest being mostly helium. Only 1.69% (yet equivalent to 5,628 times the mass of Earth) is made up of heavier elements such as oxygen, carbon, neon, and iron."
+        },
+        "distance": {
+            "title": "Distance",
+            "text": "The average distance between the Sun and the Earth is 149.6 million kilometers (1 Astronomical Unit). Its light takes about 8 minutes and 19 seconds to reach our planet."
+        },
+        "galaxy": {
+            "title": "Galaxy",
+            "text": "In the past, the Sun was thought to be a relatively insignificant star, but today we know that its brightness is greater than 85% of the stars in the Milky Way. It is located twice as far from the center of the galaxy as from the outer edge, meaning it is situated about two-thirds of the galactic radius from the center of the Milky Way."
+        }
+    },
+    "structure": {
+        "general_structure": {
+            "title": "Structure",
+            "text": "The photosphere is a thin outer layer of the Sun. In the lower layers, the Sun is already opaque. However, the photosphere is only slightly less opaque than the Earth's air."
+        },
+        "convective_zone": {
+            "title": "Convective Zone",
+            "text": "Thermal convection columns carry hot material to the Sun's surface. Once this material cools, it plunges back into the radiative zone."
+        },
+        "radiative_zone": {
+            "title": "Radiative Zone",
+            "text": "The radiative zone carries the intense heat generated in the core outward in the form of rising currents of thermal radiation. The material quickly cools and the density of matter decreases, being 100 times greater in the core than in the radiative zone."
+        },
+        "core": {
+            "title": "Core",
+            "text": "Ninety-nine percent of the energy generated in the Sun through fusion processes is produced in a zone located within 24% of the star's radius."
+        }
+    }
+}

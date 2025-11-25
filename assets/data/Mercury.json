@@ -1,0 +1,57 @@
+{
+    "name": "Mercury",
+    "encyclopedia": {
+        "encyclopedia_table": {
+            "equatorial_diameter": {
+                "name": "Equatorial Diameter",
+                "value": "4,879 km"
+            },
+            "mass": {
+                "name": "Mass",
+                "value": "3.3 x 10\u00b2\u00b3 kg"
+            },
+            "mean_distance_from_sun": {
+                "name": "Mean Distance from Sun",
+                "value": "57.9 million km"
+            },
+            "rotation_period": {
+                "name": "Rotation Period",
+                "value": "59 days"
+            },
+            "orbital_period": {
+                "name": "Orbital Period",
+                "value": "88 days"
+            },
+            "surface_gravity": {
+                "name": "Surface Gravity",
+                "value": "3.7 m/s\u00b2"
+            },
+            "temperature_day": {
+                "name": "Temperature Day",
+                "value": "472\u00b0C"
+            },
+            "temperature_night": {
+                "name": "Temperature Night",
+                "value": "-183\u00b0C"
+            },
+            "planet_description": {
+                "name": "Short Description",
+                "value": "Mercury is the innermost and smallest planet of the Solar System. Because it has almost no atmosphere to retain heat, Mercury's surface experiences the greatest temperature variation of all the planets."
+            }
+        },
+        "observation": {
+            "title": "Observation",
+            "text": "Mercury appears as a morning or evening star from Earth, but due to it's proximity to Sun, it is very hard to see. Still, Mercury can be observed at least twice a year: in spring at dusk and in autumn before dawn."
+        }
+    },
+    "structure": {
+        "structure": {
+            "title": "Planet Structure",
+            "text": "The crust is similar in appearance to the that of the Moon with mare-like plains and heavy cratering. A distinctive feature of the surface crust is the presence of numerous narrow ridges, which might have formed as Mercury's core and mantle cooled and contracted after the crust had solidified."
+        },
+        "core": {
+            "title": "Core",
+            "text": "Mercury's extreme high density infers that the planet has a large, iron-rich core, with higher iron content than that of any other major planet in the Solar System."
+        }
+    }
+}

@@ -1,0 +1,65 @@
+{
+    "name": "Saturn",
+    "encyclopedia": {
+        "encyclopedia_table": {
+            "equatorial_diameter": {
+                "name": "Equatorial Diameter",
+                "value": "120,536 KM"
+            },
+            "mass": {
+                "name": "Mass",
+                "value": "5.7 x 10\u00b2\u2076 KG"
+            },
+            "mean_distance_from_sun": {
+                "name": "Mean Distance from Sun",
+                "value": "9.58 AU"
+            },
+            "rotation_period": {
+                "name": "Rotation Period",
+                "value": "10H 39M"
+            },
+            "orbital_period": {
+                "name": "Orbital Period",
+                "value": "29 YEARS"
+            },
+            "surface_gravity": {
+                "name": "Surface Gravity",
+                "value": "10.4 M/S\u00b2"
+            },
+            "surface_temperature": {
+                "name": "Surface Temperature",
+                "value": "-125\u00b0C"
+            },
+            "planet_description": {
+                "name": "Short Description",
+                "value": "Saturn is the sixth planet from the Sun and the second largest planet in the Solar System. Until the invention of modern telescope, Saturn was regarded as the outermost of the known planets."
+            }
+        },
+        "mass": {
+            "title": "Mass",
+            "text": "Although the second largest, Saturn is the least dense of all the planets in the Solar System, with only one-eighth the density of Earth (but nine times its diameter). It is also the only planet that is less dense than water."
+        },
+        "ring": {
+            "title": "Ring",
+            "text": "While the other gas giants also have ring systems, Saturn's is larger and more visible than any other in the Solar System. The rings are composed of water ice crystals and a smaller amount of rock, ranging in size from specks of dust to a few particles as large as mountains."
+        },
+        "moons": {
+            "title": "Moons",
+            "text": "Saturn has at least 150 moons and moonlets. The precise figure is uncertain as it is difficult to draw a distinction between a large ring particle and a tiny moon. Some of Saturn's moons act as shepherd moons to confine rings and prevent them from spreading out."
+        },
+        "observation": {
+            "title": "Observation",
+            "text": "Saturn appears to the naked eye in the night sky as a bright, yellowish point of light. Magnifying at least 30x resolves Saturn's rings."
+        }
+    },
+    "structure": {
+        "general_structure": {
+            "title": "General Structure",
+            "text": "Saturn's interior is similar to Jupiter's. Contrary to Jupiter, Saturn's density is lower, making it the least dense planet in the Solar System. Combined with it's rapid rotation, Saturn becomes the most oblate planet in our Solar System: Its equatorial and polar diameters vary by almost 10 percent."
+        },
+        "athmosphere": {
+            "title": "Athmosphere",
+            "text": "Due to it's lower gravity, Saturn's atmosphere has more haze than Jupiter's, with blurred features and colors muted into a general yellowish hue. The winds on Saturn are five times as fast as those measured on Jupiter. Saturn radiates 2.5 times more heat than it receives from the Sun, possibly due to the \"raining-out\" of helium deep into its interior creating frictional heat as the helium descends through the lower density hydrogen."
+        }
+    }
+}

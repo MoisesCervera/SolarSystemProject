@@ -1,0 +1,69 @@
+{
+    "name": "Earth",
+    "encyclopedia": {
+        "encyclopedia_table": {
+            "equatorial_diameter": {
+                "name": "Equatorial Diameter",
+                "value": "12,756 km"
+            },
+            "mass": {
+                "name": "Mass",
+                "value": "6 x 10\u00b2\u2074 kg"
+            },
+            "mean_distance_from_sun": {
+                "name": "Mean Distance from Sun",
+                "value": "150 million km"
+            },
+            "rotation_period": {
+                "name": "Rotation Period",
+                "value": "23 hours 56 minutes"
+            },
+            "orbital_period": {
+                "name": "Orbital Period",
+                "value": "1 year"
+            },
+            "surface_gravity": {
+                "name": "Surface Gravity",
+                "value": "9.8 m/s\u00b2"
+            },
+            "surface_temperature": {
+                "name": "Surface Temperature",
+                "value": "15\u00b0C"
+            },
+            "planet_description": {
+                "name": "Short Description",
+                "value": "Our homeworld is the densest of the eight planets in the Solar System. It is also the largest of the four terrestrial planets."
+            }
+        },
+        "surface": {
+            "title": "Surface",
+            "text": "About 71% of the Earth's surface is covered by salt water oceans, and the remaining 30% is taken up by the seven continental landmasses. Earth's outer surface is also divided into several rigid segments, or tectonic plates, that migrate across the surface over periods of millions of years."
+        },
+        "obliquity": {
+            "title": "Axial Tilt",
+            "text": "Today, the Earth is tilted on its axis by 23.4\u00b0, producing seasonal variations in climate and weather across the surface of the planet during the course of a year."
+        },
+        "magnetic_field": {
+            "title": "Magnetic Field",
+            "text": "The temperature difference within the outer core drives convection currents, with hot liquid metals rising, cooling and then descending back towards the hot inner core. These convection currents power the Earth's magnetic field."
+        }
+    },
+    "structure": {
+        "general_structure": {
+            "title": "Planet Structure",
+            "text": "Earth's crust, together with the uppermost parts of the mantle forms the lithosphere. The lithosphere is broken into a series of tectonic plates which 'float' on a more elastic part of the upper mantle. The motion of these plates gives rise to earthquakes and volcanism."
+        },
+        "mantle": {
+            "title": "Mantle",
+            "text": "The Earth's mantle is a rocky shell which accounts for 84% of the planet's volume. The very uppermost regions of the mantle are the most solid and are relatively rigid."
+        },
+        "outer_core": {
+            "title": "Outer Core",
+            "text": "The temperature difference within the outer core drives convection currents, with hot liquid metals rising, cooling and then descending back towards the hot inner core. These convection currents power the Earth's magnetic field."
+        },
+        "inner_core": {
+            "title": "Inner Core",
+            "text": "Although the temperature in the inner core is thought to be about the same as the surface of the Sun, the extreme pressure prevents it from becoming liquid."
+        }
+    }
+}

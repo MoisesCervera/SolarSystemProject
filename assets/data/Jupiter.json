@@ -1,0 +1,69 @@
+{
+    "name": "Jupiter",
+    "encyclopedia": {
+        "encyclopedia_table": {
+            "equatorial_diameter": {
+                "name": "Equatorial Diameter",
+                "value": "142,984 KM"
+            },
+            "mass": {
+                "name": "Mass",
+                "value": "1.9 x 10\u00b2\u2077 KG"
+            },
+            "mean_distance_from_sun": {
+                "name": "Mean Distance from Sun",
+                "value": "780 M KM"
+            },
+            "rotation_period": {
+                "name": "Rotation Period",
+                "value": "9H 55M"
+            },
+            "solar_orbital_period": {
+                "name": "Orbital Period",
+                "value": "11.9 YEARS"
+            },
+            "surface_gravity": {
+                "name": "Surface Gravity",
+                "value": "25 M/S\u00b2"
+            },
+            "surface_temperature": {
+                "name": "Surface Temperature",
+                "value": "-120\u00b0C"
+            },
+            "planet_description": {
+                "name": "Short Description",
+                "value": "Jupiter is the largest planet of the Solar System, whith a mass 2.5 greater than all of the rest of the planets combined - but still only one-thousandth that of the Sun."
+            }
+        },
+        "star_like": {
+            "title": "Star-like",
+            "text": "Jupiter is the planet most like the Sun in terms of its composition. Although Jupiter would still need to be about 75 times as massive to fuse hydrogen and become a star, it would only need to be 13 times as massive to burn deuterium and become a brown dwarf."
+        },
+        "atmosphere": {
+            "title": "Atmosphere",
+            "text": "Jupiter spins on its axis faster than any other planet. Because of this rotation, Jupiter's atmosphere is subject to high winds, which cause the atmosphere to form distinct bands of colour, like swirling vortices and gigantic anticyclonic storms."
+        },
+        "moons": {
+            "title": "Moons",
+            "text": "Jupiter governs the largest number of moons of any planet, with the current official number total being 79. The four largest are the Galilean moons: Io, Europa, Ganymede, and Callisto. Ganymede, the largest moon in the Solar System, has a diameter greater than that of the planet Mercury."
+        },
+        "observations": {
+            "title": "Observations",
+            "text": "Jupiter is the fourth brightest object in our skies after the Sun, Moon and Venus. Because the orbit of Jupiter is outside the Earth's, the planet always appears nearly fully illuminated when viewed through Earth-based telescopes."
+        }
+    },
+    "structure": {
+        "general_structure": {
+            "title": "Planet Structure",
+            "text": "Jupiter is composed primarily of gaseous and liquid matter. There is no surface, only a gradual change from the atmosphere. Conditions blend smoothly from gas to liquid as the temperature and pressure inside Jupiter increase steadily toward the core."
+        },
+        "mantle": {
+            "title": "Mantle",
+            "text": "The surrounding liquid hydrogen is responsible for Jupiter's massive magentic field, which is 10 times stronger than Earth's, with the magnetic pole strength being nearly 20,000 times stronger than the Earth's pole strength."
+        },
+        "core": {
+            "title": "Core",
+            "text": "Jupiter is thought to have a dense core. The exact composition of the core is unknown, as are the properties of materials at the temperatures and pressures of those depths, but it is thought to be solid."
+        }
+    }
+}

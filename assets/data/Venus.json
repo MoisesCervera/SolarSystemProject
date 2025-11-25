@@ -1,0 +1,53 @@
+{
+    "name": "Venus",
+    "encyclopedia": {
+        "encyclopedia_table": {
+            "equatorial_diameter": {
+                "name": "Equatorial Diameter",
+                "value": "12,104 km"
+            },
+            "mass": {
+                "name": "Mass",
+                "value": "4.9 x 10\u00b2\u2074 kg"
+            },
+            "mean_distance_from_sun": {
+                "name": "Mean Distance from Sun",
+                "value": "108 million km"
+            },
+            "rotation_period": {
+                "name": "Rotation Period",
+                "value": "243 days"
+            },
+            "orbital_period": {
+                "name": "Orbital Period",
+                "value": "225 days"
+            },
+            "surface_gravity": {
+                "name": "Surface Gravity",
+                "value": "8.9 m/s\u00b2"
+            },
+            "surface_temperature": {
+                "name": "Surface Temperature",
+                "value": "462\u00b0C"
+            },
+            "planet_description": {
+                "name": "Short Description",
+                "value": "Although Venus has very similar size and interior structure as Earth, its volcanic surface and extremely hot and dense atmosphere makes it one of the most inhospitable places in the Solar System."
+            }
+        },
+        "surface": {
+            "title": "Atmosphere",
+            "text": "Thick clouds of sulfuric acid and dust reflect most of the Sun's light back to space, while carbon dioxide traps the Sun's heat inside the atmosphere, causing a runaway greenhouse effect. The atmospheric pressure on the surface of Venus is 92 times greater than on Earth."
+        },
+        "observation": {
+            "title": "Observation",
+            "text": "Venus is one of the brightest objects in our night sky - second only to the Moon. It appears as either an evening or a morning star."
+        }
+    },
+    "structure": {
+        "general_structure": {
+            "title": "Planet Structure",
+            "text": "Currently, we have little direct information about the internal structure of Venus. However, its similar size and density to Earth suggests that they share a common internal structure. The principal difference between the two planets is the lack of plate tectonics on Venus, likely due to the dry surface and mantle. This results in reduced heat loss from the planet, preventing it from cooling and providing a likely explanation for its lack of an internally generated magnetic field. Instead, Venus may lose its internal heat in periodic major resurfacing events."
+        }
+    }
+}
