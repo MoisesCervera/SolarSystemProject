@@ -102,7 +102,8 @@ class WindowManager:
             # and prevents segfaults from glutDestroyWindow on macOS
             os._exit(0)
 
-        current_time = time.perf_counter()  # Use perf_counter for better precision on Windows
+        # Use perf_counter for better precision on Windows
+        current_time = time.perf_counter()
         dt = current_time - self.last_time
         self.last_time = current_time
 

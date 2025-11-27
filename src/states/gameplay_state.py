@@ -463,7 +463,7 @@ class GameplayState(BaseState):
             # Frame-rate independent interpolation
             base_smoothness = 0.15
             lerp_factor = 1.0 - math.pow(1.0 - base_smoothness, dt * 60)
-            
+
             self.camera.position[0] += (desired_x -
                                         self.camera.position[0]) * lerp_factor
             self.camera.position[1] += (desired_y -

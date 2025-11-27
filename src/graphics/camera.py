@@ -45,7 +45,7 @@ class Camera:
             # At higher FPS, we get smaller steps that compound correctly
             base_smoothness = 0.15  # Amount to move per frame at 60 FPS
             lerp_factor = 1.0 - math.pow(1.0 - base_smoothness, dt * 60)
-            
+
             self.position[0] += (desired_x - self.position[0]) * lerp_factor
             self.position[1] += (desired_y - self.position[1]) * lerp_factor
             self.position[2] += (desired_z - self.position[2]) * lerp_factor
