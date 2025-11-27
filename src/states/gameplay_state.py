@@ -60,6 +60,9 @@ class GameplayState(BaseState):
         # Speed lines effect for boost
         self.speed_lines = []  # List of speed line particles
         self.speed_lines_active = False
+        
+        # FPS counter (set by WindowManager)
+        self.current_fps = 0
 
     def enter(self):
         print("[GameplayState] Entrando a la simulación")
@@ -794,6 +797,9 @@ class GameplayState(BaseState):
         if self.ship and self.ship.is_boosting and not self.is_dead:
             self._draw_speed_lines(w, h)
 
+        # Draw FPS counter (bottom-right corner)
+        self._draw_fps_counter(w, h)
+
     def _draw_boundary_warning(self, w, h):
         """Draw warning UI when approaching boundary."""
         UIRenderer.setup_2d(w, h)
@@ -1277,6 +1283,23 @@ class GameplayState(BaseState):
         glDisable(GL_BLEND)
         glLineWidth(1.0)
 
+        UIRenderer.restore_3d()
+
+    def _draw_fps_counter(self, w, h):
+        """Draw FPS counter in bottom-right corner."""
+        UIRenderer.setup_2d(w, h)
+        
+        fps_text = f"FPS: {self.current_fps}"
+        text_size = 14
+        text_width = len(fps_text) * text_size * 0.6
+        
+        # Position in bottom-right corner with small margin
+        x = w - text_width - 15
+        y = 15
+        
+        # Draw with semi-transparent gray color
+        UIRenderer.draw_text(x, y, fps_text, size=text_size, color=(0.6, 0.6, 0.6))
+        
         UIRenderer.restore_3d()
 
     def handle_input(self, event, x, y):

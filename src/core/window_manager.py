@@ -30,6 +30,13 @@ class WindowManager:
 
         # Control de tiempo
         self.last_time = 0
+        
+        # FPS tracking and limiting
+        self.target_fps = 60
+        self.target_frame_time = 1.0 / self.target_fps
+        self.fps = 0
+        self.frame_count = 0
+        self.fps_timer = 0.0
 
     def initialize(self):
         """Configura GLUT, crea la ventana y establece los callbacks."""
@@ -103,18 +110,36 @@ class WindowManager:
             os._exit(0)
 
         current_time = time.time()
-        dt = current_time - self.last_time
+        
+        # FPS limiting - skip this frame if not enough time has passed
+        time_since_last_frame = current_time - self.last_time
+        if time_since_last_frame < self.target_frame_time:
+            return  # Don't process this frame yet
+        
+        dt = time_since_last_frame
         self.last_time = current_time
 
         # Evitar saltos grandes de tiempo (spiral of death prevention simple)
         if dt > 0.1:
             dt = 0.1
 
+        # FPS tracking
+        self.frame_count += 1
+        self.fps_timer += dt
+        if self.fps_timer >= 1.0:
+            self.fps = self.frame_count
+            self.frame_count = 0
+            self.fps_timer -= 1.0
+
         # Actualizar lógica del estado actual
         # Inyectar state_machine al estado actual si no la tiene (Hack para navegación)
         current_state = self.state_machine.get_current_state()
         if current_state and not hasattr(current_state, 'state_machine'):
             current_state.state_machine = self.state_machine
+        
+        # Pass FPS to current state for display
+        if current_state:
+            current_state.current_fps = self.fps
 
         self.state_machine.update(dt)
 
