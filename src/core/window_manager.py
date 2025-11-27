@@ -76,7 +76,7 @@ class WindowManager:
 
     def start_main_loop(self):
         """Inicia el bucle de eventos de GLUT."""
-        self.last_time = time.perf_counter()  # Use perf_counter for better precision on Windows
+        self.last_time = time.time()
         print("[WindowManager] Iniciando bucle principal...")
         glutMainLoop()
 
@@ -102,17 +102,13 @@ class WindowManager:
             # and prevents segfaults from glutDestroyWindow on macOS
             os._exit(0)
 
-        # Use perf_counter for better precision on Windows
-        current_time = time.perf_counter()
+        current_time = time.time()
         dt = current_time - self.last_time
         self.last_time = current_time
 
         # Evitar saltos grandes de tiempo (spiral of death prevention simple)
         if dt > 0.1:
             dt = 0.1
-        # Also clamp minimum dt to prevent issues with very high framerates
-        if dt < 0.001:
-            dt = 0.001
 
         # Actualizar lógica del estado actual
         # Inyectar state_machine al estado actual si no la tiene (Hack para navegación)
