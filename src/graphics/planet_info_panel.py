@@ -484,7 +484,7 @@ class PlanetInfoPanel:
         words = text.split(' ')
         line = ""
         line_height = size + 8  # More line height
-        char_width_approx = size * 0.5  # Adjusted for Helvetica
+        char_width_approx = size * 0.45  # Tighter estimate to use more width
 
         for word in words:
             test_line = line + word + " "

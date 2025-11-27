@@ -30,22 +30,27 @@ class Camera:
             # Posición deseada: Detrás y arriba de la nave
             # Calculamos el vector "atrás" basado en la rotación de la nave
             rad = math.radians(self.follow_target.rotation_y)
-            offset_dist = 10.0
-            offset_height = 5.0
+            offset_dist = 8.0  # Closer to ship
+            offset_height = 3.5  # Lower height
 
             # Nota el doble negativo por la convención -Z
             desired_x = target_x - (-math.sin(rad) * offset_dist)
             desired_z = target_z - (-math.cos(rad) * offset_dist)
             desired_y = target_y + offset_height
 
-            # Interpolación lineal (Lerp)
+            # Interpolación lineal (Lerp) - higher value = tighter follow
             lerp_factor = self.follow_smoothness * dt
             self.position[0] += (desired_x - self.position[0]) * lerp_factor
             self.position[1] += (desired_y - self.position[1]) * lerp_factor
             self.position[2] += (desired_z - self.position[2]) * lerp_factor
 
-            # El target de la cámara (hacia donde mira) es la nave
-            self.target = [target_x, target_y, target_z]
+            # Camera looks slightly ahead of the ship for better forward view
+            look_ahead_dist = 3.0  # Reduced - closer to ship
+            look_ahead_x = target_x + (-math.sin(rad) * look_ahead_dist)
+            look_ahead_z = target_z + (-math.cos(rad) * look_ahead_dist)
+            look_ahead_y = target_y + 0.5  # Just slightly above ship
+
+            self.target = [look_ahead_x, look_ahead_y, look_ahead_z]
 
     def apply(self):
         """Aplica la matriz de vista (View Matrix) usando gluLookAt."""

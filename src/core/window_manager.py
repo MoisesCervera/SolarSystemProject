@@ -6,9 +6,8 @@ import os
 import time
 from src.core.state_machine import StateMachine
 from src.core.session import GameContext
-
-
 from src.core.input_manager import InputManager
+from src.states.pause_state import PauseState
 
 
 class WindowManager:
@@ -36,10 +35,15 @@ class WindowManager:
         """Configura GLUT, crea la ventana y establece los callbacks."""
         glutInit(sys.argv)
         glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
+
+        # Start in fullscreen mode
         glutInitWindowSize(self.width, self.height)
-        glutInitWindowPosition(100, 100)
+        glutInitWindowPosition(0, 0)
 
         self.window_id = glutCreateWindow(self.title.encode('ascii'))
+
+        # Enter fullscreen mode
+        glutFullScreen()
 
         # Configuración inicial de OpenGL
         glEnable(GL_DEPTH_TEST)       # Z-Buffer
@@ -134,8 +138,32 @@ class WindowManager:
 
     def _keyboard_down_callback(self, key, x, y):
         """Tecla presionada."""
-        if key == b'\x1b':  # ESC para salir
-            self.should_exit = True
+        if key == b'\x1b':  # ESC to open pause menu
+            # Check if we're already in pause state or welcome state
+            current_state = self.state_machine.get_current_state()
+            current_type = type(
+                current_state).__name__ if current_state else ""
+
+            # If in pause state, let it handle ESC (to resume)
+            if current_type == "PauseState":
+                self.state_machine.handle_input(('KEY_DOWN', key), x, y)
+                return
+
+            # Don't pause on welcome screen - it handles its own navigation
+            if current_type == "WelcomeState":
+                return
+
+            # Don't pause when player is dead (showing restart menu)
+            if current_type == "GameplayState":
+                if hasattr(current_state, 'is_dead') and current_state.is_dead:
+                    return
+                if hasattr(current_state, 'asteroid_impact_pending') and current_state.asteroid_impact_pending:
+                    return
+
+            # Push pause state on top of current state
+            pause_state = PauseState()
+            pause_state.state_machine = self.state_machine
+            self.state_machine.push(pause_state)
             return
         self.input_manager.key_down(key, x, y)
         # Forward event to state machine
@@ -149,10 +177,13 @@ class WindowManager:
     def _special_down_callback(self, key, x, y):
         """Tecla especial presionada."""
         self.input_manager.special_key_down(key, x, y)
+        # Forward special key to state machine
+        self.state_machine.handle_input(('SPECIAL_KEY_DOWN', key), x, y)
 
     def _special_up_callback(self, key, x, y):
         """Tecla especial soltada."""
         self.input_manager.special_key_up(key, x, y)
+        self.state_machine.handle_input(('SPECIAL_KEY_UP', key), x, y)
 
     def _mouse_callback(self, button, state, x, y):
         """Callback para clics del mouse."""

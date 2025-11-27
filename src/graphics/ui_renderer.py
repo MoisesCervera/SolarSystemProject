@@ -46,15 +46,21 @@ class UIRenderer:
 
         font = cls.get_font(size, font_name)
         # Obtener tamaño del texto
+        top_offset = 0
+        left_offset = 0
         try:
             left, top, right, bottom = font.getbbox(text)
             width = right - left
             height = bottom - top
+            top_offset = -top  # Account for ascender offset
+            left_offset = -left
             # Ajuste de padding
-            width += 6
-            height += 6
+            width += 8
+            height += 8
         except AttributeError:
             width, height = font.getsize(text)
+            width += 8
+            height += 8
 
         if width <= 0 or height <= 0:
             return None, 0, 0
@@ -63,7 +69,9 @@ class UIRenderer:
         image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
         # Dibujar texto en blanco (se teñirá con glColor)
-        draw.text((3, 0), text, font=font, fill=(255, 255, 255, 255))
+        # Use top_offset to properly position text and avoid cutoff
+        draw.text((4 + left_offset, 4 + top_offset), text,
+                  font=font, fill=(255, 255, 255, 255))
 
         # No volteamos la imagen. Enviamos los bytes tal cual (Top-Down).
         # image = image.transpose(Image.FLIP_TOP_BOTTOM)

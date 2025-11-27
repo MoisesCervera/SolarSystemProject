@@ -1,0 +1,906 @@
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from OpenGL.GLUT import *
+from src.states.base_state import BaseState
+from src.graphics.ui_renderer import UIRenderer
+from src.graphics.skybox import Skybox
+from src.graphics.texture_loader import TextureLoader
+from src.graphics.draw_utils import draw_sphere, draw_cylinder, draw_torus, draw_cone, set_material_color
+from src.core.session import GameContext
+# Import actual ship models
+from src.entities.player.ships.shipM import ShipModel
+from src.entities.player.ships.shipS import dibujar_nave as draw_ship_s
+from src.entities.player.ships.shipZ import draw_nave as draw_ship_z
+import math
+import random
+
+
+class ShipSelectState(BaseState):
+    """
+    Arcade-style ship selection with roulette carousel.
+    """
+
+    # Ship data with names and descriptions
+    SHIPS = [
+        {
+            'id': 'shipM',
+            'name': 'UFO PHANTOM',
+            'description': 'Classic flying saucer with abduction beam',
+            'color_scheme': (0.55, 0.6, 0.65),
+            'accent': (0.3, 0.8, 1.0),
+            'stats': {'speed': 3, 'armor': 4, 'weapons': 2}
+        },
+        {
+            'id': 'shipS',
+            'name': 'BUG CRAWLER',
+            'description': 'Agile insectoid scout with multiple legs',
+            'color_scheme': (0.1, 0.2, 0.7),
+            'accent': (0.9, 1.0, 0.2),
+            'stats': {'speed': 5, 'armor': 2, 'weapons': 3}
+        },
+        {
+            'id': 'shipZ',
+            'name': 'STARFIGHTER X',
+            'description': 'Heavy combat vessel with dual cannons',
+            'color_scheme': (0.3, 0.3, 0.4),
+            'accent': (1.0, 0.5, 0.0),
+            'stats': {'speed': 4, 'armor': 3, 'weapons': 5}
+        }
+    ]
+
+    def __init__(self):
+        self.skybox = None
+        self.animation_time = 0.0
+
+        # Carousel state
+        self.current_index = 0
+        self.target_angle = 0.0
+        self.current_angle = 0.0
+        self.rotation_speed = 5.0
+
+        # Ship rotation
+        self.ship_rotation = 0.0
+
+        # Selection state
+        self.is_spinning = False
+        self.spin_speed = 0.0
+        self.spin_deceleration = 0.5
+        self.selected = False
+
+        # Particle effects
+        self.particles = []
+
+        # Platform animation
+        self.platform_glow = 0.0
+
+        # Stars for background
+        self.stars = []
+
+        # UFO ship model instance for shipM
+        self.ufo_model = ShipModel()
+
+    def enter(self):
+        print("[ShipSelectState] Ship selection screen")
+
+        # Load skybox
+        bg_texture = TextureLoader.load_texture(
+            "assets/textures/background/stars.jpg")
+        self.skybox = Skybox(size=200.0, texture_id=bg_texture)
+
+        # Generate stars
+        for _ in range(150):
+            self.stars.append({
+                'x': random.uniform(-100, 100),
+                'y': random.uniform(-60, 60),
+                'z': random.uniform(-150, -50),
+                'size': random.uniform(0.1, 0.5),
+                'twinkle': random.uniform(0, math.pi * 2)
+            })
+
+        # Initialize particles
+        self._spawn_particles()
+
+    def _spawn_particles(self):
+        """Spawn ambient particles around the carousel."""
+        self.particles = []
+        for _ in range(50):
+            angle = random.uniform(0, math.pi * 2)
+            radius = random.uniform(8, 15)
+            self.particles.append({
+                'x': math.cos(angle) * radius,
+                'y': random.uniform(-3, 5),
+                'z': math.sin(angle) * radius,
+                'vx': random.uniform(-0.5, 0.5),
+                'vy': random.uniform(0.1, 0.5),
+                'vz': random.uniform(-0.5, 0.5),
+                'life': random.uniform(0.5, 1.0),
+                'max_life': 1.0,
+                'color': random.choice([(0, 1, 1), (1, 0.5, 0), (0.5, 0.5, 1)])
+            })
+
+    def update(self, dt):
+        self.animation_time += dt
+        self.ship_rotation += dt * 30  # Rotate ships slowly
+        self.platform_glow = math.sin(self.animation_time * 3) * 0.3 + 0.7
+
+        # Update carousel rotation
+        if self.is_spinning:
+            self.current_angle += self.spin_speed * dt
+            self.spin_speed -= self.spin_deceleration * dt * 100
+
+            if self.spin_speed <= 0:
+                self.is_spinning = False
+                self.spin_speed = 0
+                # Snap to nearest ship
+                angle_per_ship = 360.0 / len(self.SHIPS)
+                self.current_index = int(
+                    round(self.current_angle / angle_per_ship)) % len(self.SHIPS)
+                self.target_angle = self.current_index * angle_per_ship
+        else:
+            # Smooth interpolation to target
+            diff = self.target_angle - self.current_angle
+            # Normalize to -180 to 180
+            while diff > 180:
+                diff -= 360
+            while diff < -180:
+                diff += 360
+            self.current_angle += diff * self.rotation_speed * dt
+
+        # Update stars twinkle
+        for star in self.stars:
+            star['twinkle'] += dt * 3
+
+        # Update particles
+        for p in self.particles:
+            p['x'] += p['vx'] * dt
+            p['y'] += p['vy'] * dt
+            p['z'] += p['vz'] * dt
+            p['life'] -= dt * 0.3
+
+            if p['life'] <= 0:
+                # Respawn
+                angle = random.uniform(0, math.pi * 2)
+                radius = random.uniform(8, 15)
+                p['x'] = math.cos(angle) * radius
+                p['y'] = -3
+                p['z'] = math.sin(angle) * radius
+                p['life'] = p['max_life']
+
+    def handle_input(self, event, x, y):
+        if self.selected:
+            return
+
+        if event[0] == 'KEY_DOWN':
+            key = event[1]
+
+            # Left/Right arrows to change selection
+            if key == GLUT_KEY_LEFT or key == b'a' or key == b'A':
+                self._select_previous()
+            elif key == GLUT_KEY_RIGHT or key == b'd' or key == b'D':
+                self._select_next()
+            # Enter/Space to confirm
+            elif key == b'\r' or key == b' ':
+                self._confirm_selection()
+            # R to spin roulette
+            elif key == b'r' or key == b'R':
+                self._spin_roulette()
+
+        elif event[0] == 'SPECIAL_KEY_DOWN':
+            key = event[1]
+            if key == GLUT_KEY_LEFT:
+                self._select_previous()
+            elif key == GLUT_KEY_RIGHT:
+                self._select_next()
+
+    def _select_previous(self):
+        if not self.is_spinning:
+            self.current_index = (self.current_index - 1) % len(self.SHIPS)
+            self.target_angle = self.current_index * (360.0 / len(self.SHIPS))
+
+    def _select_next(self):
+        if not self.is_spinning:
+            self.current_index = (self.current_index + 1) % len(self.SHIPS)
+            self.target_angle = self.current_index * (360.0 / len(self.SHIPS))
+
+    def _spin_roulette(self):
+        """Start the roulette spin."""
+        if not self.is_spinning:
+            self.is_spinning = True
+            self.spin_speed = random.uniform(300, 500)  # Random initial speed
+
+    def _confirm_selection(self):
+        """Confirm ship selection and proceed to game."""
+        self.selected = True
+        selected_ship = self.SHIPS[self.current_index]
+
+        # Store in session
+        GameContext.selected_ship = selected_ship['id']
+        print(f"[ShipSelect] Selected: {selected_ship['name']}")
+
+        # Transition to gameplay
+        from src.states.gameplay_state import GameplayState
+        if hasattr(self, 'state_machine') and self.state_machine:
+            new_state = GameplayState()
+            new_state.state_machine = self.state_machine
+            self.state_machine.change(new_state)
+
+    def draw(self):
+        glClearColor(0.0, 0.0, 0.02, 1.0)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+        w = glutGet(GLUT_WINDOW_WIDTH)
+        h = glutGet(GLUT_WINDOW_HEIGHT)
+
+        # Setup 3D
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(45, w / h, 0.1, 500.0)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+
+        # Camera looking at carousel
+        gluLookAt(0, 8, 20,   0, 2, 0,   0, 1, 0)
+
+        # Draw skybox
+        if self.skybox:
+            glPushMatrix()
+            glDisable(GL_DEPTH_TEST)
+            glDisable(GL_LIGHTING)
+            self.skybox.draw()
+            glEnable(GL_DEPTH_TEST)
+            glPopMatrix()
+
+        # Draw stars
+        self._draw_stars()
+
+        # Enable lighting for 3D objects
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        glLightfv(GL_LIGHT0, GL_POSITION, [10.0, 20.0, 15.0, 1.0])
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
+        glLightfv(GL_LIGHT0, GL_AMBIENT, [0.3, 0.3, 0.4, 1.0])
+
+        # Draw carousel platform
+        self._draw_platform()
+
+        # Draw ships on carousel
+        self._draw_carousel()
+
+        # Draw particles
+        self._draw_particles()
+
+        glDisable(GL_LIGHTING)
+
+        # Setup 2D for UI
+        UIRenderer.setup_2d(w, h)
+
+        # Draw UI elements
+        self._draw_title(w, h)
+        self._draw_ship_info(w, h)
+        self._draw_stats(w, h)
+        self._draw_controls(w, h)
+        self._draw_selection_indicator(w, h)
+
+        UIRenderer.restore_3d()
+
+    def _draw_stars(self):
+        glDisable(GL_LIGHTING)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+
+        glPointSize(2.0)
+        glBegin(GL_POINTS)
+        for star in self.stars:
+            brightness = 0.5 + 0.5 * math.sin(star['twinkle'])
+            glColor4f(0.8, 0.9, 1.0, brightness)
+            glVertex3f(star['x'], star['y'], star['z'])
+        glEnd()
+
+        glDisable(GL_BLEND)
+
+    def _draw_platform(self):
+        """Draw an enhanced circular platform for the carousel."""
+        glPushMatrix()
+
+        # Main platform disc
+        glTranslatef(0, -0.5, 0)
+
+        glDisable(GL_LIGHTING)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+
+        glPushMatrix()
+        glRotatef(90, 1, 0, 0)
+
+        quadric = gluNewQuadric()
+
+        # Outer glow ring (animated)
+        outer_glow = 0.5 + 0.3 * math.sin(self.animation_time * 2)
+        glColor4f(0.0, outer_glow, outer_glow, 0.7)
+        gluDisk(quadric, 9.6, 10.3, 64, 1)
+
+        # Secondary outer ring (thin bright line)
+        glColor4f(0.0, 0.9, 1.0, 0.5)
+        gluDisk(quadric, 9.2, 9.35, 64, 1)
+
+        # Ship position ring
+        glColor4f(0.0, 0.5, 0.6, 0.4)
+        gluDisk(quadric, 6.5, 7.5, 64, 1)
+
+        # Inner accent ring (pulsing)
+        inner_glow = 0.4 + 0.3 * math.sin(self.animation_time * 3)
+        glColor4f(0.0, inner_glow, inner_glow, 0.5)
+        gluDisk(quadric, 3.8, 4.2, 64, 1)
+
+        # Center core glow
+        core_glow = 0.3 + 0.2 * math.sin(self.animation_time * 2.5)
+        glColor4f(0.0, core_glow, core_glow * 1.2, 0.4)
+        gluDisk(quadric, 0, 2.5, 32, 1)
+
+        # Bright center point
+        glColor4f(0.0, 0.8, 1.0, 0.6)
+        gluDisk(quadric, 0, 0.8, 16, 1)
+
+        gluDeleteQuadric(quadric)
+        glPopMatrix()
+
+        # Draw hexagonal accent pattern around center
+        hex_radius = 3.0
+        for i in range(6):
+            angle1 = math.radians(i * 60 + self.animation_time * 10)
+            angle2 = math.radians((i + 1) * 60 + self.animation_time * 10)
+
+            x1 = math.sin(angle1) * hex_radius
+            z1 = math.cos(angle1) * hex_radius
+            x2 = math.sin(angle2) * hex_radius
+            z2 = math.cos(angle2) * hex_radius
+
+            hex_bright = 0.4 + 0.2 * math.sin(self.animation_time * 4 + i)
+            glColor4f(0.0, hex_bright, hex_bright, 0.6)
+            glLineWidth(2.0)
+            glBegin(GL_LINES)
+            glVertex3f(x1, 0.02, z1)
+            glVertex3f(x2, 0.02, z2)
+            glEnd()
+
+        # Draw triangular markers pointing to ship positions
+        num_ships = len(self.SHIPS)
+        for i in range(num_ships):
+            marker_angle = math.radians(
+                i * (360.0 / num_ships) - self.current_angle)
+
+            # Triangle pointing outward at radius 5.5
+            tri_r = 5.2
+            tri_size = 0.4
+            cx = math.sin(marker_angle) * tri_r
+            cz = math.cos(marker_angle) * tri_r
+
+            # Calculate perpendicular for triangle width
+            perp_angle = marker_angle + math.pi / 2
+            px = math.sin(perp_angle) * tri_size
+            pz = math.cos(perp_angle) * tri_size
+
+            # Tip pointing outward
+            tip_x = math.sin(marker_angle) * (tri_r + 0.6)
+            tip_z = math.cos(marker_angle) * (tri_r + 0.6)
+
+            is_selected = (i == self.current_index) and not self.is_spinning
+            if is_selected:
+                tri_glow = 0.7 + 0.3 * math.sin(self.animation_time * 6)
+                glColor4f(0.0, tri_glow, tri_glow, 0.9)
+            else:
+                glColor4f(0.0, 0.3, 0.4, 0.5)
+
+            glBegin(GL_TRIANGLES)
+            glVertex3f(cx - px, 0.02, cz - pz)
+            glVertex3f(cx + px, 0.02, cz + pz)
+            glVertex3f(tip_x, 0.02, tip_z)
+            glEnd()
+
+        glDisable(GL_BLEND)
+        glEnable(GL_LIGHTING)
+
+        # Platform base (dark metallic)
+        glColor3f(0.02, 0.04, 0.06)
+        glPushMatrix()
+        glRotatef(-90, 1, 0, 0)
+        quadric = gluNewQuadric()
+        gluCylinder(quadric, 10.0, 10.0, 0.3, 64, 1)
+        gluDisk(quadric, 0, 10.0, 64, 1)
+        gluDeleteQuadric(quadric)
+        glPopMatrix()
+
+        # Draw 3D torus rim around the platform edge
+        glEnable(GL_LIGHTING)
+        glPushMatrix()
+        glTranslatef(0, 0.2, 0)  # Raise above platform
+        glRotatef(90, 1, 0, 0)  # Lay flat
+
+        # Main torus rim - metallic dark
+        set_material_color((0.06, 0.08, 0.1), shininess=100)
+        draw_torus(inner_radius=0.35, outer_radius=10.2, sides=24, rings=64)
+        glPopMatrix()
+
+        glDisable(GL_LIGHTING)
+        glDisable(GL_DEPTH_TEST)  # Ensure lights render on top
+
+        # Draw rotating lights on the torus rim - MORE VISIBLE
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+
+        num_rim_lights = 32
+        rim_rotation = self.animation_time * 50  # Faster rotation
+
+        for i in range(num_rim_lights):
+            light_angle = math.radians(
+                i * (360.0 / num_rim_lights) + rim_rotation)
+
+            # Position on torus outer edge
+            lx = math.sin(light_angle) * 10.2
+            lz = math.cos(light_angle) * 10.2
+            ly = 0.35  # Higher up on the rim
+
+            # Chase pattern - sequential lights
+            chase_offset = (self.animation_time * 6 + i * 0.4) % (math.pi * 2)
+            brightness = 0.4 + 0.6 * max(0, math.sin(chase_offset))
+
+            # Outer glow - larger
+            glColor4f(0.0, brightness * 0.8, brightness, brightness * 0.5)
+            glPointSize(12.0 + brightness * 6)
+            glBegin(GL_POINTS)
+            glVertex3f(lx, ly, lz)
+            glEnd()
+
+            # Inner bright core
+            glColor4f(0.2, brightness, brightness * 1.2, brightness)
+            glPointSize(6.0 + brightness * 3)
+            glBegin(GL_POINTS)
+            glVertex3f(lx, ly, lz)
+            glEnd()
+
+            # Brightest center when fully lit
+            if brightness > 0.7:
+                glColor4f(0.5, 1.0, 1.0, brightness)
+                glPointSize(3.0)
+                glBegin(GL_POINTS)
+                glVertex3f(lx, ly, lz)
+                glEnd()
+
+        glDisable(GL_BLEND)
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_LIGHTING)
+
+        # Draw enhanced pedestal markers for each ship position
+        num_ships = len(self.SHIPS)
+        for i in range(num_ships):
+            angle = math.radians(i * (360.0 / num_ships) - self.current_angle)
+            x = math.sin(angle) * 7
+            z = math.cos(angle) * 7
+
+            glPushMatrix()
+            glTranslatef(x, 0.1, z)
+
+            is_selected = (i == self.current_index) and not self.is_spinning
+
+            # Pedestal glow ring (below)
+            glDisable(GL_LIGHTING)
+            glEnable(GL_BLEND)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+
+            if is_selected:
+                # Multi-layer glow for selected
+                ped_glow = 0.6 + 0.4 * math.sin(self.animation_time * 5)
+
+                # Outer glow
+                glColor4f(0.0, ped_glow * 0.5, ped_glow * 0.5, 0.3)
+                glPushMatrix()
+                glRotatef(90, 1, 0, 0)
+                quadric = gluNewQuadric()
+                gluDisk(quadric, 2.0, 2.8, 32, 1)
+                gluDeleteQuadric(quadric)
+                glPopMatrix()
+
+                # Inner bright ring
+                glColor4f(0.0, ped_glow, ped_glow, 0.8)
+                glPushMatrix()
+                glRotatef(90, 1, 0, 0)
+                quadric = gluNewQuadric()
+                gluDisk(quadric, 1.7, 2.1, 32, 1)
+                gluDeleteQuadric(quadric)
+                glPopMatrix()
+            else:
+                glColor4f(0.05, 0.1, 0.15, 0.4)
+                glPushMatrix()
+                glRotatef(90, 1, 0, 0)
+                quadric = gluNewQuadric()
+                gluDisk(quadric, 1.5, 2.0, 32, 1)
+                gluDeleteQuadric(quadric)
+                glPopMatrix()
+
+            glDisable(GL_BLEND)
+            glEnable(GL_LIGHTING)
+
+            # Main pedestal cylinder
+            if is_selected:
+                glColor3f(0.0, 0.35, 0.4)
+            else:
+                glColor3f(0.08, 0.1, 0.12)
+
+            glPushMatrix()
+            glRotatef(-90, 1, 0, 0)
+            quadric = gluNewQuadric()
+            gluCylinder(quadric, 1.7, 1.5, 0.2, 32, 1)
+            gluDisk(quadric, 0, 1.7, 32, 1)
+            gluDeleteQuadric(quadric)
+            glPopMatrix()
+
+            glPopMatrix()
+
+        glPopMatrix()
+
+    def _draw_carousel(self):
+        """Draw the ships on the carousel."""
+        num_ships = len(self.SHIPS)
+        carousel_radius = 7.0
+
+        for i, ship in enumerate(self.SHIPS):
+            angle = math.radians(i * (360.0 / num_ships) - self.current_angle)
+            x = math.sin(angle) * carousel_radius
+            z = math.cos(angle) * carousel_radius
+
+            # Check if this is the front ship
+            is_front = abs(angle) < math.radians(
+                30) or abs(angle) > math.radians(330)
+
+            glPushMatrix()
+            glTranslatef(x, 1.5, z)
+
+            # Face center
+            facing_angle = math.degrees(math.atan2(x, z))
+            glRotatef(facing_angle + 180, 0, 1, 0)
+
+            # Add rotation animation
+            glRotatef(self.ship_rotation, 0, 1, 0)
+
+            # Scale based on position (front is bigger)
+            scale = 1.2 if is_front else 0.8
+            glScalef(scale, scale, scale)
+
+            # Draw simplified ship representation
+            self._draw_ship_model(ship, is_front)
+
+            glPopMatrix()
+
+    def _draw_ship_model(self, ship_data, highlighted=False):
+        """Draw the actual ship model based on ship data."""
+        ship_id = ship_data['id']
+
+        glEnable(GL_COLOR_MATERIAL)
+        glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
+
+        if ship_id == 'shipM':
+            # Draw the actual UFO model
+            glPushMatrix()
+            glScalef(0.35, 0.35, 0.35)  # Scale down for carousel
+            # Update animation
+            self.ufo_model.update(0.016)  # ~60fps delta
+            self.ufo_model.draw()
+            glPopMatrix()
+
+        elif ship_id == 'shipS':
+            # Draw the actual Bug Crawler model
+            glPushMatrix()
+            glScalef(0.8, 0.8, 0.8)  # Scale appropriately
+            glRotatef(180, 0, 1, 0)  # Face forward
+            # Create animation state for the ship
+            anim_state = {
+                "hover_y": math.sin(self.animation_time * 2) * 0.1,
+                "balanceo_pata_z": math.sin(self.animation_time * 3) * 5
+            }
+            draw_ship_s(anim_state)
+            glPopMatrix()
+
+        elif ship_id == 'shipZ':
+            # Draw the actual Starfighter model
+            glPushMatrix()
+            glScalef(0.5, 0.5, 0.5)  # Scale appropriately
+            glRotatef(180, 0, 1, 0)  # Face forward
+            draw_ship_z()
+            glPopMatrix()
+
+    def _draw_particles(self):
+        """Draw ambient particles."""
+        glDisable(GL_LIGHTING)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+
+        glPointSize(3.0)
+        glBegin(GL_POINTS)
+        for p in self.particles:
+            alpha = p['life'] / p['max_life']
+            glColor4f(p['color'][0], p['color'][1], p['color'][2], alpha * 0.5)
+            glVertex3f(p['x'], p['y'], p['z'])
+        glEnd()
+
+        glDisable(GL_BLEND)
+        glEnable(GL_LIGHTING)
+
+    def _draw_title(self, w, h):
+        """Draw the title with glow effect."""
+        title = "SELECT YOUR SHIP"
+        title_size = 42
+        char_width = title_size * 0.6
+        title_width = len(title) * char_width
+        title_x = (w - title_width) / 2
+        title_y = h - 70
+
+        # Pulsing glow
+        pulse = 0.7 + 0.3 * math.sin(self.animation_time * 2)
+
+        # Draw glow layers
+        for i in range(3):
+            offset = (3 - i) * 2
+            glow_alpha = (0.3 / (i + 1)) * pulse
+            UIRenderer.draw_text(title_x - offset, title_y - offset, title,
+                                 size=title_size, color=(0.0, glow_alpha, glow_alpha))
+
+        # Main title
+        UIRenderer.draw_text(title_x, title_y, title, size=title_size,
+                             color=(0.0, pulse, pulse))
+
+        # Subtitle
+        subtitle = "CHOOSE YOUR VESSEL FOR THE JOURNEY"
+        sub_size = 16
+        sub_width = len(subtitle) * sub_size * 0.5
+        sub_x = (w - sub_width) / 2
+        UIRenderer.draw_text(sub_x, title_y - 35, subtitle, size=sub_size,
+                             color=(0.4, 0.5, 0.6))
+
+    def _draw_ship_info(self, w, h):
+        """Draw current ship info panel - dynamically positioned in middle-left."""
+        if self.is_spinning:
+            return
+
+        ship = self.SHIPS[self.current_index]
+
+        # Panel background - dynamically positioned in middle-left
+        panel_w = min(360, w * 0.35)  # Max 35% of screen width
+        panel_h = min(260, h * 0.4)   # Max 40% of screen height
+        panel_x = w * 0.03  # 3% from left edge
+        panel_y = (h - panel_h) / 2  # Vertically centered
+
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        # Dark background with better opacity
+        glColor4f(0.0, 0.03, 0.06, 0.92)
+        chamfer = 18
+        glBegin(GL_POLYGON)
+        glVertex2f(panel_x + chamfer, panel_y)
+        glVertex2f(panel_x + panel_w - chamfer, panel_y)
+        glVertex2f(panel_x + panel_w, panel_y + chamfer)
+        glVertex2f(panel_x + panel_w, panel_y + panel_h - chamfer)
+        glVertex2f(panel_x + panel_w - chamfer, panel_y + panel_h)
+        glVertex2f(panel_x + chamfer, panel_y + panel_h)
+        glVertex2f(panel_x, panel_y + panel_h - chamfer)
+        glVertex2f(panel_x, panel_y + chamfer)
+        glEnd()
+
+        # Glowing border
+        border_glow = 0.6 + 0.2 * math.sin(self.animation_time * 2)
+        glLineWidth(2.5)
+        glColor3f(0.0, border_glow, border_glow)
+        glBegin(GL_LINE_LOOP)
+        glVertex2f(panel_x + chamfer, panel_y)
+        glVertex2f(panel_x + panel_w - chamfer, panel_y)
+        glVertex2f(panel_x + panel_w, panel_y + chamfer)
+        glVertex2f(panel_x + panel_w, panel_y + panel_h - chamfer)
+        glVertex2f(panel_x + panel_w - chamfer, panel_y + panel_h)
+        glVertex2f(panel_x + chamfer, panel_y + panel_h)
+        glVertex2f(panel_x, panel_y + panel_h - chamfer)
+        glVertex2f(panel_x, panel_y + chamfer)
+        glEnd()
+
+        # Inner accent line
+        glLineWidth(1.0)
+        glColor4f(0.0, 0.4, 0.5, 0.4)
+        inner_margin = 8
+        glBegin(GL_LINE_LOOP)
+        glVertex2f(panel_x + chamfer + inner_margin, panel_y + inner_margin)
+        glVertex2f(panel_x + panel_w - chamfer -
+                   inner_margin, panel_y + inner_margin)
+        glVertex2f(panel_x + panel_w - inner_margin,
+                   panel_y + chamfer + inner_margin)
+        glVertex2f(panel_x + panel_w - inner_margin,
+                   panel_y + panel_h - chamfer - inner_margin)
+        glVertex2f(panel_x + panel_w - chamfer - inner_margin,
+                   panel_y + panel_h - inner_margin)
+        glVertex2f(panel_x + chamfer + inner_margin,
+                   panel_y + panel_h - inner_margin)
+        glVertex2f(panel_x + inner_margin, panel_y +
+                   panel_h - chamfer - inner_margin)
+        glVertex2f(panel_x + inner_margin, panel_y + chamfer + inner_margin)
+        glEnd()
+
+        glDisable(GL_BLEND)
+
+        # Ship name - LARGER with glow
+        name_glow = 0.7 + 0.3 * math.sin(self.animation_time * 3)
+        name_y = panel_y + panel_h - 55
+        UIRenderer.draw_text(panel_x + 27, name_y - 2, ship['name'],
+                             size=36, color=(0.0, name_glow * 0.3, name_glow * 0.3))
+        UIRenderer.draw_text(panel_x + 25, name_y, ship['name'],
+                             size=36, color=(0.0, 1.0, 1.0))
+
+        # Separator line under name
+        sep_y = name_y - 15
+        glColor3f(0.0, 0.5, 0.5)
+        glLineWidth(1.5)
+        glBegin(GL_LINES)
+        glVertex2f(panel_x + 25, sep_y)
+        glVertex2f(panel_x + panel_w - 25, sep_y)
+        glEnd()
+
+        # Description - LARGER and easier to read
+        UIRenderer.draw_text(panel_x + 25, sep_y - 35, ship['description'],
+                             size=18, color=(0.6, 0.75, 0.85))
+
+    def _draw_stats(self, w, h):
+        """Draw ship speed stat with dots only - positioned inside panel."""
+        if self.is_spinning:
+            return
+
+        ship = self.SHIPS[self.current_index]
+        stats = ship['stats']
+        speed_value = stats['speed']
+
+        # Calculate panel position (same as _draw_ship_info)
+        panel_w = min(360, w * 0.35)
+        panel_h = min(260, h * 0.4)
+        panel_x = w * 0.03
+        panel_y = (h - panel_h) / 2
+
+        start_x = panel_x + 25
+        start_y = panel_y + 45  # Lower in the panel
+
+        # Speed label
+        UIRenderer.draw_text(start_x, start_y, "SPEED",
+                             size=18, color=(0.0, 0.85, 0.85))
+
+        # Draw speed dots (visual representation)
+        dot_start_x = start_x + 95
+        dot_y = start_y + 7
+        dot_spacing = 20
+
+        for i in range(5):
+            # Draw outer ring for all dots
+            glEnable(GL_BLEND)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+            dot_x = dot_start_x + i * dot_spacing
+
+            if i < speed_value:
+                # Filled dot with glow
+                glColor4f(0.0, 1.0, 0.7, 0.3)
+                glPointSize(14.0)
+                glBegin(GL_POINTS)
+                glVertex2f(dot_x, dot_y)
+                glEnd()
+
+                glColor3f(0.0, 1.0, 0.6)
+                glPointSize(10.0)
+                glBegin(GL_POINTS)
+                glVertex2f(dot_x, dot_y)
+                glEnd()
+            else:
+                # Empty dot (outline effect)
+                glColor3f(0.15, 0.25, 0.3)
+                glPointSize(10.0)
+                glBegin(GL_POINTS)
+                glVertex2f(dot_x, dot_y)
+                glEnd()
+
+                glColor3f(0.03, 0.05, 0.08)
+                glPointSize(6.0)
+                glBegin(GL_POINTS)
+                glVertex2f(dot_x, dot_y)
+                glEnd()
+
+            glDisable(GL_BLEND)
+
+    def _draw_controls(self, w, h):
+        """Draw a big SELECT button instead of control hints."""
+        if self.is_spinning:
+            return
+
+        # Big SELECT button at the bottom center
+        btn_width = 220
+        btn_height = 55
+        btn_x = (w - btn_width) / 2
+        btn_y = 50
+
+        # Button pulse
+        pulse = 0.6 + 0.4 * math.sin(self.animation_time * 3)
+
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        # Button background
+        glColor4f(0.0, 0.1, 0.15, 0.9)
+        chamfer = 12
+        glBegin(GL_POLYGON)
+        glVertex2f(btn_x + chamfer, btn_y)
+        glVertex2f(btn_x + btn_width - chamfer, btn_y)
+        glVertex2f(btn_x + btn_width, btn_y + chamfer)
+        glVertex2f(btn_x + btn_width, btn_y + btn_height - chamfer)
+        glVertex2f(btn_x + btn_width - chamfer, btn_y + btn_height)
+        glVertex2f(btn_x + chamfer, btn_y + btn_height)
+        glVertex2f(btn_x, btn_y + btn_height - chamfer)
+        glVertex2f(btn_x, btn_y + chamfer)
+        glEnd()
+
+        # Glowing border
+        glLineWidth(3.0)
+        glColor3f(0.0, pulse, pulse)
+        glBegin(GL_LINE_LOOP)
+        glVertex2f(btn_x + chamfer, btn_y)
+        glVertex2f(btn_x + btn_width - chamfer, btn_y)
+        glVertex2f(btn_x + btn_width, btn_y + chamfer)
+        glVertex2f(btn_x + btn_width, btn_y + btn_height - chamfer)
+        glVertex2f(btn_x + btn_width - chamfer, btn_y + btn_height)
+        glVertex2f(btn_x + chamfer, btn_y + btn_height)
+        glVertex2f(btn_x, btn_y + btn_height - chamfer)
+        glVertex2f(btn_x, btn_y + chamfer)
+        glEnd()
+
+        # Inner glow line
+        glLineWidth(1.5)
+        glColor4f(0.0, pulse * 0.5, pulse * 0.5, 0.5)
+        inner = 5
+        glBegin(GL_LINE_LOOP)
+        glVertex2f(btn_x + chamfer + inner, btn_y + inner)
+        glVertex2f(btn_x + btn_width - chamfer - inner, btn_y + inner)
+        glVertex2f(btn_x + btn_width - inner, btn_y + chamfer + inner)
+        glVertex2f(btn_x + btn_width - inner, btn_y +
+                   btn_height - chamfer - inner)
+        glVertex2f(btn_x + btn_width - chamfer -
+                   inner, btn_y + btn_height - inner)
+        glVertex2f(btn_x + chamfer + inner, btn_y + btn_height - inner)
+        glVertex2f(btn_x + inner, btn_y + btn_height - chamfer - inner)
+        glVertex2f(btn_x + inner, btn_y + chamfer + inner)
+        glEnd()
+
+        glDisable(GL_BLEND)
+
+        # Button text
+        text = "SELECT"
+        text_size = 28
+        text_width = len(text) * text_size * 0.6
+        text_x = btn_x + (btn_width - text_width) / 2
+        text_y = btn_y + (btn_height - text_size) / 2 - 2
+
+        # Text glow
+        UIRenderer.draw_text(text_x + 2, text_y - 2, text, size=text_size,
+                             color=(0.0, pulse * 0.3, pulse * 0.3))
+        # Main text
+        UIRenderer.draw_text(text_x, text_y, text, size=text_size,
+                             color=(0.0, 1.0, 1.0))
+
+    def _draw_selection_indicator(self, w, h):
+        """Draw spinning indicator only when spinning."""
+        if self.is_spinning:
+            # Show "SPINNING..." text with glow
+            text = "SPINNING..."
+            text_size = 36
+            text_width = len(text) * text_size * 0.55
+            x = (w - text_width) / 2
+            y = h * 0.15
+
+            pulse = 0.5 + 0.5 * math.sin(self.animation_time * 10)
+            # Glow
+            UIRenderer.draw_text(x + 2, y - 2, text, size=text_size,
+                                 color=(pulse * 0.3, pulse * 0.15, 0.0))
+            # Main
+            UIRenderer.draw_text(x, y, text, size=text_size,
+                                 color=(1.0, pulse, 0.0))
+        # No arrows needed - navigation is intuitive

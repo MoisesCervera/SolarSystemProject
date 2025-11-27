@@ -2,7 +2,23 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from src.entities.base.renderable import Renderable
 from src.core.input_manager import InputManager
+from src.core.session import GameContext
+# Import actual ship models
+from src.entities.player.ships.shipM import ShipModel
+from src.entities.player.ships.shipS import dibujar_nave as draw_ship_s
+from src.entities.player.ships.shipZ import draw_nave as draw_ship_z
 import math
+
+# Singleton ship model instance (created once, reused)
+_ufo_model_instance = None
+
+
+def get_ufo_model():
+    """Get or create the singleton UFO model instance."""
+    global _ufo_model_instance
+    if _ufo_model_instance is None:
+        _ufo_model_instance = ShipModel()
+    return _ufo_model_instance
 
 
 class Ship(Renderable):
@@ -23,39 +39,82 @@ class Ship(Renderable):
         self.is_boosting = False
 
         self.input_manager = InputManager()
-        self.compile_display_list()
+
+        # Use singleton UFO model (shared, already compiled)
+        self.ufo_model = get_ufo_model()
+        self.animation_time = 0.0
+
+        # Get selected ship from session
+        self.selected_ship = getattr(GameContext, 'selected_ship', 'shipM')
+
+        # Cache animation state dict to avoid per-frame allocation
+        self._anim_state = {"hover_y": 0.0, "balanceo_pata_z": 0.0}
+
+        # Don't compile display list - ship models handle their own optimization
 
     def _draw_geometry(self):
         """
-        Dibuja la nave (Cono apuntando hacia -Z).
+        Dibuja la nave seleccionada.
         """
-        # Color de la nave (Verde Sci-Fi)
-        if self.is_boosting:
-            glColor3f(0.0, 1.0, 1.0)  # Cyan cuando hace boost
+        # Get selected ship (refresh in case it changed)
+        self.selected_ship = getattr(GameContext, 'selected_ship', 'shipM')
+
+        if self.selected_ship == 'shipM':
+            # Draw UFO model
+            glPushMatrix()
+            glScalef(0.3, 0.3, 0.3)  # Scale for gameplay
+            glRotatef(180, 0, 1, 0)  # Face forward
+            self.ufo_model.draw()
+            glPopMatrix()
+
+        elif self.selected_ship == 'shipS':
+            # Draw Bug Crawler
+            glPushMatrix()
+            glScalef(0.6, 0.6, 0.6)  # Scale for gameplay
+            # Reuse cached animation state dict
+            self._anim_state["hover_y"] = math.sin(
+                self.animation_time * 2) * 0.05
+            self._anim_state["balanceo_pata_z"] = math.sin(
+                self.animation_time * 4) * 3
+            draw_ship_s(self._anim_state)
+            glPopMatrix()
+
+        elif self.selected_ship == 'shipZ':
+            # Draw Starfighter
+            glPushMatrix()
+            glScalef(0.4, 0.4, 0.4)  # Scale for gameplay
+            draw_ship_z()
+            glPopMatrix()
+
         else:
-            glColor3f(0.0, 1.0, 0.5)
+            # Fallback: default cone ship
+            if self.is_boosting:
+                glColor3f(0.0, 1.0, 1.0)  # Cyan cuando hace boost
+            else:
+                glColor3f(0.0, 1.0, 0.5)
 
-        glPushMatrix()
-        # Rotar el cono para que apunte hacia -Z (por defecto apunta a +Z)
-        glRotatef(180, 0, 1, 0)
-        # glutSolidCone(base, height, slices, stacks)
-        glutSolidCone(0.5, 1.5, 16, 16)
-        glPopMatrix()
+            glPushMatrix()
+            glRotatef(180, 0, 1, 0)
+            glutSolidCone(0.5, 1.5, 16, 16)
+            glPopMatrix()
 
-        # Alas decorativas (Triángulos simples)
-        glBegin(GL_TRIANGLES)
-        glColor3f(0.0, 0.8, 0.4)
-        # Ala izquierda
-        glVertex3f(-0.5, 0, 0.5)
-        glVertex3f(-1.5, 0, 1.0)
-        glVertex3f(-0.5, 0, 1.5)
-        # Ala derecha
-        glVertex3f(0.5, 0, 0.5)
-        glVertex3f(1.5, 0, 1.0)
-        glVertex3f(0.5, 0, 1.5)
-        glEnd()
+            glBegin(GL_TRIANGLES)
+            glColor3f(0.0, 0.8, 0.4)
+            glVertex3f(-0.5, 0, 0.5)
+            glVertex3f(-1.5, 0, 1.0)
+            glVertex3f(-0.5, 0, 1.5)
+            glVertex3f(0.5, 0, 0.5)
+            glVertex3f(1.5, 0, 1.0)
+            glVertex3f(0.5, 0, 1.5)
+            glEnd()
 
     def update(self, dt):
+        # Update animation time for ship models
+        self.animation_time += dt
+
+        # Update UFO model animation
+        self.ufo_model.update(dt)
+
         # Actualizar timers de boost
         if self.boost_cooldown > 0:
             self.boost_cooldown -= dt

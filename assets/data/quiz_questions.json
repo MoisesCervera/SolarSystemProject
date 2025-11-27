@@ -1,0 +1,1012 @@
+{
+    "questions": {
+        "Mercury": [
+            {
+                "question": "What makes Mercury's surface experience the greatest temperature variation of all planets?",
+                "options": [
+                    "Its proximity to the Sun",
+                    "Almost no atmosphere to retain heat",
+                    "Its fast rotation",
+                    "Its large iron core"
+                ],
+                "correct": 1,
+                "explanation": "Mercury has almost no atmosphere to retain heat, causing extreme temperature swings."
+            },
+            {
+                "question": "What is Mercury's equatorial diameter?",
+                "options": [
+                    "6,792 km",
+                    "4,879 km",
+                    "12,104 km",
+                    "3,474 km"
+                ],
+                "correct": 1,
+                "explanation": "Mercury has an equatorial diameter of 4,879 km, making it the smallest planet."
+            },
+            {
+                "question": "How long is Mercury's orbital period around the Sun?",
+                "options": [
+                    "365 days",
+                    "225 days",
+                    "88 days",
+                    "59 days"
+                ],
+                "correct": 2,
+                "explanation": "Mercury completes one orbit around the Sun in just 88 days."
+            },
+            {
+                "question": "What is the daytime temperature on Mercury?",
+                "options": [
+                    "127°C",
+                    "472°C",
+                    "462°C",
+                    "280°C"
+                ],
+                "correct": 1,
+                "explanation": "Mercury's daytime temperature reaches a scorching 472°C."
+            },
+            {
+                "question": "What is the nighttime temperature on Mercury?",
+                "options": [
+                    "-63°C",
+                    "-183°C",
+                    "-125°C",
+                    "-210°C"
+                ],
+                "correct": 1,
+                "explanation": "At night, Mercury drops to an extremely cold -183°C."
+            },
+            {
+                "question": "What distinctive feature is found on Mercury's surface?",
+                "options": [
+                    "Active volcanoes",
+                    "Numerous narrow ridges",
+                    "Liquid water oceans",
+                    "Dense cloud cover"
+                ],
+                "correct": 1,
+                "explanation": "Mercury has numerous narrow ridges that formed as its core and mantle cooled."
+            },
+            {
+                "question": "Why does Mercury have such a high density?",
+                "options": [
+                    "It has a thick atmosphere",
+                    "It has a large, iron-rich core",
+                    "It has many moons",
+                    "It has extensive ice caps"
+                ],
+                "correct": 1,
+                "explanation": "Mercury's extreme high density comes from its large, iron-rich core."
+            },
+            {
+                "question": "When is the best time to observe Mercury from Earth?",
+                "options": [
+                    "Only during solar eclipses",
+                    "Spring at dusk and autumn before dawn",
+                    "During full moon nights",
+                    "Any clear night"
+                ],
+                "correct": 1,
+                "explanation": "Mercury can be observed in spring at dusk and in autumn before dawn."
+            },
+            {
+                "question": "What does Mercury's surface most resemble?",
+                "options": [
+                    "Earth's oceans",
+                    "Mars' red desert",
+                    "The Moon with plains and craters",
+                    "Venus' volcanic surface"
+                ],
+                "correct": 2,
+                "explanation": "Mercury's crust is similar to the Moon's with mare-like plains and heavy cratering."
+            },
+            {
+                "question": "How long is Mercury's rotation period (one day)?",
+                "options": [
+                    "24 hours",
+                    "59 Earth days",
+                    "88 Earth days",
+                    "243 Earth days"
+                ],
+                "correct": 1,
+                "explanation": "Mercury rotates very slowly, taking 59 Earth days to complete one rotation."
+            }
+        ],
+        "Venus": [
+            {
+                "question": "What causes Venus's extreme surface temperature?",
+                "options": [
+                    "Proximity to the Sun",
+                    "Runaway greenhouse effect from CO2",
+                    "Volcanic activity",
+                    "Internal radioactive decay"
+                ],
+                "correct": 1,
+                "explanation": "Carbon dioxide traps heat inside Venus's atmosphere, causing a runaway greenhouse effect."
+            },
+            {
+                "question": "What is Venus's surface temperature?",
+                "options": [
+                    "127°C",
+                    "280°C",
+                    "462°C",
+                    "325°C"
+                ],
+                "correct": 2,
+                "explanation": "Venus has a surface temperature of 462°C due to the greenhouse effect."
+            },
+            {
+                "question": "How does Venus's atmospheric pressure compare to Earth's?",
+                "options": [
+                    "10 times greater",
+                    "92 times greater",
+                    "About the same",
+                    "50 times less"
+                ],
+                "correct": 1,
+                "explanation": "Venus's atmospheric pressure is 92 times greater than Earth's."
+            },
+            {
+                "question": "How long is Venus's rotation period?",
+                "options": [
+                    "24 hours",
+                    "59 days",
+                    "225 days",
+                    "243 days"
+                ],
+                "correct": 3,
+                "explanation": "Venus rotates very slowly, taking 243 Earth days - longer than its orbital period!"
+            },
+            {
+                "question": "What makes Venus the second brightest object in our night sky?",
+                "options": [
+                    "Its large size",
+                    "Its proximity to Earth",
+                    "Its reflective sulfuric acid clouds",
+                    "Its many moons"
+                ],
+                "correct": 2,
+                "explanation": "Thick clouds of sulfuric acid reflect most of the Sun's light, making Venus very bright."
+            },
+            {
+                "question": "Why doesn't Venus have plate tectonics like Earth?",
+                "options": [
+                    "It's too small",
+                    "Its dry surface and mantle",
+                    "It has no core",
+                    "It rotates too slowly"
+                ],
+                "correct": 1,
+                "explanation": "The lack of plate tectonics on Venus is likely due to its dry surface and mantle."
+            },
+            {
+                "question": "What is Venus's equatorial diameter?",
+                "options": [
+                    "4,879 km",
+                    "6,792 km",
+                    "12,104 km",
+                    "12,756 km"
+                ],
+                "correct": 2,
+                "explanation": "Venus has an equatorial diameter of 12,104 km, similar to Earth."
+            },
+            {
+                "question": "How is Venus often observed from Earth?",
+                "options": [
+                    "As a red point of light",
+                    "As an evening or morning star",
+                    "Only through telescopes",
+                    "Only during eclipses"
+                ],
+                "correct": 1,
+                "explanation": "Venus appears as either an evening or morning star in our sky."
+            },
+            {
+                "question": "What is Venus's orbital period around the Sun?",
+                "options": [
+                    "88 days",
+                    "165 days",
+                    "225 days",
+                    "365 days"
+                ],
+                "correct": 2,
+                "explanation": "Venus completes one orbit around the Sun in 225 days."
+            },
+            {
+                "question": "Why does Venus lack an internally generated magnetic field?",
+                "options": [
+                    "Reduced heat loss prevents cooling",
+                    "It has no iron core",
+                    "It's too close to the Sun",
+                    "Its atmosphere blocks it"
+                ],
+                "correct": 0,
+                "explanation": "Reduced heat loss from the planet prevents it from cooling, explaining its lack of magnetic field."
+            }
+        ],
+        "Earth": [
+            {
+                "question": "What percentage of Earth's surface is covered by salt water oceans?",
+                "options": [
+                    "50%",
+                    "61%",
+                    "71%",
+                    "81%"
+                ],
+                "correct": 2,
+                "explanation": "About 71% of Earth's surface is covered by salt water oceans."
+            },
+            {
+                "question": "What is Earth's axial tilt?",
+                "options": [
+                    "15.2°",
+                    "23.4°",
+                    "45°",
+                    "97.77°"
+                ],
+                "correct": 1,
+                "explanation": "Earth is tilted on its axis by 23.4°, producing seasonal variations."
+            },
+            {
+                "question": "What is Earth's equatorial diameter?",
+                "options": [
+                    "6,792 km",
+                    "12,104 km",
+                    "12,756 km",
+                    "51,118 km"
+                ],
+                "correct": 2,
+                "explanation": "Earth has an equatorial diameter of 12,756 km."
+            },
+            {
+                "question": "What powers Earth's magnetic field?",
+                "options": [
+                    "Solar radiation",
+                    "Convection currents in the outer core",
+                    "The Moon's gravity",
+                    "Tectonic plate movement"
+                ],
+                "correct": 1,
+                "explanation": "Convection currents in the outer core power Earth's magnetic field."
+            },
+            {
+                "question": "What percentage of Earth's volume does the mantle account for?",
+                "options": [
+                    "50%",
+                    "67%",
+                    "84%",
+                    "95%"
+                ],
+                "correct": 2,
+                "explanation": "Earth's mantle accounts for 84% of the planet's volume."
+            },
+            {
+                "question": "What is special about Earth among the eight planets?",
+                "options": [
+                    "It's the largest",
+                    "It's the densest",
+                    "It has the most moons",
+                    "It has the fastest rotation"
+                ],
+                "correct": 1,
+                "explanation": "Earth is the densest of the eight planets in the Solar System."
+            },
+            {
+                "question": "How long is Earth's orbital period around the Sun?",
+                "options": [
+                    "88 days",
+                    "225 days",
+                    "1 year",
+                    "1.88 years"
+                ],
+                "correct": 2,
+                "explanation": "Earth completes one orbit around the Sun in exactly 1 year."
+            },
+            {
+                "question": "What is Earth's average surface temperature?",
+                "options": [
+                    "-63°C",
+                    "0°C",
+                    "15°C",
+                    "25°C"
+                ],
+                "correct": 2,
+                "explanation": "Earth has an average surface temperature of 15°C."
+            },
+            {
+                "question": "What is Earth's surface gravity?",
+                "options": [
+                    "3.7 m/s²",
+                    "8.9 m/s²",
+                    "9.8 m/s²",
+                    "25 m/s²"
+                ],
+                "correct": 2,
+                "explanation": "Earth has a surface gravity of 9.8 m/s²."
+            },
+            {
+                "question": "What makes up the lithosphere?",
+                "options": [
+                    "Only the crust",
+                    "The crust and uppermost mantle",
+                    "The entire mantle",
+                    "The outer core"
+                ],
+                "correct": 1,
+                "explanation": "The lithosphere is formed by Earth's crust and the uppermost parts of the mantle."
+            }
+        ],
+        "Mars": [
+            {
+                "question": "What causes Mars's reddish appearance?",
+                "options": [
+                    "Volcanic lava",
+                    "Iron oxide (rust)",
+                    "Red clay",
+                    "Atmospheric gases"
+                ],
+                "correct": 1,
+                "explanation": "The reddish appearance of Mars' surface is caused by iron oxide (rust)."
+            },
+            {
+                "question": "What is the name of Mars's highest mountain?",
+                "options": [
+                    "Mount Everest",
+                    "Olympus Mons",
+                    "Valles Marineris",
+                    "Mount Olympus"
+                ],
+                "correct": 1,
+                "explanation": "Olympus Mons is the highest mountain in the entire Solar System."
+            },
+            {
+                "question": "What is the name of Mars's largest canyon?",
+                "options": [
+                    "Grand Canyon",
+                    "Olympus Mons",
+                    "Valles Marineris",
+                    "Mariner Valley"
+                ],
+                "correct": 2,
+                "explanation": "Valles Marineris is the largest canyon in the Solar System."
+            },
+            {
+                "question": "How many natural satellites (moons) does Mars have?",
+                "options": [
+                    "None",
+                    "One",
+                    "Two",
+                    "Four"
+                ],
+                "correct": 2,
+                "explanation": "Mars has two small moons: Phobos and Deimos."
+            },
+            {
+                "question": "How long is a day on Mars compared to Earth?",
+                "options": [
+                    "Much shorter",
+                    "About 40 minutes longer",
+                    "Twice as long",
+                    "The same"
+                ],
+                "correct": 1,
+                "explanation": "Days on Mars are only about 40 minutes longer than Earth days."
+            },
+            {
+                "question": "What may happen to Phobos in about 50 million years?",
+                "options": [
+                    "Escape Mars's gravity",
+                    "Crash into Mars or form a ring",
+                    "Become a planet",
+                    "Collide with Deimos"
+                ],
+                "correct": 1,
+                "explanation": "Phobos is predicted to either crash into Mars' surface or break up into a ring."
+            },
+            {
+                "question": "What is Mars's average surface temperature?",
+                "options": [
+                    "15°C",
+                    "0°C",
+                    "-63°C",
+                    "-125°C"
+                ],
+                "correct": 2,
+                "explanation": "Mars has an average surface temperature of -63°C."
+            },
+            {
+                "question": "What is Mars's orbital period around the Sun?",
+                "options": [
+                    "1 year",
+                    "1.88 years",
+                    "11.9 years",
+                    "29 years"
+                ],
+                "correct": 1,
+                "explanation": "Mars takes 1.88 Earth years to complete one orbit around the Sun."
+            },
+            {
+                "question": "What evidence suggests Mars once had a denser atmosphere?",
+                "options": [
+                    "Current volcanic activity",
+                    "Signs that water once flowed on its surface",
+                    "Its two moons",
+                    "Its red color"
+                ],
+                "correct": 1,
+                "explanation": "There is strong evidence that water once ran freely on Mars' surface."
+            },
+            {
+                "question": "What makes Mars' core partially liquid?",
+                "options": [
+                    "High temperature alone",
+                    "About 17% sulfur content",
+                    "Water ice",
+                    "Volcanic activity"
+                ],
+                "correct": 1,
+                "explanation": "Mars' core contains about 17% sulfur, which renders it partially liquid."
+            }
+        ],
+        "Jupiter": [
+            {
+                "question": "How does Jupiter's mass compare to all other planets combined?",
+                "options": [
+                    "Equal to all others",
+                    "1.5 times greater",
+                    "2.5 times greater",
+                    "10 times greater"
+                ],
+                "correct": 2,
+                "explanation": "Jupiter's mass is 2.5 times greater than all other planets combined."
+            },
+            {
+                "question": "How many moons does Jupiter officially have?",
+                "options": [
+                    "16",
+                    "53",
+                    "79",
+                    "150"
+                ],
+                "correct": 2,
+                "explanation": "Jupiter has 79 officially recognized moons."
+            },
+            {
+                "question": "What are Jupiter's four largest moons called?",
+                "options": [
+                    "Planetary moons",
+                    "Galilean moons",
+                    "Jovian moons",
+                    "Giant moons"
+                ],
+                "correct": 1,
+                "explanation": "The four largest moons are called the Galilean moons: Io, Europa, Ganymede, and Callisto."
+            },
+            {
+                "question": "How strong is Jupiter's magnetic field compared to Earth's?",
+                "options": [
+                    "About the same",
+                    "5 times stronger",
+                    "10 times stronger",
+                    "Weaker than Earth's"
+                ],
+                "correct": 2,
+                "explanation": "Jupiter's magnetic field is 10 times stronger than Earth's."
+            },
+            {
+                "question": "What causes Jupiter's distinctive color bands?",
+                "options": [
+                    "Different rock types",
+                    "High winds from fast rotation",
+                    "Solar radiation",
+                    "Volcanic activity"
+                ],
+                "correct": 1,
+                "explanation": "Jupiter's fast rotation causes high winds that form distinct bands of color."
+            },
+            {
+                "question": "Which moon has a diameter greater than Mercury?",
+                "options": [
+                    "Io",
+                    "Europa",
+                    "Ganymede",
+                    "Callisto"
+                ],
+                "correct": 2,
+                "explanation": "Ganymede is the largest moon in the Solar System, bigger than Mercury."
+            },
+            {
+                "question": "What is Jupiter's rotation period?",
+                "options": [
+                    "24 hours",
+                    "9 hours 55 minutes",
+                    "59 days",
+                    "10 hours 39 minutes"
+                ],
+                "correct": 1,
+                "explanation": "Jupiter rotates faster than any other planet, in just 9 hours 55 minutes."
+            },
+            {
+                "question": "What would Jupiter need to become a brown dwarf?",
+                "options": [
+                    "75 times more mass",
+                    "13 times more mass",
+                    "A rocky core",
+                    "Closer proximity to the Sun"
+                ],
+                "correct": 1,
+                "explanation": "Jupiter would need to be 13 times as massive to burn deuterium and become a brown dwarf."
+            },
+            {
+                "question": "What is Jupiter primarily composed of?",
+                "options": [
+                    "Rock and ice",
+                    "Iron and nickel",
+                    "Gaseous and liquid matter",
+                    "Water and ammonia"
+                ],
+                "correct": 2,
+                "explanation": "Jupiter is composed primarily of gaseous and liquid matter with no solid surface."
+            },
+            {
+                "question": "What is Jupiter's surface temperature?",
+                "options": [
+                    "-63°C",
+                    "-120°C",
+                    "-200°C",
+                    "-210°C"
+                ],
+                "correct": 1,
+                "explanation": "Jupiter has a surface temperature of about -120°C."
+            }
+        ],
+        "Saturn": [
+            {
+                "question": "What makes Saturn unique among all planets?",
+                "options": [
+                    "It has the most moons",
+                    "It's less dense than water",
+                    "It has the strongest winds",
+                    "It's the coldest"
+                ],
+                "correct": 1,
+                "explanation": "Saturn is the only planet that is less dense than water."
+            },
+            {
+                "question": "What are Saturn's rings primarily composed of?",
+                "options": [
+                    "Rock and dust",
+                    "Water ice crystals and rock",
+                    "Gas and plasma",
+                    "Iron particles"
+                ],
+                "correct": 1,
+                "explanation": "Saturn's rings are composed of water ice crystals and a smaller amount of rock."
+            },
+            {
+                "question": "How many moons and moonlets does Saturn have?",
+                "options": [
+                    "53",
+                    "79",
+                    "At least 150",
+                    "63"
+                ],
+                "correct": 2,
+                "explanation": "Saturn has at least 150 moons and moonlets."
+            },
+            {
+                "question": "What is Saturn's orbital period around the Sun?",
+                "options": [
+                    "11.9 years",
+                    "29 years",
+                    "84 years",
+                    "165 years"
+                ],
+                "correct": 1,
+                "explanation": "Saturn takes 29 years to complete one orbit around the Sun."
+            },
+            {
+                "question": "How do Saturn's winds compare to Jupiter's?",
+                "options": [
+                    "Half as fast",
+                    "About the same",
+                    "Five times as fast",
+                    "Ten times as fast"
+                ],
+                "correct": 2,
+                "explanation": "The winds on Saturn are five times as fast as those measured on Jupiter."
+            },
+            {
+                "question": "What do shepherd moons do?",
+                "options": [
+                    "Create new rings",
+                    "Confine rings and prevent spreading",
+                    "Reflect sunlight",
+                    "Generate magnetic fields"
+                ],
+                "correct": 1,
+                "explanation": "Some of Saturn's moons act as shepherd moons to confine rings and prevent them from spreading."
+            },
+            {
+                "question": "Why is Saturn the most oblate planet?",
+                "options": [
+                    "Its low density and rapid rotation",
+                    "Its many moons",
+                    "Its rings",
+                    "Its distance from the Sun"
+                ],
+                "correct": 0,
+                "explanation": "Saturn's low density combined with rapid rotation makes it the most oblate planet."
+            },
+            {
+                "question": "How much heat does Saturn radiate compared to what it receives from the Sun?",
+                "options": [
+                    "Half as much",
+                    "The same amount",
+                    "2.5 times more",
+                    "10 times more"
+                ],
+                "correct": 2,
+                "explanation": "Saturn radiates 2.5 times more heat than it receives from the Sun."
+            },
+            {
+                "question": "What color does Saturn appear as to the naked eye?",
+                "options": [
+                    "Red",
+                    "Blue",
+                    "Bright yellowish",
+                    "White"
+                ],
+                "correct": 2,
+                "explanation": "Saturn appears as a bright, yellowish point of light to the naked eye."
+            },
+            {
+                "question": "What was Saturn's historical significance before modern telescopes?",
+                "options": [
+                    "Considered the largest planet",
+                    "Regarded as the outermost known planet",
+                    "Thought to be a star",
+                    "Believed to be the Sun's twin"
+                ],
+                "correct": 1,
+                "explanation": "Until modern telescopes, Saturn was regarded as the outermost of the known planets."
+            }
+        ],
+        "Uranus": [
+            {
+                "question": "What is unique about Uranus's axial tilt?",
+                "options": [
+                    "It has no tilt",
+                    "It tilts 23.4°",
+                    "It tilts 97.77° (rolls on its side)",
+                    "It tilts backwards"
+                ],
+                "correct": 2,
+                "explanation": "Uranus has an axial tilt of 97.77°, meaning it rolls around the Sun 'on its side'."
+            },
+            {
+                "question": "What causes Uranus's cyan color?",
+                "options": [
+                    "Water oceans",
+                    "Absorption of red light by methane",
+                    "Reflection of sunlight",
+                    "Volcanic gases"
+                ],
+                "correct": 1,
+                "explanation": "Uranus's cyan color is due to the absorption of red light by atmospheric methane."
+            },
+            {
+                "question": "Who discovered Uranus and in what year?",
+                "options": [
+                    "Galileo in 1610",
+                    "William Herschel in 1781",
+                    "Newton in 1687",
+                    "Hubble in 1920"
+                ],
+                "correct": 1,
+                "explanation": "Uranus was discovered by William Herschel in 1781."
+            },
+            {
+                "question": "What is special about Uranus's discovery?",
+                "options": [
+                    "First planet seen by naked eye",
+                    "First planet discovered by telescope",
+                    "First planet found by mathematics",
+                    "First planet with rings"
+                ],
+                "correct": 1,
+                "explanation": "Uranus was the first planet to be discovered by the use of modern telescope."
+            },
+            {
+                "question": "What is Uranus's orbital period around the Sun?",
+                "options": [
+                    "29 years",
+                    "84 years",
+                    "165 years",
+                    "225 million years"
+                ],
+                "correct": 1,
+                "explanation": "Uranus takes 84 years to complete one orbit around the Sun."
+            },
+            {
+                "question": "What is Uranus's 'ice mantle' actually composed of?",
+                "options": [
+                    "Frozen water ice",
+                    "Hot and dense fluid (water-ammonia ocean)",
+                    "Solid rock",
+                    "Metallic hydrogen"
+                ],
+                "correct": 1,
+                "explanation": "Uranus's 'ice mantle' is actually a hot and dense fluid, also called a water-ammonia ocean."
+            },
+            {
+                "question": "What is Uranus's surface temperature?",
+                "options": [
+                    "-120°C",
+                    "-200°C",
+                    "-210°C",
+                    "-125°C"
+                ],
+                "correct": 2,
+                "explanation": "Uranus is the coldest planet in the Solar System at -210°C."
+            },
+            {
+                "question": "What generates Uranus's magnetic field?",
+                "options": [
+                    "Its iron core",
+                    "Convection currents at shallow depths",
+                    "Solar wind",
+                    "Its ring system"
+                ],
+                "correct": 1,
+                "explanation": "Uranus's magnetic field is generated by convection currents at shallow depths within the planet."
+            },
+            {
+                "question": "When can Uranus be seen with the naked eye?",
+                "options": [
+                    "Never",
+                    "Any clear night",
+                    "When in opposition under dark sky conditions",
+                    "Only through telescopes"
+                ],
+                "correct": 2,
+                "explanation": "In opposition, Uranus becomes visible to the naked eye under dark sky conditions."
+            },
+            {
+                "question": "What is Uranus's equatorial diameter?",
+                "options": [
+                    "49,528 km",
+                    "51,118 km",
+                    "120,536 km",
+                    "142,984 km"
+                ],
+                "correct": 1,
+                "explanation": "Uranus has an equatorial diameter of 51,118 km."
+            }
+        ],
+        "Neptune": [
+            {
+                "question": "How was Neptune discovered?",
+                "options": [
+                    "By telescope observation",
+                    "By mathematical prediction",
+                    "By accident",
+                    "By space probe"
+                ],
+                "correct": 1,
+                "explanation": "Neptune was the first planet discovered purely on the basis of mathematical prediction."
+            },
+            {
+                "question": "When was Neptune discovered?",
+                "options": [
+                    "1781",
+                    "1846",
+                    "1930",
+                    "1610"
+                ],
+                "correct": 1,
+                "explanation": "Neptune was discovered in 1846."
+            },
+            {
+                "question": "How many orbits has Neptune completed since its discovery?",
+                "options": [
+                    "One",
+                    "Two",
+                    "Five",
+                    "Ten"
+                ],
+                "correct": 0,
+                "explanation": "Since 1846, Neptune has completed only one orbit of the Sun."
+            },
+            {
+                "question": "What is Neptune's orbital period?",
+                "options": [
+                    "84 years",
+                    "165 years",
+                    "225 years",
+                    "248 years"
+                ],
+                "correct": 1,
+                "explanation": "Neptune takes 165 years to complete one orbit around the Sun."
+            },
+            {
+                "question": "What is unique about Neptune among gas giants?",
+                "options": [
+                    "It's the largest",
+                    "It's the most dense",
+                    "It has no moons",
+                    "It has no rings"
+                ],
+                "correct": 1,
+                "explanation": "Neptune is the smallest but also the most dense of the gas giants."
+            },
+            {
+                "question": "What causes Neptune's vivid blue color?",
+                "options": [
+                    "Only methane",
+                    "An unknown component besides methane",
+                    "Water oceans",
+                    "Reflection of Earth"
+                ],
+                "correct": 1,
+                "explanation": "An unknown component causes Neptune's intense color, more vivid than Uranus despite similar methane."
+            },
+            {
+                "question": "What does Neptune's atmosphere have?",
+                "options": [
+                    "The calmest weather",
+                    "The fastest winds in the Solar System",
+                    "No clouds",
+                    "Liquid water"
+                ],
+                "correct": 1,
+                "explanation": "Neptune has the fastest winds in the Solar System."
+            },
+            {
+                "question": "Which planet's surface gravity does Neptune surpass?",
+                "options": [
+                    "Only Earth",
+                    "All except Jupiter",
+                    "All except Saturn",
+                    "None"
+                ],
+                "correct": 1,
+                "explanation": "Neptune has a surface gravity that is only surpassed by Jupiter."
+            },
+            {
+                "question": "What is Neptune's surface temperature?",
+                "options": [
+                    "-120°C",
+                    "-200°C",
+                    "-210°C",
+                    "-125°C"
+                ],
+                "correct": 1,
+                "explanation": "Neptune has a surface temperature of -200°C."
+            },
+            {
+                "question": "What generates Neptune's magnetic field?",
+                "options": [
+                    "Its iron core",
+                    "Its high electrical conductivity fluid mantle",
+                    "Solar radiation",
+                    "Its many moons"
+                ],
+                "correct": 1,
+                "explanation": "Neptune's fluid mantle has high electrical conductivity, generating the planet's magnetic field."
+            }
+        ],
+        "Sun": [
+            {
+                "question": "What percentage of the Solar System's total mass does the Sun account for?",
+                "options": [
+                    "50%",
+                    "75%",
+                    "90%",
+                    "99.86%"
+                ],
+                "correct": 3,
+                "explanation": "The Sun's mass accounts for 99.86% of the total mass of the Solar System."
+            },
+            {
+                "question": "What is the Sun primarily composed of?",
+                "options": [
+                    "Helium mostly",
+                    "Three-quarters hydrogen, rest mostly helium",
+                    "Equal parts hydrogen and helium",
+                    "Iron and nickel"
+                ],
+                "correct": 1,
+                "explanation": "About three-quarters of the Sun is hydrogen, with the rest being mostly helium."
+            },
+            {
+                "question": "How long does light from the Sun take to reach Earth?",
+                "options": [
+                    "Instant",
+                    "About 1 minute",
+                    "About 8 minutes 19 seconds",
+                    "About 1 hour"
+                ],
+                "correct": 2,
+                "explanation": "Sunlight takes about 8 minutes and 19 seconds to reach Earth."
+            },
+            {
+                "question": "What is the average distance from Earth to the Sun?",
+                "options": [
+                    "100 million km",
+                    "149.6 million km",
+                    "200 million km",
+                    "1 billion km"
+                ],
+                "correct": 1,
+                "explanation": "The average distance is 149.6 million kilometers (1 Astronomical Unit)."
+            },
+            {
+                "question": "How does the Sun's brightness compare to other stars in the Milky Way?",
+                "options": [
+                    "Below average",
+                    "Average",
+                    "Greater than 85% of stars",
+                    "The brightest"
+                ],
+                "correct": 2,
+                "explanation": "The Sun's brightness is greater than 85% of the stars in the Milky Way."
+            },
+            {
+                "question": "What is the Sun's surface temperature?",
+                "options": [
+                    "1,000 K",
+                    "5,778 K",
+                    "15,000 K",
+                    "1 million K"
+                ],
+                "correct": 1,
+                "explanation": "The Sun's surface temperature is 5,778 K."
+            },
+            {
+                "question": "How long is the Sun's rotation period?",
+                "options": [
+                    "1 day",
+                    "25 days",
+                    "88 days",
+                    "365 days"
+                ],
+                "correct": 1,
+                "explanation": "The Sun rotates on its axis in about 25 days."
+            },
+            {
+                "question": "Where is most of the Sun's energy produced?",
+                "options": [
+                    "Throughout the entire Sun",
+                    "In the outer layers",
+                    "Within 24% of the star's radius",
+                    "Only at the surface"
+                ],
+                "correct": 2,
+                "explanation": "99% of the Sun's energy is produced in a zone within 24% of its radius."
+            },
+            {
+                "question": "What happens in the convective zone?",
+                "options": [
+                    "Nuclear fusion occurs",
+                    "Hot material rises, cools, then plunges back",
+                    "Light escapes to space",
+                    "The magnetic field is generated"
+                ],
+                "correct": 1,
+                "explanation": "Thermal convection columns carry hot material up; once cooled, it plunges back down."
+            },
+            {
+                "question": "How long is the Sun's orbital period around the galactic center?",
+                "options": [
+                    "1 million years",
+                    "25 million years",
+                    "225 million years",
+                    "1 billion years"
+                ],
+                "correct": 2,
+                "explanation": "The Sun takes about 225 million years to orbit the center of the Milky Way."
+            }
+        ]
+    }
+}

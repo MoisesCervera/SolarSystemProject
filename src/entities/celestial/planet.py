@@ -183,24 +183,22 @@ class Planet(Renderable):
 
         glPushMatrix()
 
-        # Moverse encima del planeta
-        # Usamos un offset proporcional al radio, pero con un mínimo para que no quede pegado
-        offset = self.radius + 1.0
-        glTranslatef(0, offset, 0)
-
-        # Billboard: Resetear rotación para mirar a la cámara
+        # Get the current modelview matrix BEFORE applying any label offset
+        # This gives us the planet center position in camera space
         modelview = glGetFloatv(GL_MODELVIEW_MATRIX)
 
-        # Extraer la posición actual (columna 3)
-        # PyOpenGL devuelve una matriz 4x4 (array de columnas)
-        # Col 3 es la traslación (x, y, z, w)
+        # Extract the planet's position in camera/view space
+        planet_x = modelview[3][0]
+        planet_y = modelview[3][1]
+        planet_z = modelview[3][2]
 
-        # Resetear matriz a identidad y restaurar traslación
+        # Billboard: Reset to identity and position label above planet
+        # The offset is applied in world Y direction (always up), not in tilted coordinates
+        offset = self.radius + 1.0
+
         glLoadIdentity()
-
-        # Fix: Acceder como matriz 4x4 (Columna 3)
-        # modelview[3] es la columna de traslación [x, y, z, w]
-        glTranslatef(modelview[3][0], modelview[3][1], modelview[3][2])
+        # Position at planet center, then offset upward in screen space
+        glTranslatef(planet_x, planet_y + offset, planet_z)
 
         # Dibujar Quad
         # Desactivar iluminación para que el texto sea siempre legible
