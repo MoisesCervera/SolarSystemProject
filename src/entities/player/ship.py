@@ -158,13 +158,9 @@ class Ship(Renderable):
         self.velocity[0] += dir_x * accel * dt
         self.velocity[2] += dir_z * accel * dt
 
-        # 3. Fricción (Inercia espacial simulada) - frame-rate independent
-        # Using exponential decay: velocity *= friction^dt
-        # This ensures consistent behavior regardless of frame rate
-        friction_factor = math.pow(
-            self.friction, dt * 60)  # Normalized to 60 FPS
-        self.velocity[0] *= friction_factor
-        self.velocity[2] *= friction_factor
+        # 3. Fricción (Inercia espacial simulada)
+        self.velocity[0] *= self.friction
+        self.velocity[2] *= self.friction
 
         # 4. Actualizar posición
         self.position[0] += self.velocity[0] * dt

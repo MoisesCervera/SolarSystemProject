@@ -30,13 +30,6 @@ class WindowManager:
 
         # Control de tiempo
         self.last_time = 0
-        
-        # FPS tracking and limiting
-        self.target_fps = 60
-        self.target_frame_time = 1.0 / self.target_fps
-        self.fps = 0
-        self.frame_count = 0
-        self.fps_timer = 0.0
 
     def initialize(self):
         """Configura GLUT, crea la ventana y establece los callbacks."""
@@ -110,36 +103,18 @@ class WindowManager:
             os._exit(0)
 
         current_time = time.time()
-        
-        # FPS limiting - skip this frame if not enough time has passed
-        time_since_last_frame = current_time - self.last_time
-        if time_since_last_frame < self.target_frame_time:
-            return  # Don't process this frame yet
-        
-        dt = time_since_last_frame
+        dt = current_time - self.last_time
         self.last_time = current_time
 
         # Evitar saltos grandes de tiempo (spiral of death prevention simple)
         if dt > 0.1:
             dt = 0.1
 
-        # FPS tracking
-        self.frame_count += 1
-        self.fps_timer += dt
-        if self.fps_timer >= 1.0:
-            self.fps = self.frame_count
-            self.frame_count = 0
-            self.fps_timer -= 1.0
-
         # Actualizar lógica del estado actual
         # Inyectar state_machine al estado actual si no la tiene (Hack para navegación)
         current_state = self.state_machine.get_current_state()
         if current_state and not hasattr(current_state, 'state_machine'):
             current_state.state_machine = self.state_machine
-        
-        # Pass FPS to current state for display
-        if current_state:
-            current_state.current_fps = self.fps
 
         self.state_machine.update(dt)
 
@@ -166,25 +141,24 @@ class WindowManager:
         if key == b'\x1b':  # ESC to open pause menu
             # Check if we're already in pause state or welcome state
             current_state = self.state_machine.get_current_state()
-            current_type = type(
-                current_state).__name__ if current_state else ""
-
+            current_type = type(current_state).__name__ if current_state else ""
+            
             # If in pause state, let it handle ESC (to resume)
             if current_type == "PauseState":
                 self.state_machine.handle_input(('KEY_DOWN', key), x, y)
                 return
-
+            
             # Don't pause on welcome screen - it handles its own navigation
             if current_type == "WelcomeState":
                 return
-
+            
             # Don't pause when player is dead (showing restart menu)
             if current_type == "GameplayState":
                 if hasattr(current_state, 'is_dead') and current_state.is_dead:
                     return
                 if hasattr(current_state, 'asteroid_impact_pending') and current_state.asteroid_impact_pending:
                     return
-
+            
             # Push pause state on top of current state
             pause_state = PauseState()
             pause_state.state_machine = self.state_machine

@@ -56,13 +56,10 @@ class GameplayState(BaseState):
         self.camera_pullback_active = False  # Camera pulling back for cinematic view
         self.camera_original_offset_dist = 10.0
         self.camera_target_offset_dist = 25.0
-
+        
         # Speed lines effect for boost
         self.speed_lines = []  # List of speed line particles
         self.speed_lines_active = False
-        
-        # FPS counter (set by WindowManager)
-        self.current_fps = 0
 
     def enter(self):
         print("[GameplayState] Entrando a la simulación")
@@ -587,7 +584,7 @@ class GameplayState(BaseState):
         # 1. Actualizar Nave (Solo en modo FOLLOW)
         if self.ship and self.camera.mode == Camera.MODE_FOLLOW and not self.asteroid_impact_pending:
             self.ship.update(dt)
-
+            
             # Update speed lines effect based on boost state
             self._update_speed_lines(dt)
 
@@ -792,13 +789,10 @@ class GameplayState(BaseState):
         # Draw mission panel (top-right)
         if self.ship and not self.is_dead and self.mission_manager.game_started:
             self._draw_mission_panel(w, h)
-
+        
         # Draw speed lines effect when boosting
         if self.ship and self.ship.is_boosting and not self.is_dead:
             self._draw_speed_lines(w, h)
-
-        # Draw FPS counter (bottom-right corner)
-        self._draw_fps_counter(w, h)
 
     def _draw_boundary_warning(self, w, h):
         """Draw warning UI when approaching boundary."""
@@ -1158,7 +1152,7 @@ class GameplayState(BaseState):
         """Update speed lines particle system for boost effect."""
         if not self.ship:
             return
-
+            
         # When boosting, spawn new lines and mark as active
         if self.ship.is_boosting:
             self.speed_lines_active = True
@@ -1167,11 +1161,11 @@ class GameplayState(BaseState):
                 # Lines spawn from edges/corners of screen (normalized -1 to 1)
                 # Use polar coordinates for even distribution around edges
                 angle = random.uniform(0, 2 * math.pi)
-
+                
                 # Spawn at edge - use max of abs(cos) or abs(sin) to get rectangle edge
                 cos_a = math.cos(angle)
                 sin_a = math.sin(angle)
-
+                
                 # Project onto rectangle boundary
                 if abs(cos_a) > abs(sin_a):
                     # Left or right edge
@@ -1181,32 +1175,32 @@ class GameplayState(BaseState):
                     # Top or bottom edge
                     y = 1.0 if sin_a > 0 else -1.0
                     x = cos_a / abs(sin_a)
-
+                
                 # Add slight random offset to spread lines
                 x *= random.uniform(0.95, 1.05)
                 y *= random.uniform(0.95, 1.05)
                 x += random.uniform(-0.05, 0.05)
                 y += random.uniform(-0.05, 0.05)
-
+                
                 # Direction points toward center (with slight randomness)
                 target_x = random.uniform(-0.1, 0.1)
                 target_y = random.uniform(-0.1, 0.1)
                 dx = target_x - x
                 dy = target_y - y
-
+                
                 # Normalize direction
                 length = math.sqrt(dx*dx + dy*dy)
                 if length > 0:
                     dx /= length
                     dy /= length
-
+                
                 speed = random.uniform(1.2, 2.0)
-
+                
                 # Line properties
                 line_length = random.uniform(0.06, 0.12)
                 life = random.uniform(0.15, 0.28)
                 brightness = random.uniform(0.6, 1.0)
-
+                
                 self.speed_lines.append({
                     'x': x, 'y': y,
                     'dx': dx * speed, 'dy': dy * speed,
@@ -1219,21 +1213,21 @@ class GameplayState(BaseState):
             # When not boosting, let existing lines fade out
             if len(self.speed_lines) == 0:
                 self.speed_lines_active = False
-
+        
         # Update existing lines
         lines_to_remove = []
         for i, line in enumerate(self.speed_lines):
             # Move line
             line['x'] += line['dx'] * dt
             line['y'] += line['dy'] * dt
-
+            
             # Decrease life
             line['life'] -= dt
-
+            
             # Remove dead lines or lines that moved too far inward
             if line['life'] <= 0 or (abs(line['x']) < 0.55 and abs(line['y']) < 0.55):
                 lines_to_remove.append(i)
-
+        
         # Remove dead lines (in reverse to preserve indices)
         for i in reversed(lines_to_remove):
             self.speed_lines.pop(i)
@@ -1242,34 +1236,34 @@ class GameplayState(BaseState):
         """Draw warp speed lines effect on screen edges."""
         if not self.speed_lines:
             return
-
+            
         UIRenderer.setup_2d(w, h)
-
+        
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE)  # Additive blending for glow effect
         glDisable(GL_TEXTURE_2D)
-
+        
         glLineWidth(2.0)
-
+        
         for line in self.speed_lines:
             # Convert normalized coords to screen coords
             screen_x = (line['x'] + 1.0) * 0.5 * w
             screen_y = (line['y'] + 1.0) * 0.5 * h
-
+            
             # Trail extends BEHIND the line (opposite to movement direction)
             # This creates the streaking effect pointing toward center
             trail_length = line['length'] * 80  # pixels
             trail_x = screen_x - line['dx'] * trail_length
             trail_y = screen_y - line['dy'] * trail_length
-
+            
             # Alpha based on life remaining
             alpha = (line['life'] / line['max_life']) * line['brightness']
-
+            
             # Cyan/white color for sci-fi feel
             r = 0.5 + 0.5 * line['brightness']
             g = 0.8 + 0.2 * line['brightness']
             b = 1.0
-
+            
             # Draw line: bright at leading edge (toward center), dim at trailing edge (at border)
             glBegin(GL_LINES)
             # Trail end (at border, dimmer)
@@ -1279,26 +1273,9 @@ class GameplayState(BaseState):
             glColor4f(r, g, b, alpha * 0.9)
             glVertex2f(screen_x, screen_y)
             glEnd()
-
+        
         glDisable(GL_BLEND)
         glLineWidth(1.0)
-
-        UIRenderer.restore_3d()
-
-    def _draw_fps_counter(self, w, h):
-        """Draw FPS counter in bottom-right corner."""
-        UIRenderer.setup_2d(w, h)
-        
-        fps_text = f"FPS: {self.current_fps}"
-        text_size = 14
-        text_width = len(fps_text) * text_size * 0.6
-        
-        # Position in bottom-right corner with small margin
-        x = w - text_width - 15
-        y = 15
-        
-        # Draw with semi-transparent gray color
-        UIRenderer.draw_text(x, y, fps_text, size=text_size, color=(0.6, 0.6, 0.6))
         
         UIRenderer.restore_3d()
 
