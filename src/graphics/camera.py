@@ -38,8 +38,14 @@ class Camera:
             desired_z = target_z - (-math.cos(rad) * offset_dist)
             desired_y = target_y + offset_height
 
-            # Interpolación lineal (Lerp) - higher value = tighter follow
-            lerp_factor = self.follow_smoothness * dt
+            # Frame-rate independent interpolation using exponential decay
+            # This ensures consistent camera behavior regardless of frame rate
+            # Formula: lerp_factor = 1 - (1 - base_factor)^(dt * 60)
+            # At 60 FPS, dt=1/60, so we get base_factor
+            # At higher FPS, we get smaller steps that compound correctly
+            base_smoothness = 0.15  # Amount to move per frame at 60 FPS
+            lerp_factor = 1.0 - math.pow(1.0 - base_smoothness, dt * 60)
+            
             self.position[0] += (desired_x - self.position[0]) * lerp_factor
             self.position[1] += (desired_y - self.position[1]) * lerp_factor
             self.position[2] += (desired_z - self.position[2]) * lerp_factor

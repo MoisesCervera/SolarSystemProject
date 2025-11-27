@@ -61,6 +61,10 @@ class GameplayState(BaseState):
         self.speed_lines = []  # List of speed line particles
         self.speed_lines_active = False
 
+        # FPS counter
+        self.fps_samples = []  # Store recent dt samples
+        self.current_fps = 0.0
+
     def enter(self):
         print("[GameplayState] Entrando a la simulación")
 
@@ -456,7 +460,10 @@ class GameplayState(BaseState):
             desired_z = target_z - (-math.cos(rad) * offset_dist)
             desired_y = target_y + offset_height
 
-            lerp_factor = self.camera.follow_smoothness * dt
+            # Frame-rate independent interpolation
+            base_smoothness = 0.15
+            lerp_factor = 1.0 - math.pow(1.0 - base_smoothness, dt * 60)
+            
             self.camera.position[0] += (desired_x -
                                         self.camera.position[0]) * lerp_factor
             self.camera.position[1] += (desired_y -
@@ -484,6 +491,16 @@ class GameplayState(BaseState):
             self.state_machine.push(WelcomeState())
 
     def update(self, dt):
+        # Update FPS counter
+        if dt > 0:
+            self.fps_samples.append(dt)
+            # Keep only last 30 samples (about 0.5s worth at 60fps)
+            if len(self.fps_samples) > 30:
+                self.fps_samples.pop(0)
+            # Calculate average FPS
+            avg_dt = sum(self.fps_samples) / len(self.fps_samples)
+            self.current_fps = 1.0 / avg_dt if avg_dt > 0 else 0.0
+
         # 0. Transición a Detalle
         if self.is_transitioning and self.transition_target:
             # Interpolar cámara hacia el planeta
@@ -793,6 +810,9 @@ class GameplayState(BaseState):
         # Draw speed lines effect when boosting
         if self.ship and self.ship.is_boosting and not self.is_dead:
             self._draw_speed_lines(w, h)
+
+        # Draw FPS counter (bottom-right)
+        self._draw_fps_counter(w, h)
 
     def _draw_boundary_warning(self, w, h):
         """Draw warning UI when approaching boundary."""
@@ -1276,6 +1296,44 @@ class GameplayState(BaseState):
 
         glDisable(GL_BLEND)
         glLineWidth(1.0)
+
+        UIRenderer.restore_3d()
+
+    def _draw_fps_counter(self, w, h):
+        """Draw FPS counter in bottom-right corner."""
+        UIRenderer.setup_2d(w, h)
+
+        # Format FPS text
+        fps_text = f"FPS: {int(self.current_fps)}"
+
+        # Position in bottom-right corner
+        text_size = 14
+        text_width = len(fps_text) * text_size * 0.6
+        x = w - text_width - 10
+        y = 20
+
+        # Draw with semi-transparent background for readability
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glColor4f(0.0, 0.0, 0.0, 0.4)
+        padding = 4
+        glBegin(GL_QUADS)
+        glVertex2f(x - padding, y - padding)
+        glVertex2f(x + text_width + padding, y - padding)
+        glVertex2f(x + text_width + padding, y + text_size + padding)
+        glVertex2f(x - padding, y + text_size + padding)
+        glEnd()
+        glDisable(GL_BLEND)
+
+        # Color based on FPS: green = good, yellow = ok, red = bad
+        if self.current_fps >= 55:
+            color = (0.2, 1.0, 0.2)  # Green
+        elif self.current_fps >= 30:
+            color = (1.0, 1.0, 0.2)  # Yellow
+        else:
+            color = (1.0, 0.3, 0.2)  # Red
+
+        UIRenderer.draw_text(x, y, fps_text, size=text_size, color=color)
 
         UIRenderer.restore_3d()
 
