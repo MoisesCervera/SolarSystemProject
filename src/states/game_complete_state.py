@@ -118,9 +118,13 @@ class GameCompleteState(BaseState):
             if key == GLUT_KEY_LEFT or key == b'a':
                 self.selected_trophy = (
                     self.selected_trophy - 1) % max(1, len(self.trophies))
+                # Play transition sound
+                get_audio_manager().play_sfx('transition')
             elif key == GLUT_KEY_RIGHT or key == b'd':
                 self.selected_trophy = (
                     self.selected_trophy + 1) % max(1, len(self.trophies))
+                # Play transition sound
+                get_audio_manager().play_sfx('transition')
 
             # Return to main menu
             elif key == b'\r' or key == b' ' or key == b'm' or key == b'M':

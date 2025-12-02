@@ -16,7 +16,7 @@ class UIRenderer:
     # Primary custom font used across the UI
     FONT_PATH = ResourceManager.get_font_path("Exo Space DEMO.ttf")
     # New alternate custom font used for answers and labels (SF Pro)
-    FONT_SFPRO_PATH = ResourceManager.get_font_path("SF-Pro.ttf")
+    FONT_SFPRO_PATH = ResourceManager.get_font_path("SF-Pro.otf")
     # New sci-fi fonts
     FONT_SPACE_ARMOR_PATH = ResourceManager.get_font_path("space_armor.otf")
     FONT_RADIOSPACE_PATH = ResourceManager.get_font_path("radiospace.ttf")

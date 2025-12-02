@@ -122,26 +122,26 @@ def get_gameplay_music_state(ship_id: str = None) -> str:
 SFX_REGISTRY: Dict[str, str] = {
     # UI sounds
     'click': 'sound/fx/button_click.wav',
-    
+
     # Ship/movement sounds
     'thruster': 'sound/fx/spaceship_rumble.wav',
     'ship_destroyed': 'sound/fx/ship_destroyed_by_asteroid.wav',
     'boost': 'sound/fx/boost.wav',
-    
+
     # Quiz sounds
     'laser': 'sound/fx/laser_shoot.wav',
     'asteroid_destroyed': 'sound/fx/asteroid_answer_destroyed_1.wav',
     'asteroid_impact': 'sound/fx/asteroid_impact_during_quiz.wav',
     'quiz_fail': 'sound/fx/quiz_fail.wav',
     'cardinal_movement': 'sound/fx/cardinal_movement_quiz.wav',
-    
+
     # Planet interaction sounds
     'planet_detail': 'sound/fx/planet_detail.wav',
     'scan_planet': 'sound/fx/scan_planet.wav',
-    
+
     # Transition sounds
     'transition': 'sound/fx/ship_transition.wav',
-    
+
     # Warning/alarm sounds
     'alarm': 'sound/fx/alarm.mp3',
 

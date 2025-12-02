@@ -81,7 +81,7 @@ class PlanetDetailState(BaseState):
         self.quiz_launch_timer = 0.0  # Brief delay before launching
         self.start_mission_button_rect = None
         self.retry_mission_button_rect = None
-        
+
         # Planet detail sound channel (to stop when entering quiz)
         self.planet_detail_channel = None
 
@@ -100,7 +100,8 @@ class PlanetDetailState(BaseState):
         audio.lower_music_volume(0.4)
 
         # Play planet detail sound (lower volume, store channel to stop later)
-        self.planet_detail_channel = audio.play_sfx('planet_detail', volume_scale=0.4)
+        self.planet_detail_channel = audio.play_sfx(
+            'planet_detail', volume_scale=0.4)
 
         self.quadric = gluNewQuadric()
         gluQuadricNormals(self.quadric, GLU_SMOOTH)
@@ -175,10 +176,10 @@ class PlanetDetailState(BaseState):
             self.trophy_awarded = True
             self.show_trophy_animation = True
             self.trophy_animation_time = 0.0
-            
+
             # Play trophy win sound
             get_audio_manager().play_sfx('trophy_win')
-            
+
             print(f"[PlanetDetailState] Trophy awarded: {trophy_type}")
 
             if game_complete:
@@ -190,7 +191,7 @@ class PlanetDetailState(BaseState):
         # Stop planet detail sound before entering quiz
         if self.planet_detail_channel and self.planet_detail_channel.get_busy():
             self.planet_detail_channel.fadeout(300)
-        
+
         if hasattr(self, 'state_machine') and self.state_machine:
             quiz_state = CylindricalQuizState(
                 self.planet_name,
@@ -264,10 +265,10 @@ class PlanetDetailState(BaseState):
                         self.trophy_awarded = True
                         self.show_trophy_animation = True
                         self.trophy_animation_time = 0.0
-                        
+
                         # Play trophy win sound
                         get_audio_manager().play_sfx('trophy_win')
-                        
+
                         print(
                             f"[PlanetDetailState] Trophy awarded: {trophy_type}")
 
