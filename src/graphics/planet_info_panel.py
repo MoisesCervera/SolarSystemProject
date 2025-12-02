@@ -366,7 +366,7 @@ class PlanetInfoPanel:
         text_y = y + (self.tab_height - text_size) / 2
 
         UIRenderer.draw_text(text_x, text_y, text,
-                             size=text_size, color=text_color)
+                             size=text_size, color=text_color, font_name="radiospace")
 
     def _draw_encyclopedia(self, x, start_y):
         data = self.data.get("encyclopedia", {})
@@ -398,22 +398,20 @@ class PlanetInfoPanel:
 
             # Increased spacing and font size
             UIRenderer.draw_text(x, y, label, size=16, color=(
-                0.0, 1.0, 1.0))  # Custom font for headers
+                0.0, 1.0, 1.0), font_name="radiospace")  # Custom font for headers
 
-            # Dynamic value position (Right aligned)
-            # Estimate value width to align right
-            # Helvetica char width approx 0.5 * size = 8
-            val_width_est = len(value) * 8
-            value_x = self.x + self.width - 40 - val_width_est
+            # Dynamic value position
+            # Calculate exact width
+            _, val_width, _ = UIRenderer.get_text_texture(
+                value, size=16, font_name="sfpro")
 
-            # Ensure it doesn't overlap label too much (simple check)
-            if value_x < x + 150:
-                value_x = x + 150
+            # Right align
+            value_x = self.x + self.width - 40 - val_width
 
+            # Draw
             UIRenderer.draw_text(value_x, y, value, size=16, color=(
-                0.9, 0.9, 0.9), font_name="Helvetica")  # Helvetica for values
-
-            y -= 35  # More vertical padding
+                0.9, 0.9, 0.9), font_name="sfpro")
+            y -= 35  # Standard spacing
 
         y -= 30
 
@@ -423,7 +421,7 @@ class PlanetInfoPanel:
 
         if description_text:
             UIRenderer.draw_text(x, y, "DESCRIPTION",
-                                 size=20, color=(0.0, 1.0, 1.0))
+                                 size=20, color=(0.0, 1.0, 1.0), font_name="radiospace")
             y -= 30
             y = self._draw_wrapped_text(
                 x, y, description_text, self.width - 50, 16)
@@ -439,7 +437,7 @@ class PlanetInfoPanel:
                 text = content["text"]
 
                 UIRenderer.draw_text(x, y, title, size=20,
-                                     color=(0.0, 1.0, 1.0))
+                                     color=(0.0, 1.0, 1.0), font_name="radiospace")
                 y -= 30
                 y = self._draw_wrapped_text(x, y, text, self.width - 50, 16)
                 y -= 40
@@ -450,7 +448,7 @@ class PlanetInfoPanel:
         structure_data = self.data.get("structure", {})
         if not structure_data:
             UIRenderer.draw_text(
-                x, start_y, "NO STRUCTURE DATA", size=24, color=(1.0, 0.0, 0.0))
+                x, start_y, "NO STRUCTURE DATA", size=24, color=(1.0, 0.0, 0.0), font_name="radiospace")
             return start_y - 30
 
         y = start_y
@@ -465,7 +463,7 @@ class PlanetInfoPanel:
             # Layer Name
             name = layer.get("title", layer.get("name", "Unknown Layer"))
             UIRenderer.draw_text(x, y, name.upper(),
-                                 size=22, color=(0.0, 1.0, 1.0))
+                                 size=22, color=(0.0, 1.0, 1.0), font_name="radiospace")
             y -= 30
 
             # Layer Description
@@ -484,15 +482,16 @@ class PlanetInfoPanel:
         words = text.split(' ')
         line = ""
         line_height = size + 8  # More line height
-        char_width_approx = size * 0.45  # Tighter estimate to use more width
 
         for word in words:
             test_line = line + word + " "
-            test_width = len(test_line) * char_width_approx
+            # Calculate exact width using texture
+            _, test_width, _ = UIRenderer.get_text_texture(
+                test_line, size=size, font_name="sfpro")
 
             if test_width > max_width:
                 UIRenderer.draw_text(x, y, line, size=size, color=(
-                    0.9, 0.9, 0.9), font_name="Helvetica")
+                    0.9, 0.9, 0.9), font_name="sfpro")
                 y -= line_height
                 line = word + " "
             else:
@@ -500,7 +499,7 @@ class PlanetInfoPanel:
 
         if line:
             UIRenderer.draw_text(x, y, line, size=size, color=(
-                0.9, 0.9, 0.9), font_name="Helvetica")
+                0.9, 0.9, 0.9), font_name="sfpro")
             y -= line_height
 
         return y

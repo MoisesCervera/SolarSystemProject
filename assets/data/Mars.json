@@ -28,7 +28,7 @@
             },
             "surface_temperature": {
                 "name": "Surface Temperature",
-                "value": "-63\u00b0C (avg), 17\u00b0C (summer), -140\u00b0C (winter)"
+                "value": "-63\u00b0C (avg)"
             },
             "planet_description": {
                 "name": "Short Description",

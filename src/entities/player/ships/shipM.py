@@ -98,10 +98,6 @@ class ShipModel:
         self.propulsor_rim_color = (0.1, 0.1, 0.1)
         self.propulsor_inner_color = (1.0, 0.4, 0.1)  # Bright orange core
 
-        # Abduction beam
-        self.beam_color = (0.4, 0.9, 1.0, 0.2)  # Bright cyan with transparency
-        self.beam_intensity = 0.0  # Animated beam intensity
-
     def update(self, delta_time):
         """
         Update UFO animation and effects.
@@ -113,9 +109,6 @@ class ShipModel:
 
         # Animate rim lights (rotating pattern)
         self.light_phase += delta_time * 2.0  # Speed of light rotation
-
-        # Pulsate abduction beam
-        self.beam_intensity = 0.5 + 0.5 * math.sin(self.animation_time * 3.0)
 
     def _compile_static_geometry(self):
         """Compile static UFO geometry into a display list for performance."""
@@ -157,7 +150,6 @@ class ShipModel:
 
         # Draw animated components (must be drawn each frame)
         self._draw_rim_lights()
-        self._draw_abduction_beam()
         self._draw_dome()  # Transparent dome last
         self._draw_dome_rim_lights()
 
@@ -375,66 +367,6 @@ class ShipModel:
             )
 
             glPopMatrix()
-
-        glPopMatrix()
-
-    def _draw_abduction_beam(self):
-        """Draw the pulsating abduction beam from below the UFO."""
-        glPushMatrix()
-
-        # Position beam at bottom center
-        glTranslatef(0, -2.3, 0)
-
-        # Enable transparency
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glDepthMask(GL_FALSE)
-
-        # Calculate beam color with pulsating alpha
-        beam_alpha = self.beam_color[3] * self.beam_intensity
-        beam_color_pulsed = (
-            self.beam_color[0],
-            self.beam_color[1],
-            self.beam_color[2],
-            beam_alpha
-        )
-
-        # Draw main beam cylinder (widens as it goes down)
-        glPushMatrix()
-        glRotatef(180, 1, 0, 0)  # Point downward
-        draw_cylinder(
-            base_radius=0.3,      # Narrow at UFO
-            top_radius=1.2,       # Wide at bottom
-            height=3.0,           # Long beam
-            slices=32,
-            stacks=1,
-            color=beam_color_pulsed
-        )
-        glPopMatrix()
-
-        # Draw inner bright core
-        brighter_beam = (
-            min(1.0, self.beam_color[0] * 1.5),
-            min(1.0, self.beam_color[1] * 1.5),
-            min(1.0, self.beam_color[2] * 1.5),
-            beam_alpha * 1.5
-        )
-
-        glPushMatrix()
-        glRotatef(180, 1, 0, 0)
-        draw_cylinder(
-            base_radius=0.15,
-            top_radius=0.6,
-            height=3.0,
-            slices=16,
-            stacks=1,
-            color=brighter_beam
-        )
-        glPopMatrix()
-
-        # Restore normal rendering
-        glDepthMask(GL_TRUE)
-        glDisable(GL_BLEND)
 
         glPopMatrix()
 

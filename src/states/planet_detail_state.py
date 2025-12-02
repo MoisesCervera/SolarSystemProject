@@ -4,13 +4,14 @@ from OpenGL.GLUT import *
 from src.states.base_state import BaseState
 from src.graphics.renderer import Renderer
 from src.graphics.ui_renderer import UIRenderer
-from src.graphics.texture_loader import TextureLoader
+from src.core.resource_loader import ResourceManager
 from src.graphics.skybox import Skybox
 from src.data.planet_layers import PLANET_LAYERS
 from src.graphics.planet_info_panel import PlanetInfoPanel
 from src.core.mission_manager import MissionManager, get_trophy_for_planet
 from src.core.quiz_manager import QuizManager
 from src.entities.trophies.trophy_base import TrophyRenderer
+from src.core.cylindrical_quiz import CylindricalQuizState
 import math
 
 
@@ -72,11 +73,18 @@ class PlanetDetailState(BaseState):
         self.trophy_renderer = None
         self.trophy_rotation = 0.0
 
+        # Cylindrical quiz state
+        self.use_cylindrical_quiz = True  # Enable the new quiz system
+        self.waiting_for_quiz_start = False  # True when showing "Press ENTER to start"
+        self.quiz_launch_timer = 0.0  # Brief delay before launching
+        self.start_mission_button_rect = None
+        self.retry_mission_button_rect = None
+
         # Cargar texturas para cada capa
         for layer in self.layers:
             if "texture" in layer:
-                tex_path = f"assets/textures/planets/{layer['texture']}"
-                layer['texture_id'] = TextureLoader.load_texture(tex_path)
+                tex_path = f"planets/{layer['texture']}"
+                layer['texture_id'] = ResourceManager.load_texture(tex_path)
 
     def enter(self):
         print(
@@ -105,15 +113,23 @@ class PlanetDetailState(BaseState):
             self.planet_name)
 
         if self.is_mission_target and not self.quiz_completed:
-            # Start quiz for mission target
-            self.quiz_session = self.quiz_manager.start_quiz(self.planet_name)
-            if self.quiz_session:
+            if self.use_cylindrical_quiz:
+                # Use new cylindrical quiz system
+                self.waiting_for_quiz_start = True
                 self.quiz_active = True
                 print(
-                    f"[PlanetDetailState] Quiz started for {self.planet_name}")
+                    f"[PlanetDetailState] Cylindrical quiz ready for {self.planet_name}")
             else:
-                print(
-                    f"[PlanetDetailState] No quiz questions for {self.planet_name}")
+                # Use old button-based quiz
+                self.quiz_session = self.quiz_manager.start_quiz(
+                    self.planet_name)
+                if self.quiz_session:
+                    self.quiz_active = True
+                    print(
+                        f"[PlanetDetailState] Quiz started for {self.planet_name}")
+                else:
+                    print(
+                        f"[PlanetDetailState] No quiz questions for {self.planet_name}")
 
         # Reset quiz state
         self.selected_answer = -1
@@ -127,6 +143,41 @@ class PlanetDetailState(BaseState):
         self.trophy_animation_time = 0.0
         self.trophy_renderer = TrophyRenderer()
         self.trophy_rotation = 0.0
+        self.quiz_launch_timer = 0.0
+
+    def _on_cylindrical_quiz_complete(self, passed, score, strikes):
+        """Callback when cylindrical quiz finishes."""
+        print(
+            f"[PlanetDetailState] Cylindrical quiz complete: passed={passed}, score={score}, strikes={strikes}")
+        self.quiz_completed = True
+        self.quiz_passed = passed
+        self.quiz_active = False
+        self.waiting_for_quiz_start = False
+
+        if passed and not self.trophy_awarded:
+            # Complete the mission and award trophy
+            trophy_type = get_trophy_for_planet(self.planet_name)
+            game_complete = self.mission_manager.complete_current_mission(
+                trophy_type)
+            self.trophy_awarded = True
+            self.show_trophy_animation = True
+            self.trophy_animation_time = 0.0
+            print(f"[PlanetDetailState] Trophy awarded: {trophy_type}")
+
+            if game_complete:
+                print(
+                    "[PlanetDetailState] ALL MISSIONS COMPLETE! Triggering victory!")
+
+    def _launch_cylindrical_quiz(self):
+        """Launch the cylindrical quiz state."""
+        if hasattr(self, 'state_machine') and self.state_machine:
+            quiz_state = CylindricalQuizState(
+                self.planet_name,
+                self.quiz_manager,
+                on_complete_callback=self._on_cylindrical_quiz_complete
+            )
+            self.state_machine.push(quiz_state)
+            self.waiting_for_quiz_start = False
 
     def exit(self):
         if self.quadric:
@@ -140,6 +191,10 @@ class PlanetDetailState(BaseState):
 
         # Limpiar luces extra para no afectar otros estados
         glDisable(GL_LIGHT1)
+
+        # Clear Space key from InputManager to prevent accidental boost in GameplayState
+        from src.core.input_manager import InputManager
+        InputManager().key_state[' '] = False
 
     def update(self, dt):
         # Animar apertura
@@ -212,7 +267,13 @@ class PlanetDetailState(BaseState):
                     self.state_machine.push(PauseState())
                 return
 
-            # Quiz answer input - block during feedback or delay
+            # Handle cylindrical quiz launch
+            if self.waiting_for_quiz_start and self.use_cylindrical_quiz:
+                if key == b'\r' or key == b' ':  # Enter or Space to start quiz
+                    self._launch_cylindrical_quiz()
+                    return
+
+            # Quiz answer input for old system - block during feedback or delay
             if self.quiz_active and self.quiz_session and not self.answer_feedback and not self.feedback_delay_active:
                 question = self.quiz_session.get_current_question()
                 if question:
@@ -255,6 +316,20 @@ class PlanetDetailState(BaseState):
 
             if button == GLUT_LEFT_BUTTON:
                 if state == GLUT_DOWN:
+                    # Check for Start Mission button click
+                    if self.waiting_for_quiz_start and self.use_cylindrical_quiz and self.start_mission_button_rect:
+                        bx, by, bw, bh = self.start_mission_button_rect
+                        if bx <= x <= bx + bw and by <= ui_y <= by + bh:
+                            self._launch_cylindrical_quiz()
+                            return
+
+                    # Check for Retry Mission button click
+                    if self.quiz_completed and not self.quiz_passed and self.retry_mission_button_rect:
+                        bx, by, bw, bh = self.retry_mission_button_rect
+                        if bx <= x <= bx + bw and by <= ui_y <= by + bh:
+                            self._launch_cylindrical_quiz()
+                            return
+
                     # Verificar clic en panel primero
                     if self.info_panel and self.info_panel.handle_click(x, ui_y):
                         return  # Consumido por el panel
@@ -493,162 +568,59 @@ class PlanetDetailState(BaseState):
             if self.info_panel:
                 self.info_panel.draw()
 
-            # Draw quiz panel on the right side if this is mission target
+            # Draw minimal quiz UI on the right side if this is mission target
             if self.is_mission_target:
-                self._draw_quiz_panel(w, h)
+                # Reuse panel coordinates from the original layout
+                panel_w = 420
+                panel_h = h - 80
+                panel_x = w - panel_w - 15
+                panel_y = 40
+
+                # Draw small or relevant quiz content only
+                if self.quiz_completed:
+                    self._draw_quiz_results(panel_x, panel_y, panel_w, panel_h)
+                elif self.waiting_for_quiz_start and self.use_cylindrical_quiz:
+                    # Draw only the small Start Mission label
+                    self._draw_quiz_start_prompt(
+                        panel_x, panel_y, panel_w, panel_h)
+                elif self.quiz_session:
+                    self._draw_quiz_question(
+                        panel_x, panel_y, panel_w, panel_h)
+                else:
+                    text = "No quiz available"
+                    _, t_w, _ = UIRenderer.get_text_texture(
+                        text, 18, "radiospace")
+                    UIRenderer.draw_text(panel_x + (panel_w - t_w) / 2, panel_y + panel_h - 80,
+                                         text, size=18, color=(0.7, 0.7, 0.7), font_name="radiospace")
 
             # Draw trophy animation
             if self.show_trophy_animation:
                 self._draw_trophy_celebration(w, h)
 
             # Instrucción (Abajo a la derecha)
-            if not self.quiz_active or self.quiz_completed:
+            # Only show the "PRESS SPACE TO RETURN" hint when the quiz is not active
+            # or when the quiz is completed but NOT passed. If the player has passed
+            # the quiz (mission won) we hide the wrapping "return" hint and the
+            # results panel content per UX request.
+            if not self.quiz_active or (self.quiz_completed and not self.quiz_passed):
+                text = "PRESS SPACE TO RETURN"
+                _, t_w, _ = UIRenderer.get_text_texture(text, 18, "radiospace")
                 UIRenderer.draw_text(
-                    w - 300, 20, "PRESS SPACE TO RETURN", size=18, color=(1.0, 0.5, 0.5))
+                    (w - t_w) / 2, 20, text, size=18, color=(1.0, 0.5, 0.5), font_name="radiospace")
+            elif self.waiting_for_quiz_start and self.use_cylindrical_quiz:
+                # Bottom hint was intentionally removed per UI polish request.
+                # The small 'START MISSION' label is shown in the right-side panel instead
+                # and the more prominent panel includes its own hint for beginning the quiz.
+                pass
             else:
+                text = "COMPLETE QUIZ TO CONTINUE"
+                _, t_w, _ = UIRenderer.get_text_texture(text, 18, "radiospace")
                 UIRenderer.draw_text(
-                    w - 350, 20, "COMPLETE QUIZ TO CONTINUE", size=18, color=(1.0, 0.8, 0.0))
+                    (w - t_w) / 2, 20, text, size=18, color=(1.0, 0.8, 0.0), font_name="radiospace")
         finally:
             UIRenderer.restore_3d()
 
-    def _draw_quiz_panel(self, w, h):
-        """Draw the quiz panel on the right side of the screen."""
-        # Panel dimensions
-        panel_w = 420
-        panel_h = h - 80
-        panel_x = w - panel_w - 15
-        panel_y = 40
-
-        # Draw semi-transparent background with gradient effect
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-        # Main panel background
-        chamfer = 20
-        glBegin(GL_POLYGON)
-        glColor4f(0.02, 0.06, 0.12, 0.95)
-        glVertex2f(panel_x + chamfer, panel_y)
-        glVertex2f(panel_x + panel_w - chamfer, panel_y)
-        glVertex2f(panel_x + panel_w, panel_y + chamfer)
-        glColor4f(0.01, 0.04, 0.08, 0.95)
-        glVertex2f(panel_x + panel_w, panel_y + panel_h - chamfer)
-        glVertex2f(panel_x + panel_w - chamfer, panel_y + panel_h)
-        glVertex2f(panel_x + chamfer, panel_y + panel_h)
-        glVertex2f(panel_x, panel_y + panel_h - chamfer)
-        glColor4f(0.02, 0.06, 0.12, 0.95)
-        glVertex2f(panel_x, panel_y + chamfer)
-        glEnd()
-
-        # Inner glow/highlight at top
-        glBegin(GL_QUADS)
-        border_color = (0.0, 0.8, 1.0) if not self.quiz_completed else (
-            (0.0, 1.0, 0.5) if self.quiz_passed else (1.0, 0.3, 0.3))
-        glColor4f(border_color[0] * 0.3, border_color[1]
-                  * 0.3, border_color[2] * 0.3, 0.4)
-        glVertex2f(panel_x + chamfer, panel_y + panel_h - 60)
-        glVertex2f(panel_x + panel_w - chamfer, panel_y + panel_h - 60)
-        glColor4f(border_color[0] * 0.1, border_color[1]
-                  * 0.1, border_color[2] * 0.1, 0.0)
-        glVertex2f(panel_x + panel_w - chamfer, panel_y + panel_h - 100)
-        glVertex2f(panel_x + chamfer, panel_y + panel_h - 100)
-        glEnd()
-
-        # Border with glow effect
-        glLineWidth(3.0)
-        glColor4f(border_color[0], border_color[1], border_color[2], 0.8)
-        glBegin(GL_LINE_LOOP)
-        glVertex2f(panel_x + chamfer, panel_y)
-        glVertex2f(panel_x + panel_w - chamfer, panel_y)
-        glVertex2f(panel_x + panel_w, panel_y + chamfer)
-        glVertex2f(panel_x + panel_w, panel_y + panel_h - chamfer)
-        glVertex2f(panel_x + panel_w - chamfer, panel_y + panel_h)
-        glVertex2f(panel_x + chamfer, panel_y + panel_h)
-        glVertex2f(panel_x, panel_y + panel_h - chamfer)
-        glVertex2f(panel_x, panel_y + chamfer)
-        glEnd()
-
-        # Corner accents
-        glLineWidth(2.0)
-        glColor3f(*border_color)
-        accent_size = 25
-        # Top-left
-        glBegin(GL_LINES)
-        glVertex2f(panel_x, panel_y + panel_h - chamfer - accent_size)
-        glVertex2f(panel_x, panel_y + panel_h - chamfer)
-        glVertex2f(panel_x + chamfer, panel_y + panel_h)
-        glVertex2f(panel_x + chamfer + accent_size, panel_y + panel_h)
-        # Top-right
-        glVertex2f(panel_x + panel_w - chamfer -
-                   accent_size, panel_y + panel_h)
-        glVertex2f(panel_x + panel_w - chamfer, panel_y + panel_h)
-        glVertex2f(panel_x + panel_w, panel_y + panel_h - chamfer)
-        glVertex2f(panel_x + panel_w, panel_y +
-                   panel_h - chamfer - accent_size)
-        # Bottom-left
-        glVertex2f(panel_x, panel_y + chamfer + accent_size)
-        glVertex2f(panel_x, panel_y + chamfer)
-        glVertex2f(panel_x + chamfer, panel_y)
-        glVertex2f(panel_x + chamfer + accent_size, panel_y)
-        # Bottom-right
-        glVertex2f(panel_x + panel_w - chamfer - accent_size, panel_y)
-        glVertex2f(panel_x + panel_w - chamfer, panel_y)
-        glVertex2f(panel_x + panel_w, panel_y + chamfer)
-        glVertex2f(panel_x + panel_w, panel_y + chamfer + accent_size)
-        glEnd()
-
-        glDisable(GL_BLEND)
-
-        # Header with icon indicator
-        header = "MISSION QUIZ" if not self.quiz_completed else (
-            "QUIZ PASSED" if self.quiz_passed else "QUIZ FAILED")
-        header_color = (0.0, 1.0, 1.0) if not self.quiz_completed else (
-            (0.0, 1.0, 0.5) if self.quiz_passed else (1.0, 0.3, 0.3))
-
-        # Draw header icon (small decorative element)
-        icon_x = panel_x + 20
-        icon_y = panel_y + panel_h - 38
-        glColor3f(*header_color)
-        glBegin(GL_TRIANGLES)
-        glVertex2f(icon_x, icon_y)
-        glVertex2f(icon_x + 12, icon_y + 8)
-        glVertex2f(icon_x, icon_y + 16)
-        glEnd()
-
-        UIRenderer.draw_text(panel_x + 40, panel_y + panel_h - 40, header,
-                             size=24, color=header_color)
-
-        # Decorative separator line with gradient
-        glEnable(GL_BLEND)
-        glBegin(GL_QUADS)
-        glColor4f(border_color[0], border_color[1], border_color[2], 0.0)
-        glVertex2f(panel_x + 15, panel_y + panel_h - 55)
-        glColor4f(border_color[0], border_color[1], border_color[2], 0.8)
-        glVertex2f(panel_x + panel_w / 2, panel_y + panel_h - 55)
-        glVertex2f(panel_x + panel_w / 2, panel_y + panel_h - 53)
-        glColor4f(border_color[0], border_color[1], border_color[2], 0.0)
-        glVertex2f(panel_x + 15, panel_y + panel_h - 53)
-        glEnd()
-        glBegin(GL_QUADS)
-        glColor4f(border_color[0], border_color[1], border_color[2], 0.8)
-        glVertex2f(panel_x + panel_w / 2, panel_y + panel_h - 55)
-        glColor4f(border_color[0], border_color[1], border_color[2], 0.0)
-        glVertex2f(panel_x + panel_w - 15, panel_y + panel_h - 55)
-        glVertex2f(panel_x + panel_w - 15, panel_y + panel_h - 53)
-        glColor4f(border_color[0], border_color[1], border_color[2], 0.8)
-        glVertex2f(panel_x + panel_w / 2, panel_y + panel_h - 53)
-        glEnd()
-        glDisable(GL_BLEND)
-
-        if self.quiz_completed:
-            # Show final results
-            self._draw_quiz_results(panel_x, panel_y, panel_w, panel_h)
-        elif self.quiz_session:
-            # Show current question
-            self._draw_quiz_question(panel_x, panel_y, panel_w, panel_h)
-        else:
-            # No quiz available
-            UIRenderer.draw_text(panel_x + 15, panel_y + panel_h - 80,
-                                 "No quiz available", size=18, color=(0.7, 0.7, 0.7))
+    # _draw_quiz_panel removed per request; logic replaced by calls from _draw_ui
 
     def _draw_quiz_question(self, panel_x, panel_y, panel_w, panel_h):
         """Draw the current quiz question and options."""
@@ -698,10 +670,10 @@ class PlanetDetailState(BaseState):
 
         # Question counter and score
         UIRenderer.draw_text(panel_x + 20, panel_y + panel_h - 100,
-                             f"Question {q_num} of {q_total}", size=14, color=(0.6, 0.7, 0.8))
+                             f"Question {q_num} of {q_total}", size=14, color=(0.6, 0.7, 0.8), font_name="radiospace")
         score_text = f"Score: {score} of {current_score}"
         UIRenderer.draw_text(panel_x + panel_w - 130, panel_y + panel_h - 100,
-                             score_text, size=14, color=(0.9, 0.8, 0.3))
+                             score_text, size=14, color=(0.9, 0.8, 0.3), font_name="radiospace")
 
         # Question text box
         question_text = question.get('question', 'No question')
@@ -738,12 +710,12 @@ class PlanetDetailState(BaseState):
                 line = line + " " + word if line else word
             else:
                 UIRenderer.draw_text(panel_x + 28, y_pos, line,
-                                     size=16, color=(1.0, 1.0, 1.0), font_name="helvetica")
+                                     size=16, color=(1.0, 1.0, 1.0), font_name="sfpro")
                 y_pos -= 24
                 line = word
         if line:
             UIRenderer.draw_text(panel_x + 28, y_pos, line,
-                                 size=16, color=(1.0, 1.0, 1.0), font_name="helvetica")
+                                 size=16, color=(1.0, 1.0, 1.0), font_name="sfpro")
 
         # Options as cards
         options = question.get('options', [])
@@ -824,7 +796,7 @@ class PlanetDetailState(BaseState):
 
             # Number text
             UIRenderer.draw_text(badge_x + 8, badge_y + 5,
-                                 str(i + 1), size=16, color=num_color)
+                                 str(i + 1), size=16, color=num_color, font_name="radiospace")
 
             # Option text with word wrap - calculate lines first to center vertically
             opt_words = option.split()
@@ -849,7 +821,7 @@ class PlanetDetailState(BaseState):
             # Draw centered lines
             for idx, line_text in enumerate(opt_lines):
                 UIRenderer.draw_text(card_x + 50, opt_y_start - idx * line_height, line_text,
-                                     size=14, color=text_color, font_name="helvetica")
+                                     size=14, color=text_color, font_name="sfpro")
 
         # Show feedback explanation
         if self.answer_feedback:
@@ -880,7 +852,7 @@ class PlanetDetailState(BaseState):
                 glDisable(GL_BLEND)
 
                 UIRenderer.draw_text(panel_x + 28, exp_box_y + exp_box_h - 20,
-                                     "Explanation", size=12, color=(0.9, 0.8, 0.3))
+                                     "Explanation", size=12, color=(0.9, 0.8, 0.3), font_name="radiospace")
 
                 # Word wrap explanation
                 exp_words = explanation.split()
@@ -891,12 +863,12 @@ class PlanetDetailState(BaseState):
                         exp_line = exp_line + " " + word if exp_line else word
                     else:
                         UIRenderer.draw_text(panel_x + 28, exp_y, exp_line,
-                                             size=12, color=(0.8, 0.8, 0.7), font_name="helvetica")
+                                             size=12, color=(0.8, 0.8, 0.7), font_name="sfpro")
                         exp_y -= 16
                         exp_line = word
                 if exp_line:
                     UIRenderer.draw_text(panel_x + 28, exp_y, exp_line,
-                                         size=12, color=(0.8, 0.8, 0.7), font_name="helvetica")
+                                         size=12, color=(0.8, 0.8, 0.7), font_name="sfpro")
         else:
             # Instruction hint at bottom
             glEnable(GL_BLEND)
@@ -908,124 +880,177 @@ class PlanetDetailState(BaseState):
             glVertex2f(panel_x + 15, panel_y + 80)
             glEnd()
             glDisable(GL_BLEND)
-            UIRenderer.draw_text(panel_x + panel_w / 2 - 80, panel_y + 58,
-                                 "Press 1-4 to select", size=14, color=(0.5, 0.6, 0.7))
+            text = "Press 1-4 to select"
+            _, t_w, _ = UIRenderer.get_text_texture(text, 14, "radiospace")
+            UIRenderer.draw_text(panel_x + (panel_w - t_w) / 2, panel_y + 58,
+                                 text, size=14, color=(0.5, 0.6, 0.7), font_name="radiospace")
+
+    def _draw_quiz_start_prompt(self, panel_x, panel_y, panel_w, panel_h):
+        """Draw the prompt to start the cylindrical quiz."""
+        # Replace the large center quiz start card with a small, elegant
+        # 'START MISSION' label anchored to the right half of the screen.
+        # Compute global screen coordinates
+        w = glutGet(GLUT_WINDOW_WIDTH)
+        h = glutGet(GLUT_WINDOW_HEIGHT)
+
+        box_w = 300
+        box_h = 80
+        # position at the middle-right of the screen
+        # Center the button within the panel area
+        if panel_x is not None and panel_w is not None:
+            box_x = panel_x + (panel_w - box_w) / 2
+        else:
+            box_x = (w - box_w) / 2
+        box_y = h / 2 - box_h / 2
+
+        # Store rect for input handling
+        self.start_mission_button_rect = (box_x, box_y, box_w, box_h)
+
+        # Draw small scifi panel (chamfered and cyan border)
+        UIRenderer.setup_2d(w, h)
+
+        # Draw button background with glow
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        # Pulsing glow effect
+        pulse = 0.5 + 0.5 * math.sin(glutGet(GLUT_ELAPSED_TIME) * 0.003)
+
+        # Background
+        glColor4f(0.0, 0.2, 0.3, 0.8)
+        chamfer = 15.0
+        glBegin(GL_POLYGON)
+        glVertex2f(box_x + chamfer, box_y)
+        glVertex2f(box_x + box_w - chamfer, box_y)
+        glVertex2f(box_x + box_w, box_y + chamfer)
+        glVertex2f(box_x + box_w, box_y + box_h - chamfer)
+        glVertex2f(box_x + box_w - chamfer, box_y + box_h)
+        glVertex2f(box_x + chamfer, box_y + box_h)
+        glVertex2f(box_x, box_y + box_h - chamfer)
+        glVertex2f(box_x, box_y + chamfer)
+        glEnd()
+
+        # Glowing Border
+        glLineWidth(2.0 + pulse)
+        glColor4f(0.0, 1.0, 1.0, 0.6 + 0.4 * pulse)
+        glBegin(GL_LINE_LOOP)
+        glVertex2f(box_x + chamfer, box_y)
+        glVertex2f(box_x + box_w - chamfer, box_y)
+        glVertex2f(box_x + box_w, box_y + chamfer)
+        glVertex2f(box_x + box_w, box_y + box_h - chamfer)
+        glVertex2f(box_x + box_w - chamfer, box_y + box_h)
+        glVertex2f(box_x + chamfer, box_y + box_h)
+        glVertex2f(box_x, box_y + box_h - chamfer)
+        glVertex2f(box_x, box_y + chamfer)
+        glEnd()
+
+        glDisable(GL_BLEND)
+
+        # Draw the 'START MISSION' title inside the panel
+        title = "START MISSION "
+        _, title_w, title_h = UIRenderer.get_text_texture(title, 32)
+
+        # Center text vertically and horizontally
+        # Add a small vertical offset (+4) for better optical centering
+        text_x = box_x + (box_w - title_w) / 2
+        text_y = box_y + (box_h - title_h) / 2 + 4
+
+        UIRenderer.draw_text(text_x, text_y, title, size=32, color=(
+            0.0, 1.0, 1.0), font_name="radiospace")
+
+        UIRenderer.restore_3d()
 
     def _draw_quiz_results(self, panel_x, panel_y, panel_w, panel_h):
         """Draw the quiz results after completion."""
-        if not self.quiz_session:
+        # Handle both old quiz_session and new cylindrical quiz
+        if self.quiz_session:
+            results = self.quiz_session.get_results()
+        else:
+            # Cylindrical quiz - simple pass/fail display
+            results = {
+                'passed': self.quiz_passed,
+                'score': 5 if self.quiz_passed else 0,
+                'total': 5,
+                'percentage': 100 if self.quiz_passed else 0
+            }
+
+        if results['passed']:
             return
 
-        results = self.quiz_session.get_results()
+        # Draw Retry Button for failed mission
+        w = glutGet(GLUT_WINDOW_WIDTH)
+        h = glutGet(GLUT_WINDOW_HEIGHT)
 
-        # Center content area
-        content_y = panel_y + panel_h / 2
+        # Same size/pos as start button (centered vertically on right side)
+        box_w = 300
+        box_h = 80
 
-        # Score circle/badge
-        circle_x = panel_x + panel_w / 2
-        circle_y = content_y + 80
-        circle_r = 60
-
-        glEnable(GL_BLEND)
-
-        # Circle background
-        if results['passed']:
-            glColor4f(0.0, 0.3, 0.15, 0.8)
+        # Use panel_x if available to align with right panel area, or default to right side
+        if panel_x is not None:
+            box_x = panel_x + (panel_w - box_w) / 2
         else:
-            glColor4f(0.3, 0.1, 0.1, 0.8)
+            box_x = (w - box_w) / 2
 
-        # Draw circle segments
-        glBegin(GL_TRIANGLE_FAN)
-        glVertex2f(circle_x, circle_y)
-        import math
-        for i in range(33):
-            angle = math.radians(i * 11.25)
-            glVertex2f(circle_x + circle_r * math.cos(angle),
-                       circle_y + circle_r * math.sin(angle))
+        box_y = h / 2 - box_h / 2
+
+        self.retry_mission_button_rect = (box_x, box_y, box_w, box_h)
+
+        UIRenderer.setup_2d(w, h)
+
+        # Red style for failure
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        # Pulsing glow effect for retry
+        pulse = 0.5 + 0.5 * math.sin(glutGet(GLUT_ELAPSED_TIME) * 0.005)
+
+        # Background
+        glColor4f(0.3, 0.05, 0.05, 0.8)
+        chamfer = 15.0
+        glBegin(GL_POLYGON)
+        glVertex2f(box_x + chamfer, box_y)
+        glVertex2f(box_x + box_w - chamfer, box_y)
+        glVertex2f(box_x + box_w, box_y + chamfer)
+        glVertex2f(box_x + box_w, box_y + box_h - chamfer)
+        glVertex2f(box_x + box_w - chamfer, box_y + box_h)
+        glVertex2f(box_x + chamfer, box_y + box_h)
+        glVertex2f(box_x, box_y + box_h - chamfer)
+        glVertex2f(box_x, box_y + chamfer)
         glEnd()
 
-        # Circle border
-        if results['passed']:
-            glColor4f(0.0, 1.0, 0.5, 0.9)
-        else:
-            glColor4f(1.0, 0.3, 0.3, 0.9)
-        glLineWidth(4.0)
+        # Border
+        glLineWidth(2.0 + pulse)
+        glColor4f(1.0, 0.2, 0.2, 0.6 + 0.4 * pulse)
         glBegin(GL_LINE_LOOP)
-        for i in range(32):
-            angle = math.radians(i * 11.25)
-            glVertex2f(circle_x + circle_r * math.cos(angle),
-                       circle_y + circle_r * math.sin(angle))
+        glVertex2f(box_x + chamfer, box_y)
+        glVertex2f(box_x + box_w - chamfer, box_y)
+        glVertex2f(box_x + box_w, box_y + chamfer)
+        glVertex2f(box_x + box_w, box_y + box_h - chamfer)
+        glVertex2f(box_x + box_w - chamfer, box_y + box_h)
+        glVertex2f(box_x + chamfer, box_y + box_h)
+        glVertex2f(box_x, box_y + box_h - chamfer)
+        glVertex2f(box_x, box_y + chamfer)
         glEnd()
         glDisable(GL_BLEND)
 
-        # Score number in circle
-        score_text = f"{results['score']} of {results['total']}"
-        UIRenderer.draw_text(circle_x - 35, circle_y + 5, score_text,
-                             size=22, color=(1.0, 1.0, 1.0))
+        # Text
+        title = "RETRY MISSION"
+        _, title_w, title_h = UIRenderer.get_text_texture(title, 32)
 
-        # Percentage below
-        pct_color = (0.0, 1.0, 0.5) if results['passed'] else (1.0, 0.5, 0.5)
-        pct_text = f"{results['percentage']:.0f}%"
-        UIRenderer.draw_text(circle_x - 25, circle_y - 30, pct_text,
-                             size=18, color=pct_color)
+        # Center text vertically and horizontally
+        # Add a small vertical offset (+4) for better optical centering
+        text_x = box_x + (box_w - title_w) / 2
+        text_y = box_y + (box_h - title_h) / 2 + 4
 
-        # Result message
-        y_pos = content_y - 20
+        UIRenderer.draw_text(text_x, text_y, title, size=32, color=(
+            1.0, 0.4, 0.4), font_name="radiospace")
 
-        if results['passed']:
-            UIRenderer.draw_text(panel_x + panel_w / 2 - 100, y_pos,
-                                 "MISSION COMPLETE", size=24, color=(0.0, 1.0, 0.5))
-            y_pos -= 40
-
-            # Trophy earned box
-            glEnable(GL_BLEND)
-            glColor4f(0.15, 0.12, 0.0, 0.7)
-            box_x = panel_x + 30
-            box_w = panel_w - 60
-            glBegin(GL_QUADS)
-            glVertex2f(box_x, y_pos - 25)
-            glVertex2f(box_x + box_w, y_pos - 25)
-            glVertex2f(box_x + box_w, y_pos + 35)
-            glVertex2f(box_x, y_pos + 35)
-            glEnd()
-            glColor4f(1.0, 0.8, 0.2, 0.8)
-            glLineWidth(2.0)
-            glBegin(GL_LINE_LOOP)
-            glVertex2f(box_x, y_pos - 25)
-            glVertex2f(box_x + box_w, y_pos - 25)
-            glVertex2f(box_x + box_w, y_pos + 35)
-            glVertex2f(box_x, y_pos + 35)
-            glEnd()
-            glDisable(GL_BLEND)
-
-            trophy_type = get_trophy_for_planet(self.planet_name)
-            trophy_name = trophy_type.replace('_', ' ').title()
-            UIRenderer.draw_text(box_x + 15, y_pos + 8, "TROPHY EARNED",
-                                 size=12, color=(0.8, 0.7, 0.4))
-            UIRenderer.draw_text(box_x + 15, y_pos - 12, trophy_name,
-                                 size=18, color=(1.0, 0.9, 0.5))
-        else:
-            UIRenderer.draw_text(panel_x + panel_w / 2 - 85, y_pos,
-                                 "MISSION FAILED", size=24, color=(1.0, 0.3, 0.3))
-            y_pos -= 35
-            UIRenderer.draw_text(panel_x + panel_w / 2 - 75, y_pos,
-                                 "60% required to pass", size=14, color=(0.7, 0.5, 0.5))
-            y_pos -= 25
-            UIRenderer.draw_text(panel_x + panel_w / 2 - 55, y_pos,
-                                 "Try again later", size=14, color=(0.6, 0.6, 0.6))
-
-        # Bottom hint
-        glEnable(GL_BLEND)
-        glColor4f(0.0, 0.1, 0.15, 0.6)
-        glBegin(GL_QUADS)
-        glVertex2f(panel_x + 15, panel_y + 50)
-        glVertex2f(panel_x + panel_w - 15, panel_y + 50)
-        glVertex2f(panel_x + panel_w - 15, panel_y + 80)
-        glVertex2f(panel_x + 15, panel_y + 80)
-        glEnd()
-        glDisable(GL_BLEND)
-        UIRenderer.draw_text(panel_x + panel_w / 2 - 80, panel_y + 58,
-                             "Press SPACE to return", size=14, color=(0.5, 0.6, 0.7))
+        # "MISSION FAILED" label above
+        text = "MISSION FAILED"
+        _, t_w, _ = UIRenderer.get_text_texture(text, 18, "radiospace")
+        UIRenderer.draw_text(box_x + (box_w - t_w) / 2, box_y + box_h +
+                             15, text, size=18, color=(1.0, 0.3, 0.3), font_name="radiospace")
+        UIRenderer.restore_3d()
 
     def _draw_trophy_celebration(self, w, h):
         """Draw trophy celebration animation with actual 3D trophy."""
@@ -1043,22 +1068,10 @@ class PlanetDetailState(BaseState):
             glVertex2f(0, h)
             glEnd()
 
-            # Trophy text
-            if self.trophy_animation_time > 0.5:
-                alpha = min(1.0, (self.trophy_animation_time - 0.5) * 2)
-                trophy_type = get_trophy_for_planet(self.planet_name)
-                trophy_name = trophy_type.replace('_', ' ').title()
-
-                # Main text - positioned above the trophy
-                text1 = "TROPHY EARNED!"
-                text1_width = len(text1) * 36 * 0.55
-                UIRenderer.draw_text((w - text1_width) / 2, h / 2 + 160, text1,
-                                     size=36, color=(1.0, 0.8, 0.0))
-
-                text2 = trophy_name
-                text2_width = len(text2) * 28 * 0.55
-                UIRenderer.draw_text((w - text2_width) / 2, h / 2 + 110, text2,
-                                     size=28, color=(1.0, 1.0, 1.0))
+            # The 3D trophy model is displayed above, but we intentionally
+            # refrain from drawing large overlay text such as "TROPHY EARNED!"
+            # and the trophy name; these textual banners are suppressed by
+            # request to keep the Planet Detail UI minimal on mission pass.
 
             glDisable(GL_BLEND)
 
@@ -1093,6 +1106,7 @@ class PlanetDetailState(BaseState):
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glEnable(GL_DEPTH_TEST)
+        glDisable(GL_CULL_FACE)
         glDepthFunc(GL_LEQUAL)
         glEnable(GL_COLOR_MATERIAL)
         glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
@@ -1128,6 +1142,7 @@ class PlanetDetailState(BaseState):
         glDisable(GL_LIGHTING)
         glDisable(GL_LIGHT0)
         glDisable(GL_COLOR_MATERIAL)
+        glEnable(GL_CULL_FACE)
 
         # Restore matrices
         glMatrixMode(GL_MODELVIEW)

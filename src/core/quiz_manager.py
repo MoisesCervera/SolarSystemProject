@@ -4,6 +4,7 @@ import json
 import random
 import time
 import os
+from src.core.resource_loader import ResourceManager
 
 
 class QuizManager:
@@ -35,15 +36,13 @@ class QuizManager:
     def _load_questions(self):
         """Load all quiz questions from JSON file."""
         try:
-            quiz_path = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                "assets", "data", "quiz_questions.json"
-            )
-            with open(quiz_path, 'r') as f:
-                data = json.load(f)
+            data = ResourceManager.load_json("quiz_questions.json")
+            if data:
                 self.all_questions = data.get("questions", {})
-            print(
-                f"[QuizManager] Loaded questions for {len(self.all_questions)} planets")
+                print(
+                    f"[QuizManager] Loaded questions for {len(self.all_questions)} planets")
+            else:
+                self.all_questions = {}
         except Exception as e:
             print(f"[QuizManager] Error loading questions: {e}")
             self.all_questions = {}

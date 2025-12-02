@@ -27,16 +27,9 @@ class Ship(Renderable):
         self.position = list(position)  # [x, y, z]
         self.velocity = [0.0, 0.0, 0.0]
         self.rotation_y = 0.0  # Yaw
+        self.tilt_angle = 0.0  # Roll (banking)
+        self.pitch_angle = 0.0  # Pitch (forward tilt)
         self.speed = 0.0
-        self.max_speed = 20.0
-        self.acceleration = 30.0
-        self.friction = 0.95
-        self.turn_speed = 120.0
-
-        # Boost parameters
-        self.boost_cooldown = 0.0
-        self.boost_duration = 0.0
-        self.is_boosting = False
 
         self.input_manager = InputManager()
 
@@ -46,6 +39,43 @@ class Ship(Renderable):
 
         # Get selected ship from session
         self.selected_ship = getattr(GameContext, 'selected_ship', 'shipM')
+
+        # Default stats (Ship M / Balanced)
+        self.max_speed = 20.0
+        self.acceleration = 30.0
+        self.friction = 0.98
+        self.turn_speed = 120.0
+
+        # Boost parameters
+        self.boost_cooldown = 0.0
+        self.boost_duration = 0.0
+        self.is_boosting = False
+        self.boost_duration_max = 1.8
+        self.boost_cooldown_time = 3.5
+        self.boost_accel_multiplier = 6.0
+
+        # Apply ship-specific stats
+        if self.selected_ship == 'shipS':  # Bug Crawler - Fast & Agile
+            self.max_speed = 30.0
+            self.acceleration = 50.0
+            self.turn_speed = 160.0
+            self.boost_duration_max = 1.2  # Shorter boost
+            self.boost_cooldown_time = 2.0  # Faster cooldown
+            self.boost_accel_multiplier = 8.0  # Explosive speed
+
+        elif self.selected_ship == 'shipZ':  # Starfighter - Combat/Heavy
+            self.max_speed = 25.0
+            self.acceleration = 35.0
+            self.turn_speed = 110.0  # Slightly heavier turning
+            self.boost_duration_max = 3.0  # Long sustained boost
+            self.boost_cooldown_time = 5.0
+            self.boost_accel_multiplier = 4.0  # Less explosive, more sustained
+
+        # Global speed multiplier to easily scale ship movement across the game
+        # Increase this value to make the ship move much faster in gameplay
+        # Global speed multiplier to easily scale ship movement across the game
+        # Reduced to 1.5 to tone down the speed (half of previous 3.0 per user feedback)
+        self.speed_multiplier = 1
 
         # Cache animation state dict to avoid per-frame allocation
         self._anim_state = {"hover_y": 0.0, "balanceo_pata_z": 0.0}
@@ -64,6 +94,8 @@ class Ship(Renderable):
             glPushMatrix()
             glScalef(0.3, 0.3, 0.3)  # Scale for gameplay
             glRotatef(180, 0, 1, 0)  # Face forward
+            glRotatef(self.pitch_angle, 1, 0, 0)  # Apply Pitch (Nose Down)
+            glRotatef(self.tilt_angle, 0, 0, 1)  # Apply tilt (Bank)
             self.ufo_model.draw()
             glPopMatrix()
 
@@ -71,6 +103,11 @@ class Ship(Renderable):
             # Draw Bug Crawler
             glPushMatrix()
             glScalef(0.6, 0.6, 0.6)  # Scale for gameplay
+
+            # Apply tilt (Bank) - Inverted because shipS has internal 180 flip
+            glRotatef(-self.pitch_angle, 1, 0, 0)  # Apply Pitch (Nose Down)
+            glRotatef(-self.tilt_angle, 0, 0, 1)
+
             # Reuse cached animation state dict
             self._anim_state["hover_y"] = math.sin(
                 self.animation_time * 2) * 0.05
@@ -127,24 +164,45 @@ class Ship(Renderable):
         # Activar Boost (Espacio)
         if self.input_manager.is_key_pressed(' ') and self.boost_cooldown <= 0:
             self.is_boosting = True
-            self.boost_duration = 1.0  # Dura 1 segundo
-            self.boost_cooldown = 5.0  # 5 segundos de espera
+            self.boost_duration = self.boost_duration_max
+            self.boost_cooldown = self.boost_cooldown_time
             print("BOOST ACTIVATED!")
 
         # 1. Rotación (A/D o Flechas Izq/Der)
+        target_tilt = 0.0
         if self.input_manager.is_key_pressed('a') or self.input_manager.is_special_key_pressed(GLUT_KEY_LEFT):
             self.rotation_y += self.turn_speed * dt
+            target_tilt = -15.0  # Bank left (Reversed)
         if self.input_manager.is_key_pressed('d') or self.input_manager.is_special_key_pressed(GLUT_KEY_RIGHT):
             self.rotation_y -= self.turn_speed * dt
+            target_tilt = 15.0  # Bank right (Reversed)
+
+        # Smoothly interpolate tilt
+        # Faster return to 0 than entry
+        tilt_speed = 5.0 * dt
+        if target_tilt == 0.0:
+            tilt_speed *= 1.5
+
+        self.tilt_angle += (target_tilt - self.tilt_angle) * tilt_speed
 
         # 2. Aceleración (W/S o Flechas Arr/Abj)
-        current_accel = self.acceleration * (3.0 if self.is_boosting else 1.0)
+        # Apply global speed multiplier so the ship moves faster if required
+        current_accel = self.acceleration * \
+            (self.boost_accel_multiplier if self.is_boosting else 1.0) * \
+            self.speed_multiplier
 
         accel = 0.0
+        target_pitch = 0.0
         if self.input_manager.is_key_pressed('w') or self.input_manager.is_special_key_pressed(GLUT_KEY_UP):
             accel = current_accel
+            target_pitch = 10.0  # Lean forward
         elif self.input_manager.is_key_pressed('s') or self.input_manager.is_special_key_pressed(GLUT_KEY_DOWN):
             accel = -current_accel
+            target_pitch = -10.0  # Lean backward
+
+        # Smoothly interpolate pitch
+        pitch_speed = 5.0 * dt
+        self.pitch_angle += (target_pitch - self.pitch_angle) * pitch_speed
 
         # Calcular vector dirección (Hacia donde mira la nave)
         # En OpenGL -Z es "adelante".
@@ -158,13 +216,25 @@ class Ship(Renderable):
         self.velocity[0] += dir_x * accel * dt
         self.velocity[2] += dir_z * accel * dt
 
-        # 3. Fricción (Inercia espacial simulada)
+        # 3. Friction (space-like inertia simulated)
         self.velocity[0] *= self.friction
         self.velocity[2] *= self.friction
 
-        # 4. Actualizar posición
+        # 4. Update position
         self.position[0] += self.velocity[0] * dt
         self.position[2] += self.velocity[2] * dt
+
+        # Cap the horizontal speed to a maximum to avoid runaway velocities
+        hspeed = math.sqrt(
+            self.velocity[0] * self.velocity[0] + self.velocity[2] * self.velocity[2])
+        # Allow a slightly higher maximum speed while boosting (40% higher)
+        max_speed_allowed = self.max_speed * self.speed_multiplier * (
+            1.4 if self.is_boosting else 1.0)
+        if hspeed > max_speed_allowed and hspeed > 0:
+            # scale down velocities to cap
+            scale = max_speed_allowed / hspeed
+            self.velocity[0] *= scale
+            self.velocity[2] *= scale
 
     def draw(self):
         # Desactivar culling para la nave

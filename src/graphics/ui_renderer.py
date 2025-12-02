@@ -3,6 +3,7 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from PIL import Image, ImageDraw, ImageFont
 import os
+from src.core.resource_loader import ResourceManager
 
 
 class UIRenderer:
@@ -11,7 +12,14 @@ class UIRenderer:
     """
     _font_cache = {}
     _texture_cache = {}
-    FONT_PATH = "assets/fonts/Exo Space DEMO.ttf"
+
+    # Primary custom font used across the UI
+    FONT_PATH = ResourceManager.get_font_path("Exo Space DEMO.ttf")
+    # New alternate custom font used for answers and labels (SF Pro)
+    FONT_SFPRO_PATH = ResourceManager.get_font_path("SF-Pro.ttf")
+    # New sci-fi fonts
+    FONT_SPACE_ARMOR_PATH = ResourceManager.get_font_path("space_armor.otf")
+    FONT_RADIOSPACE_PATH = ResourceManager.get_font_path("radiospace.ttf")
 
     @classmethod
     def get_font(cls, size, font_name=None):
@@ -30,8 +38,39 @@ class UIRenderer:
                         except IOError:
                             cls._font_cache[key] = ImageFont.load_default()
                 else:
-                    cls._font_cache[key] = ImageFont.truetype(
-                        cls.FONT_PATH, size)
+                    # Support an alternate custom font via font_name alias
+                    if font_name:
+                        fn = font_name.lower()
+                        # Map alias to SF-Pro first
+                        if fn in ("sfpro", "sf-pro", "sf pro"):
+                            try:
+                                cls._font_cache[key] = ImageFont.truetype(
+                                    cls.FONT_SFPRO_PATH, size)
+                            except IOError:
+                                cls._font_cache[key] = ImageFont.truetype(
+                                    cls.FONT_PATH, size)
+                        # Map alias to Space Armor
+                        elif fn in ("space_armor", "space armor", "spacearmor"):
+                            try:
+                                cls._font_cache[key] = ImageFont.truetype(
+                                    cls.FONT_SPACE_ARMOR_PATH, size)
+                            except IOError:
+                                cls._font_cache[key] = ImageFont.truetype(
+                                    cls.FONT_PATH, size)
+                        # Map alias to Radiospace
+                        elif fn in ("radiospace", "radio space"):
+                            try:
+                                cls._font_cache[key] = ImageFont.truetype(
+                                    cls.FONT_RADIOSPACE_PATH, size)
+                            except IOError:
+                                cls._font_cache[key] = ImageFont.truetype(
+                                    cls.FONT_PATH, size)
+                        else:
+                            cls._font_cache[key] = ImageFont.truetype(
+                                cls.FONT_PATH, size)
+                    else:
+                        cls._font_cache[key] = ImageFont.truetype(
+                            cls.FONT_PATH, size)
             except IOError:
                 print(
                     f"Warning: Could not load font {cls.FONT_PATH}. Using default.")
@@ -39,24 +78,35 @@ class UIRenderer:
         return cls._font_cache[key]
 
     @classmethod
-    def get_text_texture(cls, text, size, font_name=None):
-        key = (text, size, font_name)
+    def get_text_texture(cls, text, size, font_name=None, bold=False, stroke_width=0, bold_strength=1, scale=1):
+        key = (text, size, font_name, bool(bold), int(
+            stroke_width), int(bold_strength), int(scale))
         if key in cls._texture_cache:
             return cls._texture_cache[key]
 
         font = cls.get_font(size, font_name)
+        if scale != 1:
+            # Create a scaled font instance for measurements and drawing
+            scaled_font = cls.get_font(int(size * scale), font_name)
+        else:
+            scaled_font = font
         # Obtener tamaño del texto
         top_offset = 0
         left_offset = 0
         try:
-            left, top, right, bottom = font.getbbox(text)
+            left, top, right, bottom = scaled_font.getbbox(text)
             width = right - left
             height = bottom - top
             top_offset = -top  # Account for ascender offset
             left_offset = -left
             # Ajuste de padding
-            width += 8
-            height += 8
+            # Expand texture to account for stroke/bold offsets
+            stroke_pad = max(0, stroke_width)
+            if bold and stroke_pad == 0:
+                # Default bold padding if no explicit stroke given
+                stroke_pad = 1
+            width += 8 + stroke_pad * 2
+            height += 8 + stroke_pad * 2
         except AttributeError:
             width, height = font.getsize(text)
             width += 8
@@ -65,13 +115,52 @@ class UIRenderer:
         if width <= 0 or height <= 0:
             return None, 0, 0
 
-        # Crear imagen RGBA
-        image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        # Crear imagen RGBA (render at scale for HiDPI crispness)
+        image = Image.new("RGBA", (int(width), int(height)), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
         # Dibujar texto en blanco (se teñirá con glColor)
         # Use top_offset to properly position text and avoid cutoff
-        draw.text((4 + left_offset, 4 + top_offset), text,
-                  font=font, fill=(255, 255, 255, 255))
+        # scale drawing positions if scale != 1
+        x_pos = int(4 + left_offset + stroke_pad)
+        y_pos = int(4 + top_offset + stroke_pad)
+        # scale font drawing size
+        # If font size needs rescaling, load a scaled font instead
+        if scale != 1:
+            # Create a scaled font instance for crispness
+            try:
+                scaled_font_size = int(size * scale)
+                font = ImageFont.truetype(font.path, scaled_font_size) if hasattr(
+                    font, 'path') else font
+            except Exception:
+                # Some PIL fonts might not expose .path; fallback to original font
+                pass
+        fill = (255, 255, 255, 255)
+
+        # Try to use stroke_width drawing if provided, else emulate bold by drawing offsets
+        if stroke_width > 0:
+            # Pillow supports stroke_width and stroke_fill in newer versions; try it
+            try:
+                draw.text((x_pos, y_pos), text, font=scaled_font,
+                          fill=fill, stroke_width=int(stroke_width * scale), stroke_fill=fill)
+            except TypeError:
+                # Fallback: draw multiple strokes around the text to mimic thickness
+                s = int(max(1, stroke_width * scale))
+                for dx in range(-s, s + 1):
+                    for dy in range(-s, s + 1):
+                        draw.text((x_pos + dx, y_pos + dy), text,
+                                  font=scaled_font, fill=fill)
+        elif bold:
+            # Emulate bold by drawing multiple slightly offset duplicates
+            # bold_strength controls the offset magnitude and thus thickness
+            bs = max(1, int(bold_strength))
+            # Scale the offset by scale to keep visual weight consistent on HiDPI
+            sbs = max(1, int(bs * scale))
+            offsets = [(0, 0), (-sbs, 0), (sbs, 0), (0, -sbs), (0, sbs)]
+            for dx, dy in offsets:
+                draw.text((x_pos + dx, y_pos + dy), text,
+                          font=scaled_font, fill=fill)
+        else:
+            draw.text((x_pos, y_pos), text, font=font, fill=fill)
 
         # No volteamos la imagen. Enviamos los bytes tal cual (Top-Down).
         # image = image.transpose(Image.FLIP_TOP_BOTTOM)
@@ -83,11 +172,23 @@ class UIRenderer:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
         img_data = image.tobytes("raw", "RGBA", 0, -1)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+        tex_w, tex_h = image.size
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h,
                      0, GL_RGBA, GL_UNSIGNED_BYTE, img_data)
+        # Generate mipmaps for better downscaled quality
+        try:
+            glGenerateMipmap(GL_TEXTURE_2D)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                            GL_LINEAR_MIPMAP_LINEAR)
+        except Exception:
+            # GLenum not supported? ignore
+            pass
 
-        cls._texture_cache[key] = (texture_id, width, height)
-        return texture_id, width, height
+        # Store rendered texture size as displayed width (tex_w / scale)
+        disp_w = int(round(tex_w / scale))
+        disp_h = int(round(tex_h / scale))
+        cls._texture_cache[key] = (texture_id, disp_w, disp_h)
+        return texture_id, disp_w, disp_h
 
     @staticmethod
     def setup_2d(width, height):
@@ -162,7 +263,7 @@ class UIRenderer:
         glDisable(GL_BLEND)
 
     @staticmethod
-    def draw_text(x, y, text, size=20, color=(1.0, 1.0, 1.0), font_name=None):
+    def draw_text(x, y, text, size=20, color=(1.0, 1.0, 1.0), font_name=None, bold=False, stroke_width=0, bold_strength=1, scale=1):
         """
         Renderiza texto usando una textura generada con PIL y TrueType Font.
         """
@@ -170,7 +271,7 @@ class UIRenderer:
         text = text.replace("[", "<").replace("]", ">")
 
         texture_id, width, height = UIRenderer.get_text_texture(
-            text, size, font_name)
+            text, size, font_name, bold=bold, stroke_width=stroke_width, bold_strength=bold_strength, scale=scale)
         if not texture_id:
             return
 
@@ -179,7 +280,10 @@ class UIRenderer:
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glBindTexture(GL_TEXTURE_2D, texture_id)
 
-        glColor3f(*color)
+        if len(color) == 4:
+            glColor4f(*color)
+        else:
+            glColor3f(*color)
 
         glBegin(GL_QUADS)
         # Coordenadas de textura estándar (0,0 abajo-izq)

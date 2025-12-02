@@ -1,7 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from src.entities.base.renderable import Renderable
-from src.graphics.texture_loader import TextureLoader
+from src.core.resource_loader import ResourceManager
 from src.graphics.ui_renderer import UIRenderer
 import math
 import random
@@ -25,7 +25,11 @@ class Planet(Renderable):
         self.rotation_angle = 0.0
 
         if self.texture_path:
-            self.texture_id = TextureLoader.load_texture(self.texture_path)
+            # Strip "assets/textures/" if present to work with ResourceManager
+            if self.texture_path.startswith("assets/textures/"):
+                self.texture_path = self.texture_path.replace(
+                    "assets/textures/", "")
+            self.texture_id = ResourceManager.load_texture(self.texture_path)
 
         # Inicio aleatorio de la órbita para caos visual
         self.orbit_angle = random.uniform(0.0, 360.0)
@@ -176,15 +180,15 @@ class Planet(Renderable):
         glPopMatrix()
 
     def _draw_label(self):
-        # Obtener textura del nombre
-        texture_id, width, height = UIRenderer.get_text_texture(self.name, 32)
+        # Obtener textura del nombre con fuente sci-fi
+        texture_id, width, height = UIRenderer.get_text_texture(
+            self.name.upper(), 32, font_name="radiospace")
         if not texture_id:
             return
 
         glPushMatrix()
 
         # Get the current modelview matrix BEFORE applying any label offset
-        # This gives us the planet center position in camera space
         modelview = glGetFloatv(GL_MODELVIEW_MATRIX)
 
         # Extract the planet's position in camera/view space
@@ -193,42 +197,58 @@ class Planet(Renderable):
         planet_z = modelview[3][2]
 
         # Billboard: Reset to identity and position label above planet
-        # The offset is applied in world Y direction (always up), not in tilted coordinates
-        offset = self.radius + 1.0
+        offset = self.radius + 2.0  # Higher offset for line connector
 
         glLoadIdentity()
-        # Position at planet center, then offset upward in screen space
         glTranslatef(planet_x, planet_y + offset, planet_z)
 
-        # Dibujar Quad
-        # Desactivar iluminación para que el texto sea siempre legible
+        # Desactivar iluminación
         glDisable(GL_LIGHTING)
-        glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, texture_id)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         # Escalar tamaño pixel a mundo
-        scale = 0.02
+        scale = 0.015
         w = width * scale
         h = height * scale
 
-        glColor3f(1.0, 1.0, 1.0)
+        # --- SCI-FI DECORATION ---
+        # Draw a vertical line connecting planet to label
+        glLineWidth(1.0)
+        glColor4f(0.0, 0.8, 1.0, 0.6)
+        glBegin(GL_LINES)
+        glVertex3f(0, -1.5, 0)  # From closer to planet
+        glVertex3f(0, 0, 0)     # To label bottom
+        glEnd()
+
+        # Draw a horizontal bracket/underline
+        glLineWidth(2.0)
+        glColor4f(0.0, 1.0, 1.0, 0.8)
+        glBegin(GL_LINES)
+        glVertex3f(-w/2 - 0.2, 0, 0)
+        glVertex3f(w/2 + 0.2, 0, 0)
+        # Small vertical ticks at ends
+        glVertex3f(-w/2 - 0.2, 0, 0)
+        glVertex3f(-w/2 - 0.2, 0.2, 0)
+        glVertex3f(w/2 + 0.2, 0, 0)
+        glVertex3f(w/2 + 0.2, 0.2, 0)
+        glEnd()
+
+        # --- TEXT DRAWING ---
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, texture_id)
+
+        glColor4f(0.8, 0.9, 1.0, 1.0)  # Cyan-ish white
 
         glBegin(GL_QUADS)
-        # Mapeo de coordenadas de textura
-        # Si el texto sale invertido, invertimos las coordenadas T.
-        # T=0 (Top Image) -> Y=0 (Bottom Quad)
-        # T=1 (Bottom Image) -> Y=h (Top Quad)
-
         glTexCoord2f(0, 0)
-        glVertex3f(-w/2, 0, 0)
+        glVertex3f(-w/2, 0.2, 0)  # Slightly above line
         glTexCoord2f(1, 0)
-        glVertex3f(w/2, 0, 0)
+        glVertex3f(w/2, 0.2, 0)
         glTexCoord2f(1, 1)
-        glVertex3f(w/2, h, 0)
+        glVertex3f(w/2, 0.2 + h, 0)
         glTexCoord2f(0, 1)
-        glVertex3f(-w/2, h, 0)
+        glVertex3f(-w/2, 0.2 + h, 0)
         glEnd()
 
         glDisable(GL_BLEND)

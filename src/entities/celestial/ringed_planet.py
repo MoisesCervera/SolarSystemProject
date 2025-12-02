@@ -1,7 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from src.entities.celestial.planet import Planet
-from src.graphics.texture_loader import TextureLoader
+from src.core.resource_loader import ResourceManager
 
 
 class RingedPlanet(Planet):
@@ -15,7 +15,10 @@ class RingedPlanet(Planet):
         self.ring_texture_id = None
 
         if self.ring_texture_path:
-            self.ring_texture_id = TextureLoader.load_texture(
+            if self.ring_texture_path.startswith("assets/textures/"):
+                self.ring_texture_path = self.ring_texture_path.replace(
+                    "assets/textures/", "")
+            self.ring_texture_id = ResourceManager.load_texture(
                 self.ring_texture_path)
 
         # Inicializa el planeta base

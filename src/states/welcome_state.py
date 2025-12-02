@@ -4,9 +4,10 @@ from OpenGL.GLUT import *
 from src.states.base_state import BaseState
 from src.graphics.ui_renderer import UIRenderer
 from src.graphics.skybox import Skybox
-from src.graphics.texture_loader import TextureLoader
+from src.core.resource_loader import ResourceManager
 from src.graphics.draw_utils import draw_sphere, draw_torus, set_material_color
 import math
+import random
 
 
 class WelcomeState(BaseState):
@@ -55,12 +56,28 @@ class WelcomeState(BaseState):
         # Background stars for the solar system view
         self.bg_stars = []
 
+        # Sci-fi UI variables
+        self.scan_line_y = 0.0
+        self.hex_timer = 0.0
+        self.hex_text = "0x00 0x00"
+        # Pre-generate hex codes to prevent texture cache explosion
+        self.hex_codes = [
+            f"0x{random.randint(0, 255):02X} 0x{random.randint(0, 255):02X}" for _ in range(32)]
+
+        # Glitch effect variables
+        self.glitch_timer = 0.0
+        self.glitch_duration = 0.0
+        self.glitch_offset_x = 0.0
+        self.glitch_offset_y = 0.0
+
+        # Store button rectangles for mouse interaction
+        self.button_rects = {}
+
     def enter(self):
         print("[WelcomeState] Entrando al estado de bienvenida")
 
         # Cargar skybox (no longer used but kept for compatibility)
-        bg_texture = TextureLoader.load_texture(
-            "assets/textures/background/stars.jpg")
+        bg_texture = ResourceManager.load_texture("background/stars.jpg")
         self.skybox = Skybox(size=100.0, texture_id=bg_texture)
 
         # Generate background stars for the solar system view - DENSE star field
@@ -187,6 +204,34 @@ class WelcomeState(BaseState):
             if p['y'] > 50:
                 p['y'] = -50
 
+        # Update sci-fi UI elements
+        self.scan_line_y += dt * 150
+        h = glutGet(GLUT_WINDOW_HEIGHT)
+        if self.scan_line_y > h:
+            self.scan_line_y = 0
+
+        self.hex_timer += dt
+        if self.hex_timer > 0.08:
+            self.hex_timer = 0
+            self.hex_text = random.choice(self.hex_codes)
+
+        # Glitch logic
+        if self.glitch_duration > 0:
+            self.glitch_duration -= dt
+            if self.glitch_duration <= 0:
+                self.glitch_offset_x = 0
+                self.glitch_offset_y = 0
+        else:
+            self.glitch_timer -= dt
+            if self.glitch_timer <= 0:
+                # Trigger glitch
+                self.glitch_duration = random.uniform(0.05, 0.2)
+                self.glitch_timer = random.uniform(2.0, 5.0)
+
+        if self.glitch_duration > 0:
+            self.glitch_offset_x = random.uniform(-5, 5)
+            self.glitch_offset_y = random.uniform(-2, 2)
+
     def handle_input(self, event, x, y):
         if event[0] == 'KEY_DOWN':
             key = event[1]
@@ -202,6 +247,31 @@ class WelcomeState(BaseState):
             # Also allow Enter/Space for ship select
             elif key == b'\r' or key == b' ':
                 self._go_to_ship_select()
+        elif event[0] == 'MOUSE_BUTTON':
+            button, state = event[1], event[2]
+            if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+                # Convert Y coordinate (GLUT is top-left, OpenGL is bottom-left)
+                h = glutGet(GLUT_WINDOW_HEIGHT)
+                gl_y = h - y
+
+                # Check buttons
+                if 'start' in self.button_rects:
+                    bx, by, bw, bh = self.button_rects['start']
+                    if bx <= x <= bx + bw and by <= gl_y <= by + bh:
+                        self._go_to_ship_select()
+                        return
+
+                if 'orbital' in self.button_rects:
+                    bx, by, bw, bh = self.button_rects['orbital']
+                    if bx <= x <= bx + bw and by <= gl_y <= by + bh:
+                        self._go_to_orbital_view()
+                        return
+
+                if 'quit' in self.button_rects:
+                    bx, by, bw, bh = self.button_rects['quit']
+                    if bx <= x <= bx + bw and by <= gl_y <= by + bh:
+                        self._quit_game()
+                        return
 
     def _go_to_ship_select(self):
         from src.states.ship_select_state import ShipSelectState
@@ -252,19 +322,118 @@ class WelcomeState(BaseState):
         # Setup 2D for UI (draw on top)
         UIRenderer.setup_2d(w, h)
 
-        # Draw a subtle dark overlay to make text more readable
-        self._draw_overlay(w, h)
+        try:
+            # Draw a subtle dark overlay to make text more readable
+            self._draw_overlay(w, h)
 
-        # Draw title
-        self._draw_title(w, h)
+            # Draw title
+            self._draw_title(w, h)
 
-        # Draw start button
-        self._draw_start_button(w, h)
+            # Draw start button
+            self._draw_start_button(w, h)
 
-        # Draw credits/info
-        self._draw_info(w, h)
+            # Draw credits/info
+            self._draw_info(w, h)
 
-        UIRenderer.restore_3d()
+            # Draw extra sci-fi details
+            self._draw_sci_fi_details(w, h)
+        finally:
+            UIRenderer.restore_3d()
+
+    def _draw_sci_fi_details(self, w, h):
+        """Draw extra sci-fi UI elements."""
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glDisable(GL_TEXTURE_2D)
+
+        # 1. Corner Brackets
+        glColor4f(0.0, 0.8, 1.0, 0.5)
+        glLineWidth(2.0)
+        gap = 20
+        length = 100
+        corner_cut = 15
+
+        # Top Left
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(gap, h - gap - length)
+        glVertex2f(gap, h - gap - corner_cut)
+        glVertex2f(gap + corner_cut, h - gap)
+        glVertex2f(gap + length, h - gap)
+        glEnd()
+
+        # Top Right
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(w - gap - length, h - gap)
+        glVertex2f(w - gap - corner_cut, h - gap)
+        glVertex2f(w - gap, h - gap - corner_cut)
+        glVertex2f(w - gap, h - gap - length)
+        glEnd()
+
+        # Bottom Left
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(gap, gap + length)
+        glVertex2f(gap, gap + corner_cut)
+        glVertex2f(gap + corner_cut, gap)
+        glVertex2f(gap + length, gap)
+        glEnd()
+
+        # Bottom Right
+        glBegin(GL_LINE_STRIP)
+        glVertex2f(w - gap - length, gap)
+        glVertex2f(w - gap - corner_cut, gap)
+        glVertex2f(w - gap, gap + corner_cut)
+        glVertex2f(w - gap, gap + length)
+        glEnd()
+
+        # 2. Scanning Line
+        glColor4f(0.0, 1.0, 1.0, 0.15)
+        glLineWidth(1.0)
+        glBegin(GL_LINES)
+        glVertex2f(0, self.scan_line_y)
+        glVertex2f(w, self.scan_line_y)
+        glEnd()
+
+        # 3. Rotating Circles around Title
+        # Title is at h * 0.75, center x is w/2
+        center_x = w / 2
+        center_y = h * 0.75 + 40  # Adjust for title height
+
+        glLineWidth(1.5)
+        for i in range(3):
+            radius = 350 + i * 25
+            speed = (i + 1) * 0.15 * (1 if i % 2 == 0 else -1)
+            angle_offset = self.animation_time * speed
+
+            glColor4f(0.0, 0.6, 0.8, 0.15)
+            glBegin(GL_LINE_STRIP)
+            segments = 128
+            for j in range(segments + 1):
+                theta = (j / segments) * 2 * math.pi + angle_offset
+                # Create gaps
+                if math.sin(theta * 4) > 0.7:
+                    continue
+                x = center_x + radius * math.cos(theta)
+                # Flattened circle (ellipse)
+                y = center_y + radius * math.sin(theta) * 0.3
+                glVertex2f(x, y)
+            glEnd()
+
+        # 4. Data Blocks
+        from src.graphics.ui_renderer import UIRenderer
+
+        # Top Left Data
+        UIRenderer.draw_text(gap + 15, h - gap - 25, "SYS.STATUS: ONLINE",
+                             size=12, color=(0.0, 0.8, 1.0), font_name="radiospace")
+        UIRenderer.draw_text(
+            gap + 15, h - gap - 40, f"MEM: {self.hex_text}", size=12, color=(0.0, 0.6, 0.8), font_name="radiospace")
+
+        # Top Right Data
+        UIRenderer.draw_text(w - gap - 160, h - gap - 25, "NET.LINK: SECURE",
+                             size=12, color=(0.0, 0.8, 1.0), font_name="radiospace")
+        UIRenderer.draw_text(w - gap - 160, h - gap - 40,
+                             f"T: {self.animation_time:.2f}", size=12, color=(0.0, 0.6, 0.8), font_name="radiospace")
+
+        glDisable(GL_BLEND)
 
     def _draw_solar_system(self):
         """Draw the solar system from a top-down view."""
@@ -452,15 +621,19 @@ class WelcomeState(BaseState):
         glDisable(GL_BLEND)
 
     def _draw_title(self, w, h):
-        # Main title with pulsing effect - LARGER
+        # Main title with pulsing effect
         title = "SOLAR EXPLORER"
-        title_size = 120  # Much bigger
+        title_size = 80  # Reduced size
 
-        # Calculate centered position
-        char_width = title_size * 0.6
-        title_width = len(title) * char_width
-        title_x = (w - title_width) / 2
+        # Calculate centered position dynamically
+        _, title_w, _ = UIRenderer.get_text_texture(
+            title, title_size, font_name="space_armor")
+        title_x = (w - title_w) / 2
         title_y = h * 0.75  # Position in upper portion of screen
+
+        # Apply glitch offset
+        gx = self.glitch_offset_x
+        gy = self.glitch_offset_y
 
         # Glow effect (multiple layers)
         glow_intensity = 0.3 + self.title_pulse * 0.2
@@ -469,25 +642,36 @@ class WelcomeState(BaseState):
         for i in range(3):
             offset = (3 - i) * 3
             alpha = glow_intensity / (i + 1)
-            UIRenderer.draw_text(title_x - offset, title_y - offset, title,
-                                 size=title_size, color=(0.0, alpha, alpha))
+            UIRenderer.draw_text(title_x - offset + gx, title_y - offset + gy, title,
+                                 size=title_size, color=(0.0, alpha, alpha), font_name="space_armor")
+
+        # Glitch chromatic aberration
+        if self.glitch_duration > 0:
+            UIRenderer.draw_text(title_x + gx - 4, title_y + gy,
+                                 title, size=title_size, color=(1.0, 0.0, 0.0, 0.7), font_name="space_armor")
+            UIRenderer.draw_text(title_x + gx + 4, title_y + gy,
+                                 title, size=title_size, color=(0.0, 0.0, 1.0, 0.7), font_name="space_armor")
 
         # Main title
         cyan_pulse = 0.7 + self.title_pulse * 0.3
-        UIRenderer.draw_text(title_x, title_y, title, size=title_size,
-                             color=(0.0, cyan_pulse, cyan_pulse))
+        UIRenderer.draw_text(title_x + gx, title_y + gy, title, size=title_size,
+                             color=(0.0, cyan_pulse, cyan_pulse), font_name="space_armor")
 
         # Subtitle - LARGER
         subtitle = "A JOURNEY THROUGH THE COSMOS"
         sub_size = 32  # Much bigger (was 20)
-        sub_width = len(subtitle) * sub_size * 0.55
-        sub_x = (w - sub_width) / 2
+
+        # Calculate centered position dynamically
+        _, sub_w, _ = UIRenderer.get_text_texture(
+            subtitle, sub_size, font_name="radiospace")
+        sub_x = (w - sub_w) / 2
+
         sub_y = title_y - 80  # More space below title
         # Subtle glow for subtitle
         UIRenderer.draw_text(sub_x + 2, sub_y - 2, subtitle, size=sub_size,
-                             color=(0.0, 0.3, 0.3))
+                             color=(0.0, 0.3, 0.3), font_name="radiospace")
         UIRenderer.draw_text(sub_x, sub_y, subtitle, size=sub_size,
-                             color=(0.5, 0.7, 0.8))
+                             color=(0.5, 0.7, 0.8), font_name="radiospace")
 
     def _draw_start_button(self, w, h):
         # Main start button dimensions
@@ -534,19 +718,23 @@ class WelcomeState(BaseState):
         glDisable(GL_BLEND)
 
         # Button text - USE CUSTOM FONT with glow
-        text = "PRESS S TO START"
-        text_size = 26
-        text_width = len(text) * text_size * 0.55
-        text_x = btn_x + (btn_width - text_width) / 2
-        text_y = btn_y + (btn_height - text_size) / 2 - 2
+        text = "START"
+        text_size = 36
+
+        # Calculate centered position dynamically
+        _, text_w, text_h = UIRenderer.get_text_texture(
+            text, text_size, font_name="radiospace")
+        text_x = btn_x + (btn_width - text_w) / 2
+
+        text_y = btn_y + (btn_height - text_h) / 2
 
         # Glow effect
         glow_color = (0.0, pulse * 0.5, pulse * 0.5)
         UIRenderer.draw_text(text_x + 2, text_y - 2, text, size=text_size,
-                             color=glow_color)
+                             color=glow_color, font_name="radiospace")
         # Main text
         UIRenderer.draw_text(text_x, text_y, text, size=text_size,
-                             color=(0.0, 1.0, 1.0))
+                             color=(0.0, 1.0, 1.0), font_name="radiospace")
 
         # ---- ORBITAL VIEW BUTTON ----
         orbital_btn_y = btn_y - 80  # Below the start button
@@ -594,15 +782,19 @@ class WelcomeState(BaseState):
         glDisable(GL_BLEND)
 
         # Orbital button text
-        orbital_text = "O - ORBITAL VIEW"
-        orbital_text_size = 20
-        orbital_text_width = len(orbital_text) * orbital_text_size * 0.55
+        orbital_text = "ORBITAL VIEW"
+        orbital_text_size = 28
+
+        # Calculate centered position dynamically
+        _, orbital_text_w, orbital_text_h = UIRenderer.get_text_texture(
+            orbital_text, orbital_text_size, font_name="radiospace")
         orbital_text_x = orbital_btn_x + \
-            (orbital_btn_width - orbital_text_width) / 2
+            (orbital_btn_width - orbital_text_w) / 2
+
         orbital_text_y = orbital_btn_y + \
-            (orbital_btn_height - orbital_text_size) / 2 - 2
+            (orbital_btn_height - orbital_text_h) / 2
         UIRenderer.draw_text(orbital_text_x, orbital_text_y, orbital_text, size=orbital_text_size,
-                             color=(1.0, 0.7, 0.2))
+                             color=(1.0, 0.7, 0.2), font_name="radiospace")
 
         # ---- QUIT BUTTON ----
         quit_btn_y = orbital_btn_y - 70  # Below orbital button
@@ -646,30 +838,50 @@ class WelcomeState(BaseState):
         glDisable(GL_BLEND)
 
         # Quit button text
-        quit_text = "Q - QUIT"
-        quit_text_size = 18
-        quit_text_width = len(quit_text) * quit_text_size * 0.55
-        quit_text_x = quit_btn_x + (quit_btn_width - quit_text_width) / 2
-        quit_text_y = quit_btn_y + (quit_btn_height - quit_text_size) / 2 - 2
+        quit_text = "QUIT"
+        quit_text_size = 22
+
+        # Calculate centered position dynamically
+        _, quit_text_w, quit_text_h = UIRenderer.get_text_texture(
+            quit_text, quit_text_size, font_name="radiospace")
+        quit_text_x = quit_btn_x + (quit_btn_width - quit_text_w) / 2
+
+        quit_text_y = quit_btn_y + (quit_btn_height - quit_text_h) / 2
         UIRenderer.draw_text(quit_text_x, quit_text_y, quit_text, size=quit_text_size,
-                             color=(0.8, 0.3, 0.3))
+                             color=(0.8, 0.3, 0.3), font_name="radiospace")
+
+        # Store rects for click detection
+        self.button_rects['start'] = (btn_x, btn_y, btn_width, btn_height)
+        self.button_rects['orbital'] = (
+            orbital_btn_x, orbital_btn_y, orbital_btn_width, orbital_btn_height)
+        self.button_rects['quit'] = (
+            quit_btn_x, quit_btn_y, quit_btn_width, quit_btn_height)
 
     def _draw_info(self, w, h):
         # Bottom info - USE CUSTOM FONT
         info = "USE ARROW KEYS TO NAVIGATE - ENTER TO SELECT"
         info_size = 16
-        info_width = len(info) * info_size * 0.5
-        info_x = (w - info_width) / 2
+
+        # Calculate centered position dynamically
+        _, info_w, _ = UIRenderer.get_text_texture(
+            info, info_size, font_name="radiospace")
+        info_x = (w - info_w) / 2
+
         info_y = 35
 
         # Subtle pulsing
         alpha_pulse = 0.4 + 0.1 * math.sin(self.animation_time * 1.5)
         UIRenderer.draw_text(info_x, info_y, info, size=info_size,
-                             color=(alpha_pulse, alpha_pulse, alpha_pulse + 0.1))
+                             color=(alpha_pulse, alpha_pulse, alpha_pulse + 0.1), font_name="radiospace")
 
         # Version/credit at very bottom
         credit = "SOLAR SYSTEM PROJECT v1.0"
         credit_size = 12
-        credit_width = len(credit) * credit_size * 0.5
-        UIRenderer.draw_text((w - credit_width) / 2, 12, credit, size=credit_size,
-                             color=(0.25, 0.25, 0.3))
+
+        # Calculate centered position dynamically
+        _, credit_w, _ = UIRenderer.get_text_texture(
+            credit, credit_size, font_name="radiospace")
+        credit_x = (w - credit_w) / 2
+
+        UIRenderer.draw_text(credit_x, 12, credit, size=credit_size,
+                             color=(0.25, 0.25, 0.3), font_name="radiospace")

@@ -141,24 +141,25 @@ class WindowManager:
         if key == b'\x1b':  # ESC to open pause menu
             # Check if we're already in pause state or welcome state
             current_state = self.state_machine.get_current_state()
-            current_type = type(current_state).__name__ if current_state else ""
-            
+            current_type = type(
+                current_state).__name__ if current_state else ""
+
             # If in pause state, let it handle ESC (to resume)
             if current_type == "PauseState":
                 self.state_machine.handle_input(('KEY_DOWN', key), x, y)
                 return
-            
+
             # Don't pause on welcome screen - it handles its own navigation
             if current_type == "WelcomeState":
                 return
-            
+
             # Don't pause when player is dead (showing restart menu)
             if current_type == "GameplayState":
                 if hasattr(current_state, 'is_dead') and current_state.is_dead:
                     return
                 if hasattr(current_state, 'asteroid_impact_pending') and current_state.asteroid_impact_pending:
                     return
-            
+
             # Push pause state on top of current state
             pause_state = PauseState()
             pause_state.state_machine = self.state_machine

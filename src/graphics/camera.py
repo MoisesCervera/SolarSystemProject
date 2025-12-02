@@ -49,7 +49,7 @@ class Camera:
             look_ahead_x = target_x + (-math.sin(rad) * look_ahead_dist)
             look_ahead_z = target_z + (-math.cos(rad) * look_ahead_dist)
             look_ahead_y = target_y + 0.5  # Just slightly above ship
-            
+
             self.target = [look_ahead_x, look_ahead_y, look_ahead_z]
 
     def apply(self):
