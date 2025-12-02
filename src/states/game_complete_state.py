@@ -123,10 +123,12 @@ class GameCompleteState(BaseState):
                     from src.states.welcome_state import WelcomeState
                     # Reset mission manager for new game
                     self.mission_manager.reset()
-                    # Clear states and go to welcome
-                    while self.state_machine.states:
-                        self.state_machine.pop()
-                    self.state_machine.push(WelcomeState())
+                    # Clear states without transition first
+                    while len(self.state_machine.states) > 1:
+                        self.state_machine.pop_immediate()
+                    # Change to welcome state with transition
+                    self.state_machine.change(
+                        WelcomeState(), use_transition=True, duration=0.6)
 
     def draw(self):
         glClearColor(0.0, 0.0, 0.05, 1.0)

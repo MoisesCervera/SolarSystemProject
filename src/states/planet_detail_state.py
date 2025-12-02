@@ -12,6 +12,7 @@ from src.core.mission_manager import MissionManager, get_trophy_for_planet
 from src.core.quiz_manager import QuizManager
 from src.entities.trophies.trophy_base import TrophyRenderer
 from src.core.cylindrical_quiz import CylindricalQuizState
+from src.core.transition_manager import get_transition_manager
 import math
 
 
@@ -169,14 +170,16 @@ class PlanetDetailState(BaseState):
                     "[PlanetDetailState] ALL MISSIONS COMPLETE! Triggering victory!")
 
     def _launch_cylindrical_quiz(self):
-        """Launch the cylindrical quiz state."""
+        """Launch the cylindrical quiz state with a fade transition."""
         if hasattr(self, 'state_machine') and self.state_machine:
             quiz_state = CylindricalQuizState(
                 self.planet_name,
                 self.quiz_manager,
                 on_complete_callback=self._on_cylindrical_quiz_complete
             )
-            self.state_machine.push(quiz_state)
+            # Use transition for entering the quiz (duration=0.6 for smooth effect)
+            self.state_machine.push(
+                quiz_state, use_transition=True, duration=0.6)
             self.waiting_for_quiz_start = False
 
     def exit(self):
@@ -248,12 +251,14 @@ class PlanetDetailState(BaseState):
         if self.show_trophy_animation:
             self.trophy_animation_time += dt
             if self.trophy_animation_time > 4.0:
-                # Check if game is complete
-                if self.mission_manager.is_game_complete():
+                # Check if game is complete (only trigger once)
+                if self.mission_manager.is_game_complete() and not getattr(self, '_victory_triggered', False):
+                    self._victory_triggered = True
                     # Transition to victory state
                     if hasattr(self, 'state_machine'):
                         from src.states.game_complete_state import GameCompleteState
-                        self.state_machine.change(GameCompleteState())
+                        self.state_machine.change(
+                            GameCompleteState(), use_transition=True, duration=0.8)
 
     def handle_input(self, event, x, y):
         # Handle quiz answer selection (1-4 keys)
@@ -264,7 +269,8 @@ class PlanetDetailState(BaseState):
             if key == b'\x1b':  # ESC key
                 if hasattr(self, 'state_machine'):
                     from src.states.pause_state import PauseState
-                    self.state_machine.push(PauseState())
+                    self.state_machine.push_immediate(
+                        PauseState())  # Pause is instant
                 return
 
             # Handle cylindrical quiz launch
@@ -302,9 +308,9 @@ class PlanetDetailState(BaseState):
                 if self.quiz_active and not self.quiz_completed:
                     return  # Block exit during active quiz
 
-                # Pop this state to return to gameplay
+                # Pop this state to return to gameplay with fade
                 if hasattr(self, 'state_machine'):
-                    self.state_machine.pop()
+                    self.state_machine.pop(use_transition=True, duration=0.4)
 
         # Manejo del mouse para rotación
         elif event[0] == 'MOUSE_BUTTON':

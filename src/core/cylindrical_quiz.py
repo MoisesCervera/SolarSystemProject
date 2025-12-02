@@ -1928,12 +1928,13 @@ class CylindricalQuizState(BaseState):
 
         self.quiz.update(dt)
 
-        if self.finished:
+        if self.finished and not getattr(self, '_exit_triggered', False):
+            self._exit_triggered = True  # Prevent multiple triggers
             if self.on_complete_callback:
                 self.on_complete_callback(
                     self.result_passed, self.result_score, self.result_strikes)
             if hasattr(self, 'state_machine') and self.state_machine:
-                self.state_machine.pop()
+                self.state_machine.pop(use_transition=True, duration=0.5)
 
     def draw(self):
         """Draw the quiz."""

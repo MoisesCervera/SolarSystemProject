@@ -278,7 +278,8 @@ class WelcomeState(BaseState):
         if hasattr(self, 'state_machine') and self.state_machine:
             new_state = ShipSelectState()
             new_state.state_machine = self.state_machine
-            self.state_machine.change(new_state)
+            self.state_machine.change(
+                new_state, use_transition=True, duration=0.5)
 
     def _go_to_orbital_view(self):
         """Go directly to orbital view without ship selection."""
@@ -289,7 +290,8 @@ class WelcomeState(BaseState):
         if hasattr(self, 'state_machine') and self.state_machine:
             new_state = GameplayState()
             new_state.state_machine = self.state_machine
-            self.state_machine.change(new_state)
+            self.state_machine.change(
+                new_state, use_transition=True, duration=0.5)
 
     def _quit_game(self):
         """Exit the application."""

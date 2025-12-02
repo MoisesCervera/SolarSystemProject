@@ -7,6 +7,7 @@ import time
 from src.core.state_machine import StateMachine
 from src.core.session import GameContext
 from src.core.input_manager import InputManager
+from src.core.transition_manager import get_transition_manager
 from src.states.pause_state import PauseState
 
 
@@ -160,10 +161,10 @@ class WindowManager:
                 if hasattr(current_state, 'asteroid_impact_pending') and current_state.asteroid_impact_pending:
                     return
 
-            # Push pause state on top of current state
+            # Push pause state on top of current state (instant, no transition)
             pause_state = PauseState()
             pause_state.state_machine = self.state_machine
-            self.state_machine.push(pause_state)
+            self.state_machine.push_immediate(pause_state)
             return
         self.input_manager.key_down(key, x, y)
         # Forward event to state machine

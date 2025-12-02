@@ -153,19 +153,22 @@ class PauseState(BaseState):
                     return
 
     def _resume(self):
-        """Resume the game by popping this state."""
+        """Resume the game by popping this state (no transition for instant resume)."""
         if hasattr(self, 'state_machine'):
-            self.state_machine.pop()
+            self.state_machine.pop_immediate()
 
     def _go_to_main_menu(self):
-        """Return to the main menu (welcome state)."""
+        """Return to the main menu (welcome state) with transition."""
         if hasattr(self, 'state_machine'):
             # Import here to avoid circular imports
             from src.states.welcome_state import WelcomeState
-            # Clear the entire state stack and push welcome state
-            while self.state_machine.states:
-                self.state_machine.pop()
-            self.state_machine.push(WelcomeState())
+            # Clear the entire state stack and push welcome state with transition
+            # First pop all states without transition
+            while len(self.state_machine.states) > 1:
+                self.state_machine.pop_immediate()
+            # Then change to welcome state with transition
+            self.state_machine.change(
+                WelcomeState(), use_transition=True, duration=0.6)
 
     def _quit_game(self):
         """Quit the game entirely."""

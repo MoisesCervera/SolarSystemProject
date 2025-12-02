@@ -489,19 +489,21 @@ class GameplayState(BaseState):
             self.camera.update(dt)
 
     def _restart_game(self):
-        """Restart the game from ship select."""
+        """Restart the game from ship select with transition."""
         if hasattr(self, 'state_machine'):
             from src.states.ship_select_state import ShipSelectState
-            self.state_machine.change(ShipSelectState())
+            self.state_machine.change(
+                ShipSelectState(), use_transition=True, duration=0.6)
 
     def _return_to_menu(self):
-        """Return to main menu."""
+        """Return to main menu with transition."""
         if hasattr(self, 'state_machine'):
             from src.states.welcome_state import WelcomeState
-            # Clear all states and push welcome
-            while self.state_machine.states:
-                self.state_machine.pop()
-            self.state_machine.push(WelcomeState())
+            # Clear all states without transition, then change with transition
+            while len(self.state_machine.states) > 1:
+                self.state_machine.pop_immediate()
+            self.state_machine.change(
+                WelcomeState(), use_transition=True, duration=0.6)
 
     def update(self, dt):
         # Decay screen shake
@@ -562,7 +564,8 @@ class GameplayState(BaseState):
                     # Reset transition flags BEFORE pushing so we don't re-trigger on return
                     self.is_transitioning = False
                     self.transition_target = None
-                    self.state_machine.push(detail_state)
+                    self.state_machine.push(
+                        detail_state, use_transition=True, duration=0.5)
                 else:
                     print(
                         "ERROR CRÍTICO: GameplayState no tiene referencia a state_machine")
@@ -1378,4 +1381,5 @@ class GameplayState(BaseState):
                 print("[DEBUG] Forcing Game Complete State")
                 if hasattr(self, 'state_machine'):
                     from src.states.game_complete_state import GameCompleteState
-                    self.state_machine.change(GameCompleteState())
+                    self.state_machine.change(
+                        GameCompleteState(), use_transition=True, duration=0.8)

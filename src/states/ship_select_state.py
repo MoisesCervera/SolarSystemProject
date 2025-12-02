@@ -270,12 +270,13 @@ class ShipSelectState(BaseState):
         GameContext.selected_ship = selected_ship['id']
         print(f"[ShipSelect] Selected: {selected_ship['name']}")
 
-        # Transition to gameplay
+        # Transition to gameplay with fade
         from src.states.gameplay_state import GameplayState
         if hasattr(self, 'state_machine') and self.state_machine:
             new_state = GameplayState()
             new_state.state_machine = self.state_machine
-            self.state_machine.change(new_state)
+            self.state_machine.change(
+                new_state, use_transition=True, duration=0.5)
 
     def draw(self):
         glClearColor(0.0, 0.0, 0.02, 1.0)
