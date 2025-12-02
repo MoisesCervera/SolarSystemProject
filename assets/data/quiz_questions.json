@@ -110,6 +110,160 @@
                 ],
                 "correct": 1,
                 "explanation": "Mercury rotates very slowly, taking 59 Earth days to complete one rotation."
+            },
+            {
+                "question": "What percentage of Mercury's volume is occupied by its iron core?",
+                "options": [
+                    "25%",
+                    "42%",
+                    "55%",
+                    "85%"
+                ],
+                "correct": 2,
+                "explanation": "Mercury's iron core occupies about 55% of the planet's volume, much larger than any other planet."
+            },
+            {
+                "question": "What is the Caloris Basin on Mercury?",
+                "options": [
+                    "A volcanic region",
+                    "One of the largest impact craters in the Solar System",
+                    "A frozen ice cap",
+                    "A magnetic anomaly"
+                ],
+                "correct": 1,
+                "explanation": "The Caloris Basin is one of the largest impact craters in the Solar System, about 1,550 km in diameter."
+            },
+            {
+                "question": "How many spacecraft have visited Mercury?",
+                "options": [
+                    "None",
+                    "Two",
+                    "Five",
+                    "Ten"
+                ],
+                "correct": 1,
+                "explanation": "Only two spacecraft have visited Mercury: Mariner 10 (1974-75) and MESSENGER (2011-2015)."
+            },
+            {
+                "question": "What is Mercury's surface gravity compared to Earth's?",
+                "options": [
+                    "About 38% of Earth's",
+                    "About 50% of Earth's",
+                    "About 75% of Earth's",
+                    "Greater than Earth's"
+                ],
+                "correct": 0,
+                "explanation": "Mercury's surface gravity is about 38% of Earth's, or 3.7 m/s²."
+            },
+            {
+                "question": "Does Mercury have any moons?",
+                "options": [
+                    "One small moon",
+                    "Two moons",
+                    "No moons",
+                    "Three captured asteroids"
+                ],
+                "correct": 2,
+                "explanation": "Mercury has no natural satellites or moons, likely due to its proximity to the Sun."
+            },
+            {
+                "question": "What is the temperature swing between day and night on Mercury?",
+                "options": [
+                    "About 100°C",
+                    "About 300°C",
+                    "About 600°C",
+                    "About 1000°C"
+                ],
+                "correct": 2,
+                "explanation": "Mercury experiences temperature swings of about 600°C between day (427°C) and night (-183°C)."
+            },
+            {
+                "question": "What is unique about Mercury's orbit compared to other planets?",
+                "options": [
+                    "It's perfectly circular",
+                    "It's the most elliptical of all planets",
+                    "It's tilted 90 degrees",
+                    "It orbits backwards"
+                ],
+                "correct": 1,
+                "explanation": "Mercury has the most elliptical (eccentric) orbit of all the planets in our Solar System."
+            },
+            {
+                "question": "What surprising discovery was made at Mercury's poles?",
+                "options": [
+                    "Active volcanoes",
+                    "Water ice in permanently shadowed craters",
+                    "Liquid water oceans",
+                    "Plant life"
+                ],
+                "correct": 1,
+                "explanation": "Water ice has been found in permanently shadowed craters at Mercury's poles despite its proximity to the Sun."
+            },
+            {
+                "question": "How does Mercury's density compare to other planets?",
+                "options": [
+                    "It's the least dense",
+                    "It's average density",
+                    "It's the second densest after Earth",
+                    "It's denser than Earth"
+                ],
+                "correct": 2,
+                "explanation": "Mercury is the second densest planet in the Solar System, after Earth, due to its large iron core."
+            },
+            {
+                "question": "What is a 3:2 spin-orbit resonance on Mercury?",
+                "options": [
+                    "Mercury rotates 3 times for every 2 orbits",
+                    "Mercury orbits 3 times for every 2 rotations",
+                    "Mercury has 3 moons that orbit twice per day",
+                    "Mercury's core spins 3 times faster than its surface"
+                ],
+                "correct": 0,
+                "explanation": "Mercury has a 3:2 spin-orbit resonance, meaning it rotates exactly 3 times for every 2 orbits around the Sun."
+            },
+            {
+                "question": "What is the escape velocity from Mercury?",
+                "options": [
+                    "2.4 km/s",
+                    "4.3 km/s",
+                    "11.2 km/s",
+                    "23.5 km/s"
+                ],
+                "correct": 1,
+                "explanation": "Mercury's escape velocity is 4.3 km/s, much lower than Earth's 11.2 km/s due to its smaller mass."
+            },
+            {
+                "question": "What is the BepiColombo mission?",
+                "options": [
+                    "A Mars rover",
+                    "A joint ESA-JAXA mission to Mercury",
+                    "A Jupiter probe",
+                    "A Venus lander"
+                ],
+                "correct": 1,
+                "explanation": "BepiColombo is a joint mission by ESA and JAXA launched in 2018 to study Mercury, arriving in 2025."
+            },
+            {
+                "question": "Why does Mercury have a very weak magnetic field?",
+                "options": [
+                    "It has no iron core",
+                    "Its core is completely solid",
+                    "Its core rotates slowly",
+                    "It's too close to the Sun"
+                ],
+                "correct": 2,
+                "explanation": "Mercury's weak magnetic field (about 1% of Earth's) is likely due to its core rotating slowly."
+            },
+            {
+                "question": "What are 'hollows' on Mercury?",
+                "options": [
+                    "Ancient riverbeds",
+                    "Bright, shallow depressions unique to Mercury",
+                    "Deep volcanic craters",
+                    "Frozen lakes"
+                ],
+                "correct": 1,
+                "explanation": "Hollows are bright, shallow, irregularly shaped depressions found only on Mercury, possibly formed by volatile loss."
             }
         ],
         "Venus": [
@@ -222,6 +376,160 @@
                 ],
                 "correct": 0,
                 "explanation": "Reduced heat loss from the planet prevents it from cooling, explaining its lack of magnetic field."
+            },
+            {
+                "question": "In which direction does Venus rotate?",
+                "options": [
+                    "The same as Earth (prograde)",
+                    "Opposite to most planets (retrograde)",
+                    "It doesn't rotate",
+                    "It rotates on its side"
+                ],
+                "correct": 1,
+                "explanation": "Venus rotates in a retrograde direction, opposite to most planets, so the Sun rises in the west."
+            },
+            {
+                "question": "What is the main component of Venus's atmosphere?",
+                "options": [
+                    "Nitrogen",
+                    "Oxygen",
+                    "Carbon dioxide (96.5%)",
+                    "Sulfur dioxide"
+                ],
+                "correct": 2,
+                "explanation": "Venus's atmosphere is about 96.5% carbon dioxide, which causes the extreme greenhouse effect."
+            },
+            {
+                "question": "How many volcanoes are estimated to be on Venus?",
+                "options": [
+                    "About 100",
+                    "About 1,000",
+                    "More than 1,600",
+                    "None"
+                ],
+                "correct": 2,
+                "explanation": "Venus has more than 1,600 major volcanoes, more than any other planet in the Solar System."
+            },
+            {
+                "question": "What spacecraft first successfully landed on Venus?",
+                "options": [
+                    "Viking 1",
+                    "Venera 7",
+                    "Mariner 2",
+                    "Pioneer Venus"
+                ],
+                "correct": 1,
+                "explanation": "Venera 7 (Soviet) was the first spacecraft to successfully land on Venus in 1970."
+            },
+            {
+                "question": "Why is Venus sometimes called Earth's 'sister planet'?",
+                "options": [
+                    "They have similar atmospheres",
+                    "They have similar size and mass",
+                    "They have similar temperatures",
+                    "They orbit at the same distance from the Sun"
+                ],
+                "correct": 1,
+                "explanation": "Venus is called Earth's sister planet because they are similar in size, mass, and composition."
+            },
+            {
+                "question": "What type of clouds cover Venus?",
+                "options": [
+                    "Water vapor clouds",
+                    "Methane clouds",
+                    "Sulfuric acid clouds",
+                    "Ammonia clouds"
+                ],
+                "correct": 2,
+                "explanation": "Venus is covered by thick clouds of sulfuric acid that completely obscure its surface."
+            },
+            {
+                "question": "How does a day on Venus compare to its year?",
+                "options": [
+                    "A day is shorter than a year",
+                    "A day is longer than a year",
+                    "They are equal",
+                    "Venus has no day/night cycle"
+                ],
+                "correct": 1,
+                "explanation": "A Venus day (243 Earth days) is longer than its year (225 Earth days)."
+            },
+            {
+                "question": "What is the highest mountain on Venus called?",
+                "options": [
+                    "Olympus Mons",
+                    "Maxwell Montes",
+                    "Mount Venus",
+                    "Ishtar Peak"
+                ],
+                "correct": 1,
+                "explanation": "Maxwell Montes is the highest mountain on Venus, rising about 11 km above the mean surface level."
+            },
+            {
+                "question": "How many moons does Venus have?",
+                "options": [
+                    "None",
+                    "One",
+                    "Two",
+                    "Three"
+                ],
+                "correct": 0,
+                "explanation": "Venus has no natural satellites, making it one of only two planets (with Mercury) without moons."
+            },
+            {
+                "question": "What is the surface of Venus primarily made of?",
+                "options": [
+                    "Ice and water",
+                    "Basaltic rock",
+                    "Sand and dust",
+                    "Metallic iron"
+                ],
+                "correct": 1,
+                "explanation": "Venus's surface is primarily composed of basaltic rock, similar to Earth's oceanic crust."
+            },
+            {
+                "question": "What are 'pancake domes' on Venus?",
+                "options": [
+                    "Cloud formations",
+                    "Flat-topped volcanic features",
+                    "Impact craters",
+                    "Mountain ranges"
+                ],
+                "correct": 1,
+                "explanation": "Pancake domes are flat, circular volcanic features unique to Venus, formed by viscous lava."
+            },
+            {
+                "question": "How long do spacecraft typically survive on Venus's surface?",
+                "options": [
+                    "Several years",
+                    "A few months",
+                    "Less than 2 hours",
+                    "About 1 week"
+                ],
+                "correct": 2,
+                "explanation": "Due to extreme heat and pressure, no spacecraft has survived more than about 2 hours on Venus's surface."
+            },
+            {
+                "question": "What is Venus's albedo (reflectivity)?",
+                "options": [
+                    "About 10%",
+                    "About 35%",
+                    "About 70%",
+                    "About 95%"
+                ],
+                "correct": 2,
+                "explanation": "Venus has an albedo of about 70%, reflecting most sunlight due to its thick cloud cover."
+            },
+            {
+                "question": "What was discovered in Venus's atmosphere in 2020 that caused excitement?",
+                "options": [
+                    "Oxygen",
+                    "Phosphine gas",
+                    "Water vapor",
+                    "Methane"
+                ],
+                "correct": 1,
+                "explanation": "Phosphine gas was detected in Venus's atmosphere in 2020, sparking debate about possible biological origin."
             }
         ],
         "Earth": [
@@ -334,6 +642,160 @@
                 ],
                 "correct": 1,
                 "explanation": "The lithosphere is formed by Earth's crust and the uppermost parts of the mantle."
+            },
+            {
+                "question": "How old is Earth approximately?",
+                "options": [
+                    "1 billion years",
+                    "2.5 billion years",
+                    "4.5 billion years",
+                    "10 billion years"
+                ],
+                "correct": 2,
+                "explanation": "Earth is approximately 4.5 billion years old, formed from the solar nebula."
+            },
+            {
+                "question": "What is the name of Earth's only natural satellite?",
+                "options": [
+                    "Luna",
+                    "Phobos",
+                    "Titan",
+                    "The Moon"
+                ],
+                "correct": 3,
+                "explanation": "Earth has one natural satellite, commonly called the Moon (or Luna in Latin)."
+            },
+            {
+                "question": "What is Earth's rotation period (one day)?",
+                "options": [
+                    "23 hours 56 minutes",
+                    "24 hours exactly",
+                    "25 hours",
+                    "12 hours"
+                ],
+                "correct": 0,
+                "explanation": "Earth's sidereal rotation period is 23 hours 56 minutes and 4 seconds."
+            },
+            {
+                "question": "What is the main gas in Earth's atmosphere?",
+                "options": [
+                    "Oxygen (78%)",
+                    "Carbon dioxide (78%)",
+                    "Nitrogen (78%)",
+                    "Argon (78%)"
+                ],
+                "correct": 2,
+                "explanation": "Nitrogen makes up about 78% of Earth's atmosphere, with oxygen at about 21%."
+            },
+            {
+                "question": "What is the temperature at Earth's inner core?",
+                "options": [
+                    "About 1,000°C",
+                    "About 3,000°C",
+                    "About 5,400°C",
+                    "About 15,000°C"
+                ],
+                "correct": 2,
+                "explanation": "Earth's inner core temperature is estimated to be about 5,400°C, similar to the Sun's surface."
+            },
+            {
+                "question": "What causes Earth's seasons?",
+                "options": [
+                    "Distance from the Sun",
+                    "The Moon's gravitational pull",
+                    "Earth's axial tilt of 23.4°",
+                    "Solar flares"
+                ],
+                "correct": 2,
+                "explanation": "Earth's seasons are caused by its 23.4° axial tilt, not its distance from the Sun."
+            },
+            {
+                "question": "What is the highest point on Earth's surface?",
+                "options": [
+                    "K2",
+                    "Mount Kilimanjaro",
+                    "Mount Everest",
+                    "Mauna Kea"
+                ],
+                "correct": 2,
+                "explanation": "Mount Everest is the highest point on Earth at 8,849 meters above sea level."
+            },
+            {
+                "question": "What percentage of Earth's fresh water is in glaciers and ice caps?",
+                "options": [
+                    "About 30%",
+                    "About 50%",
+                    "About 69%",
+                    "About 90%"
+                ],
+                "correct": 2,
+                "explanation": "About 69% of Earth's fresh water is frozen in glaciers and ice caps."
+            },
+            {
+                "question": "What protects Earth from harmful solar radiation?",
+                "options": [
+                    "The ozone layer and magnetic field",
+                    "The clouds",
+                    "The Moon",
+                    "Ocean water"
+                ],
+                "correct": 0,
+                "explanation": "Earth's ozone layer and magnetic field protect us from harmful ultraviolet and solar radiation."
+            },
+            {
+                "question": "What is the deepest point on Earth?",
+                "options": [
+                    "Puerto Rico Trench",
+                    "Mariana Trench",
+                    "Java Trench",
+                    "Philippine Trench"
+                ],
+                "correct": 1,
+                "explanation": "The Mariana Trench's Challenger Deep is the deepest point on Earth at about 10,935 meters below sea level."
+            },
+            {
+                "question": "How fast does Earth travel around the Sun?",
+                "options": [
+                    "About 1,000 km/h",
+                    "About 30,000 km/h",
+                    "About 107,000 km/h",
+                    "About 500,000 km/h"
+                ],
+                "correct": 2,
+                "explanation": "Earth travels around the Sun at approximately 107,000 km/h (about 30 km/s)."
+            },
+            {
+                "question": "What percentage of Earth's atmosphere is oxygen?",
+                "options": [
+                    "About 10%",
+                    "About 21%",
+                    "About 50%",
+                    "About 78%"
+                ],
+                "correct": 1,
+                "explanation": "Earth's atmosphere contains about 21% oxygen, which is essential for most life forms."
+            },
+            {
+                "question": "How many tectonic plates does Earth have?",
+                "options": [
+                    "5 major plates",
+                    "7-8 major plates",
+                    "15 major plates",
+                    "25 major plates"
+                ],
+                "correct": 1,
+                "explanation": "Earth has 7-8 major tectonic plates and several smaller ones that constantly move and interact."
+            },
+            {
+                "question": "What is the escape velocity from Earth?",
+                "options": [
+                    "5.0 km/s",
+                    "11.2 km/s",
+                    "25.0 km/s",
+                    "42.1 km/s"
+                ],
+                "correct": 1,
+                "explanation": "Earth's escape velocity is 11.2 km/s, the minimum speed needed to leave Earth's gravitational pull."
             }
         ],
         "Mars": [
@@ -446,6 +908,160 @@
                 ],
                 "correct": 1,
                 "explanation": "Mars' core contains about 17% sulfur, which renders it partially liquid."
+            },
+            {
+                "question": "How tall is Olympus Mons compared to Mount Everest?",
+                "options": [
+                    "About the same height",
+                    "Twice as tall",
+                    "About three times as tall",
+                    "Ten times as tall"
+                ],
+                "correct": 2,
+                "explanation": "Olympus Mons is about 21.9 km tall, nearly three times the height of Mount Everest (8.8 km)."
+            },
+            {
+                "question": "What are the names of Mars's two moons?",
+                "options": [
+                    "Io and Europa",
+                    "Phobos and Deimos",
+                    "Titan and Rhea",
+                    "Ganymede and Callisto"
+                ],
+                "correct": 1,
+                "explanation": "Mars's two small moons are named Phobos (Fear) and Deimos (Terror) after Greek mythology."
+            },
+            {
+                "question": "What is a 'sol' on Mars?",
+                "options": [
+                    "A Martian year",
+                    "A Martian day",
+                    "A Martian month",
+                    "A Martian season"
+                ],
+                "correct": 1,
+                "explanation": "A 'sol' is a Martian day, which is about 24 hours and 37 minutes long."
+            },
+            {
+                "question": "What is the atmospheric pressure on Mars compared to Earth?",
+                "options": [
+                    "About the same",
+                    "About 1% of Earth's",
+                    "About 50% of Earth's",
+                    "Greater than Earth's"
+                ],
+                "correct": 1,
+                "explanation": "Mars's atmospheric pressure is only about 1% of Earth's, making the atmosphere very thin."
+            },
+            {
+                "question": "What is the main component of Mars's atmosphere?",
+                "options": [
+                    "Nitrogen",
+                    "Oxygen",
+                    "Carbon dioxide (95%)",
+                    "Methane"
+                ],
+                "correct": 2,
+                "explanation": "Mars's atmosphere is about 95% carbon dioxide, with traces of nitrogen and argon."
+            },
+            {
+                "question": "What are the polar ice caps on Mars made of?",
+                "options": [
+                    "Only water ice",
+                    "Only frozen carbon dioxide",
+                    "Water ice and frozen carbon dioxide",
+                    "Frozen methane"
+                ],
+                "correct": 2,
+                "explanation": "Mars's polar ice caps contain both water ice and frozen carbon dioxide (dry ice)."
+            },
+            {
+                "question": "How long does it take for light to travel from the Sun to Mars?",
+                "options": [
+                    "About 8 minutes",
+                    "About 12-13 minutes",
+                    "About 30 minutes",
+                    "About 1 hour"
+                ],
+                "correct": 1,
+                "explanation": "Light takes about 12-13 minutes to travel from the Sun to Mars, depending on orbital position."
+            },
+            {
+                "question": "What is the gravity on Mars compared to Earth?",
+                "options": [
+                    "About 38% of Earth's",
+                    "About 50% of Earth's",
+                    "About 75% of Earth's",
+                    "Greater than Earth's"
+                ],
+                "correct": 0,
+                "explanation": "Mars's gravity is about 38% of Earth's, so a person weighing 100 kg on Earth would weigh 38 kg on Mars."
+            },
+            {
+                "question": "What causes the massive dust storms on Mars?",
+                "options": [
+                    "Volcanic eruptions",
+                    "Temperature differences between hemispheres",
+                    "Meteor impacts",
+                    "Magnetic field fluctuations"
+                ],
+                "correct": 1,
+                "explanation": "Mars's massive dust storms are caused by temperature differences between its hemispheres, creating strong winds."
+            },
+            {
+                "question": "Which rover is currently active on Mars as of 2024?",
+                "options": [
+                    "Spirit",
+                    "Opportunity",
+                    "Curiosity and Perseverance",
+                    "Viking 1"
+                ],
+                "correct": 2,
+                "explanation": "Curiosity (since 2012) and Perseverance (since 2021) are both currently active rovers exploring Mars."
+            },
+            {
+                "question": "What is the Ingenuity helicopter?",
+                "options": [
+                    "A satellite orbiting Mars",
+                    "The first aircraft to fly on another planet",
+                    "A Mars lander",
+                    "A proposed crewed mission"
+                ],
+                "correct": 1,
+                "explanation": "Ingenuity is a small helicopter that made history as the first powered, controlled flight on another planet in 2021."
+            },
+            {
+                "question": "How long can Mars dust storms last?",
+                "options": [
+                    "A few hours",
+                    "A few days",
+                    "Weeks to months",
+                    "Over a year"
+                ],
+                "correct": 2,
+                "explanation": "Mars dust storms can last weeks to months, and global storms can envelop the entire planet."
+            },
+            {
+                "question": "What is the diameter of Olympus Mons at its base?",
+                "options": [
+                    "About 100 km",
+                    "About 300 km",
+                    "About 600 km",
+                    "About 1,000 km"
+                ],
+                "correct": 2,
+                "explanation": "Olympus Mons has a base diameter of about 600 km, making it roughly the size of Arizona."
+            },
+            {
+                "question": "What is Mars's escape velocity?",
+                "options": [
+                    "2.4 km/s",
+                    "5.0 km/s",
+                    "11.2 km/s",
+                    "23.5 km/s"
+                ],
+                "correct": 1,
+                "explanation": "Mars's escape velocity is about 5.0 km/s, less than half of Earth's 11.2 km/s."
             }
         ],
         "Jupiter": [
@@ -558,6 +1174,160 @@
                 ],
                 "correct": 1,
                 "explanation": "Jupiter has a surface temperature of about -120°C."
+            },
+            {
+                "question": "What is the Great Red Spot on Jupiter?",
+                "options": [
+                    "A volcanic region",
+                    "A massive storm that has lasted centuries",
+                    "An impact crater",
+                    "A magnetic anomaly"
+                ],
+                "correct": 1,
+                "explanation": "The Great Red Spot is a massive anticyclonic storm that has been raging for at least 400 years."
+            },
+            {
+                "question": "How big is the Great Red Spot compared to Earth?",
+                "options": [
+                    "About the same size",
+                    "About twice Earth's diameter",
+                    "About 1.3 times Earth's diameter",
+                    "Ten times Earth's diameter"
+                ],
+                "correct": 2,
+                "explanation": "The Great Red Spot is about 1.3 times the diameter of Earth, though it has been shrinking."
+            },
+            {
+                "question": "What is Jupiter's orbital period around the Sun?",
+                "options": [
+                    "1.88 years",
+                    "11.86 years",
+                    "29 years",
+                    "84 years"
+                ],
+                "correct": 1,
+                "explanation": "Jupiter takes about 11.86 Earth years to complete one orbit around the Sun."
+            },
+            {
+                "question": "Which of Jupiter's moons might have a subsurface ocean?",
+                "options": [
+                    "Io",
+                    "Europa",
+                    "Ganymede",
+                    "Callisto"
+                ],
+                "correct": 1,
+                "explanation": "Europa is believed to have a liquid water ocean beneath its icy surface, making it a candidate for extraterrestrial life."
+            },
+            {
+                "question": "What makes Io unique among the Galilean moons?",
+                "options": [
+                    "It has the most water",
+                    "It's the most volcanically active body in the Solar System",
+                    "It's the largest moon",
+                    "It has its own atmosphere"
+                ],
+                "correct": 1,
+                "explanation": "Io is the most volcanically active body in the Solar System, with hundreds of active volcanoes."
+            },
+            {
+                "question": "Does Jupiter have rings?",
+                "options": [
+                    "No rings at all",
+                    "Yes, faint rings made of dust particles",
+                    "Only one large ring",
+                    "Rings as prominent as Saturn's"
+                ],
+                "correct": 1,
+                "explanation": "Jupiter has a faint ring system composed mainly of dust particles from its inner moons."
+            },
+            {
+                "question": "What is Jupiter's equatorial diameter?",
+                "options": [
+                    "51,118 km",
+                    "120,536 km",
+                    "142,984 km",
+                    "49,528 km"
+                ],
+                "correct": 2,
+                "explanation": "Jupiter has an equatorial diameter of 142,984 km, making it the largest planet in our Solar System."
+            },
+            {
+                "question": "How many Earth-sized planets could fit inside Jupiter?",
+                "options": [
+                    "About 100",
+                    "About 500",
+                    "About 1,300",
+                    "About 5,000"
+                ],
+                "correct": 2,
+                "explanation": "About 1,300 Earths could fit inside Jupiter by volume."
+            },
+            {
+                "question": "What causes Jupiter's intense radiation belts?",
+                "options": [
+                    "Solar wind alone",
+                    "Its powerful magnetic field trapping charged particles",
+                    "Volcanic activity from Io",
+                    "Its ring system"
+                ],
+                "correct": 1,
+                "explanation": "Jupiter's powerful magnetic field traps charged particles, creating intense radiation belts around the planet."
+            },
+            {
+                "question": "What is the Juno spacecraft studying?",
+                "options": [
+                    "Saturn's rings",
+                    "Jupiter's composition and magnetic field",
+                    "Mars's surface",
+                    "The asteroid belt"
+                ],
+                "correct": 1,
+                "explanation": "Juno, launched in 2011, is studying Jupiter's composition, gravity field, magnetic field, and polar magnetosphere."
+            },
+            {
+                "question": "How many times could all the other planets fit inside Jupiter?",
+                "options": [
+                    "About 2 times",
+                    "About 5 times",
+                    "About 10 times",
+                    "The others don't fit even once"
+                ],
+                "correct": 0,
+                "explanation": "Jupiter is so large that all the other planets in the Solar System could fit inside it about 2 times."
+            },
+            {
+                "question": "What is Jupiter's escape velocity?",
+                "options": [
+                    "23.5 km/s",
+                    "35.5 km/s",
+                    "59.5 km/s",
+                    "120.0 km/s"
+                ],
+                "correct": 2,
+                "explanation": "Jupiter's escape velocity is 59.5 km/s, over 5 times greater than Earth's due to its massive gravity."
+            },
+            {
+                "question": "What is the thickness of Europa's ice shell estimated to be?",
+                "options": [
+                    "About 1-5 km",
+                    "About 10-30 km",
+                    "About 100-200 km",
+                    "About 500 km"
+                ],
+                "correct": 1,
+                "explanation": "Europa's ice shell is estimated to be 10-30 km thick, covering a liquid water ocean beneath."
+            },
+            {
+                "question": "What event did Comet Shoemaker-Levy 9 demonstrate in 1994?",
+                "options": [
+                    "A comet orbiting Jupiter",
+                    "Multiple fragments impacting Jupiter",
+                    "A new moon forming",
+                    "Jupiter's ring system changing"
+                ],
+                "correct": 1,
+                "explanation": "In 1994, Comet Shoemaker-Levy 9 broke apart and its fragments spectacularly impacted Jupiter over several days."
             }
         ],
         "Saturn": [
@@ -670,6 +1440,160 @@
                 ],
                 "correct": 1,
                 "explanation": "Until modern telescopes, Saturn was regarded as the outermost of the known planets."
+            },
+            {
+                "question": "What is Saturn's largest moon called?",
+                "options": [
+                    "Ganymede",
+                    "Europa",
+                    "Titan",
+                    "Enceladus"
+                ],
+                "correct": 2,
+                "explanation": "Titan is Saturn's largest moon and the second-largest moon in the Solar System."
+            },
+            {
+                "question": "What is unique about Titan's atmosphere?",
+                "options": [
+                    "It has no atmosphere",
+                    "It's the only moon with a dense, nitrogen-rich atmosphere",
+                    "It's made of oxygen",
+                    "It's thinner than Earth's"
+                ],
+                "correct": 1,
+                "explanation": "Titan is the only moon with a dense atmosphere, primarily composed of nitrogen like Earth's."
+            },
+            {
+                "question": "How wide are Saturn's main rings?",
+                "options": [
+                    "About 1,000 km",
+                    "About 70,000 km",
+                    "About 282,000 km",
+                    "About 1 million km"
+                ],
+                "correct": 2,
+                "explanation": "Saturn's main rings extend about 282,000 km from the planet's center."
+            },
+            {
+                "question": "How thick are Saturn's main rings?",
+                "options": [
+                    "About 10 meters to 1 kilometer",
+                    "About 100 kilometers",
+                    "About 1,000 kilometers",
+                    "About 10,000 kilometers"
+                ],
+                "correct": 0,
+                "explanation": "Despite being very wide, Saturn's rings are remarkably thin, only about 10 meters to 1 kilometer thick."
+            },
+            {
+                "question": "What is Saturn's rotation period?",
+                "options": [
+                    "24 hours",
+                    "10 hours 33 minutes",
+                    "59 days",
+                    "29 years"
+                ],
+                "correct": 1,
+                "explanation": "Saturn rotates very quickly, completing one rotation in about 10 hours and 33 minutes."
+            },
+            {
+                "question": "What is Enceladus known for?",
+                "options": [
+                    "Being the largest moon",
+                    "Having water geysers erupting from its south pole",
+                    "Having the thickest atmosphere",
+                    "Being the hottest moon"
+                ],
+                "correct": 1,
+                "explanation": "Enceladus has water-ice geysers erupting from its south pole, suggesting a subsurface ocean."
+            },
+            {
+                "question": "What is Saturn's equatorial diameter?",
+                "options": [
+                    "51,118 km",
+                    "120,536 km",
+                    "142,984 km",
+                    "49,528 km"
+                ],
+                "correct": 1,
+                "explanation": "Saturn has an equatorial diameter of 120,536 km, making it the second-largest planet."
+            },
+            {
+                "question": "How many named ring divisions does Saturn have?",
+                "options": [
+                    "Two",
+                    "Four",
+                    "Seven",
+                    "Over a dozen"
+                ],
+                "correct": 2,
+                "explanation": "Saturn has seven main ring divisions named A through G, each with distinct properties."
+            },
+            {
+                "question": "What is the Cassini Division?",
+                "options": [
+                    "A moon of Saturn",
+                    "A gap between Saturn's A and B rings",
+                    "Saturn's magnetic field boundary",
+                    "A storm system on Saturn"
+                ],
+                "correct": 1,
+                "explanation": "The Cassini Division is a 4,800 km wide gap between Saturn's A and B rings, discovered in 1675."
+            },
+            {
+                "question": "What is Saturn's surface gravity compared to Earth's?",
+                "options": [
+                    "About 50% of Earth's",
+                    "About 107% of Earth's",
+                    "About 200% of Earth's",
+                    "About 250% of Earth's"
+                ],
+                "correct": 1,
+                "explanation": "Despite being much larger, Saturn's surface gravity is only about 107% of Earth's due to its low density."
+            },
+            {
+                "question": "What is the hexagonal storm at Saturn's north pole?",
+                "options": [
+                    "An artificial structure",
+                    "A six-sided jet stream pattern",
+                    "An optical illusion",
+                    "A magnetic anomaly"
+                ],
+                "correct": 1,
+                "explanation": "Saturn has a unique hexagonal cloud pattern at its north pole, a persistent jet stream about 30,000 km wide."
+            },
+            {
+                "question": "How old are Saturn's rings estimated to be?",
+                "options": [
+                    "About 4.5 billion years (as old as Saturn)",
+                    "About 100-400 million years",
+                    "About 1 billion years",
+                    "About 10 million years"
+                ],
+                "correct": 1,
+                "explanation": "Recent evidence suggests Saturn's rings are relatively young, only about 100-400 million years old."
+            },
+            {
+                "question": "What did the Cassini spacecraft do at the end of its mission?",
+                "options": [
+                    "Landed on Titan",
+                    "Plunged into Saturn's atmosphere",
+                    "Left the Solar System",
+                    "Crashed into Enceladus"
+                ],
+                "correct": 1,
+                "explanation": "In 2017, Cassini was deliberately plunged into Saturn's atmosphere to protect potentially habitable moons."
+            },
+            {
+                "question": "What liquid exists on Titan's surface?",
+                "options": [
+                    "Water",
+                    "Mercury",
+                    "Methane and ethane",
+                    "Ammonia"
+                ],
+                "correct": 2,
+                "explanation": "Titan has lakes and seas of liquid methane and ethane on its surface, making it unique in the Solar System."
             }
         ],
         "Uranus": [
@@ -782,6 +1706,160 @@
                 ],
                 "correct": 1,
                 "explanation": "Uranus has an equatorial diameter of 51,118 km."
+            },
+            {
+                "question": "How many known moons does Uranus have?",
+                "options": [
+                    "5",
+                    "13",
+                    "27",
+                    "82"
+                ],
+                "correct": 2,
+                "explanation": "Uranus has 27 known moons, all named after characters from Shakespeare and Alexander Pope."
+            },
+            {
+                "question": "What are Uranus's five largest moons?",
+                "options": [
+                    "Io, Europa, Ganymede, Callisto, Titan",
+                    "Miranda, Ariel, Umbriel, Titania, Oberon",
+                    "Phobos, Deimos, Triton, Charon, Nereid",
+                    "Enceladus, Mimas, Tethys, Dione, Rhea"
+                ],
+                "correct": 1,
+                "explanation": "Uranus's five largest moons are Miranda, Ariel, Umbriel, Titania, and Oberon."
+            },
+            {
+                "question": "Does Uranus have rings?",
+                "options": [
+                    "No rings",
+                    "Yes, 13 known rings",
+                    "Only one ring",
+                    "Rings as prominent as Saturn's"
+                ],
+                "correct": 1,
+                "explanation": "Uranus has 13 known rings, which are dark and difficult to observe from Earth."
+            },
+            {
+                "question": "What is Uranus's rotation period?",
+                "options": [
+                    "10 hours",
+                    "17 hours 14 minutes",
+                    "24 hours",
+                    "59 days"
+                ],
+                "correct": 1,
+                "explanation": "Uranus rotates once every 17 hours and 14 minutes."
+            },
+            {
+                "question": "Why is Uranus classified as an 'ice giant'?",
+                "options": [
+                    "Its surface is covered in ice",
+                    "Its atmosphere is frozen",
+                    "It contains more 'ices' like water, ammonia, and methane than gas",
+                    "It's the coldest planet"
+                ],
+                "correct": 2,
+                "explanation": "Uranus is called an ice giant because it contains more ices (water, ammonia, methane) than hydrogen and helium."
+            },
+            {
+                "question": "What makes Uranus's magnetic field unusual?",
+                "options": [
+                    "It's very weak",
+                    "It's tilted 59° from the rotation axis",
+                    "It doesn't have one",
+                    "It's the strongest in the Solar System"
+                ],
+                "correct": 1,
+                "explanation": "Uranus's magnetic field is tilted 59° from its rotational axis and doesn't pass through the planet's center."
+            },
+            {
+                "question": "Which spacecraft has visited Uranus?",
+                "options": [
+                    "Pioneer 10",
+                    "Voyager 2",
+                    "Cassini",
+                    "New Horizons"
+                ],
+                "correct": 1,
+                "explanation": "Voyager 2 is the only spacecraft to have visited Uranus, flying by in 1986."
+            },
+            {
+                "question": "What is the surface gravity on Uranus compared to Earth?",
+                "options": [
+                    "About 38% of Earth's",
+                    "About 89% of Earth's",
+                    "About the same as Earth's",
+                    "Greater than Earth's"
+                ],
+                "correct": 1,
+                "explanation": "Uranus's surface gravity is about 89% of Earth's, despite being much larger."
+            },
+            {
+                "question": "What causes the extreme seasons on Uranus?",
+                "options": [
+                    "Its distance from the Sun",
+                    "Its 97.77° axial tilt",
+                    "Its fast rotation",
+                    "Its ring system"
+                ],
+                "correct": 1,
+                "explanation": "Uranus's extreme 97.77° tilt means each pole gets around 42 years of continuous sunlight followed by 42 years of darkness."
+            },
+            {
+                "question": "Why is Uranus sometimes called the 'sideways planet'?",
+                "options": [
+                    "Its orbit is sideways",
+                    "It rotates on its side with a 98° tilt",
+                    "Its moons orbit sideways",
+                    "Its rings are sideways"
+                ],
+                "correct": 1,
+                "explanation": "Uranus is called the sideways planet because its axis is tilted 98°, making it appear to roll around the Sun."
+            },
+            {
+                "question": "What was Uranus originally named after its discovery?",
+                "options": [
+                    "Neptune",
+                    "Georgium Sidus (George's Star)",
+                    "Herschel",
+                    "Saturn II"
+                ],
+                "correct": 1,
+                "explanation": "Herschel originally named it 'Georgium Sidus' after King George III, before it was renamed Uranus."
+            },
+            {
+                "question": "What is the escape velocity from Uranus?",
+                "options": [
+                    "11.2 km/s",
+                    "21.3 km/s",
+                    "35.5 km/s",
+                    "59.5 km/s"
+                ],
+                "correct": 1,
+                "explanation": "Uranus has an escape velocity of 21.3 km/s, about twice that of Earth."
+            },
+            {
+                "question": "What is the largest moon of Uranus?",
+                "options": [
+                    "Miranda",
+                    "Ariel",
+                    "Titania",
+                    "Oberon"
+                ],
+                "correct": 2,
+                "explanation": "Titania is Uranus's largest moon with a diameter of 1,578 km, discovered by William Herschel in 1787."
+            },
+            {
+                "question": "Why does Uranus emit very little internal heat?",
+                "options": [
+                    "It's too far from the Sun",
+                    "A massive collision may have caused it to lose heat",
+                    "It has no core",
+                    "Its rings absorb the heat"
+                ],
+                "correct": 1,
+                "explanation": "Uranus emits very little internal heat, possibly because a giant impact that caused its tilt also released most of its primordial heat."
             }
         ],
         "Neptune": [
@@ -894,6 +1972,160 @@
                 ],
                 "correct": 1,
                 "explanation": "Neptune's fluid mantle has high electrical conductivity, generating the planet's magnetic field."
+            },
+            {
+                "question": "What is Neptune's largest moon?",
+                "options": [
+                    "Nereid",
+                    "Proteus",
+                    "Triton",
+                    "Larissa"
+                ],
+                "correct": 2,
+                "explanation": "Triton is Neptune's largest moon and the only large moon with a retrograde orbit."
+            },
+            {
+                "question": "What is unusual about Triton's orbit?",
+                "options": [
+                    "It's perfectly circular",
+                    "It orbits in the opposite direction (retrograde)",
+                    "It's the fastest orbiting moon",
+                    "It orbits through Neptune's rings"
+                ],
+                "correct": 1,
+                "explanation": "Triton orbits Neptune in the opposite direction to Neptune's rotation, suggesting it was captured."
+            },
+            {
+                "question": "Does Neptune have rings?",
+                "options": [
+                    "No rings",
+                    "Yes, 5 main rings",
+                    "Only one ring",
+                    "Rings as prominent as Saturn's"
+                ],
+                "correct": 1,
+                "explanation": "Neptune has 5 main rings, which are faint and composed of dust particles and ice."
+            },
+            {
+                "question": "What is Neptune's rotation period?",
+                "options": [
+                    "10 hours",
+                    "16 hours 6 minutes",
+                    "24 hours",
+                    "165 hours"
+                ],
+                "correct": 1,
+                "explanation": "Neptune rotates once every 16 hours and 6 minutes."
+            },
+            {
+                "question": "How many known moons does Neptune have?",
+                "options": [
+                    "2",
+                    "8",
+                    "16",
+                    "27"
+                ],
+                "correct": 2,
+                "explanation": "Neptune has 16 known moons, with Triton being by far the largest."
+            },
+            {
+                "question": "What is the Great Dark Spot on Neptune?",
+                "options": [
+                    "A permanent impact crater",
+                    "A massive storm system similar to Jupiter's Great Red Spot",
+                    "A volcanic region",
+                    "A magnetic pole"
+                ],
+                "correct": 1,
+                "explanation": "The Great Dark Spot was a massive storm system observed by Voyager 2, similar to Jupiter's Great Red Spot."
+            },
+            {
+                "question": "How fast can winds on Neptune reach?",
+                "options": [
+                    "About 100 km/h",
+                    "About 500 km/h",
+                    "About 2,100 km/h",
+                    "About 5,000 km/h"
+                ],
+                "correct": 2,
+                "explanation": "Neptune has the fastest winds in the Solar System, reaching speeds up to 2,100 km/h."
+            },
+            {
+                "question": "What is Neptune's equatorial diameter?",
+                "options": [
+                    "49,528 km",
+                    "51,118 km",
+                    "120,536 km",
+                    "142,984 km"
+                ],
+                "correct": 0,
+                "explanation": "Neptune has an equatorial diameter of 49,528 km, making it slightly smaller than Uranus."
+            },
+            {
+                "question": "Which spacecraft has visited Neptune?",
+                "options": [
+                    "Pioneer 11",
+                    "Voyager 2",
+                    "Cassini",
+                    "New Horizons"
+                ],
+                "correct": 1,
+                "explanation": "Voyager 2 is the only spacecraft to have visited Neptune, flying by in 1989."
+            },
+            {
+                "question": "What is the escape velocity from Neptune?",
+                "options": [
+                    "11.2 km/s",
+                    "21.3 km/s",
+                    "23.5 km/s",
+                    "59.5 km/s"
+                ],
+                "correct": 2,
+                "explanation": "Neptune's escape velocity is 23.5 km/s, about twice that of Earth."
+            },
+            {
+                "question": "What happened to the Great Dark Spot observed by Voyager 2?",
+                "options": [
+                    "It's still visible today",
+                    "It disappeared by 1994",
+                    "It merged with another storm",
+                    "It became a permanent feature"
+                ],
+                "correct": 1,
+                "explanation": "The Great Dark Spot observed by Voyager 2 in 1989 had disappeared by 1994, showing Neptune's dynamic atmosphere."
+            },
+            {
+                "question": "What is predicted to happen to Triton in the distant future?",
+                "options": [
+                    "It will escape Neptune's gravity",
+                    "It will spiral inward and be destroyed",
+                    "It will become a planet",
+                    "It will collide with another moon"
+                ],
+                "correct": 1,
+                "explanation": "Triton's retrograde orbit is slowly decaying, and it will eventually spiral inward and be torn apart by Neptune's gravity."
+            },
+            {
+                "question": "What active geological features does Triton have?",
+                "options": [
+                    "Volcanoes erupting lava",
+                    "Geysers of nitrogen gas",
+                    "Earthquakes",
+                    "No geological activity"
+                ],
+                "correct": 1,
+                "explanation": "Triton has active nitrogen geysers that shoot material up to 8 km into its thin atmosphere."
+            },
+            {
+                "question": "How does Neptune's magnetic field compare to Earth's?",
+                "options": [
+                    "About the same strength",
+                    "About 27 times stronger",
+                    "About 100 times stronger",
+                    "Weaker than Earth's"
+                ],
+                "correct": 1,
+                "explanation": "Neptune's magnetic field is about 27 times more powerful than Earth's, tilted 47° from its rotation axis."
             }
         ],
         "Sun": [
@@ -1006,6 +2238,160 @@
                 ],
                 "correct": 2,
                 "explanation": "The Sun takes about 225 million years to orbit the center of the Milky Way."
+            },
+            {
+                "question": "What type of star is the Sun?",
+                "options": [
+                    "Red dwarf",
+                    "Yellow dwarf (G-type main-sequence)",
+                    "White dwarf",
+                    "Red giant"
+                ],
+                "correct": 1,
+                "explanation": "The Sun is a G-type main-sequence star, commonly called a yellow dwarf."
+            },
+            {
+                "question": "What is the Sun's diameter compared to Earth?",
+                "options": [
+                    "About 10 times larger",
+                    "About 50 times larger",
+                    "About 109 times larger",
+                    "About 1,000 times larger"
+                ],
+                "correct": 2,
+                "explanation": "The Sun's diameter is about 109 times that of Earth, at approximately 1.4 million km."
+            },
+            {
+                "question": "What is the temperature at the Sun's core?",
+                "options": [
+                    "About 1 million K",
+                    "About 5,778 K",
+                    "About 15 million K",
+                    "About 100 million K"
+                ],
+                "correct": 2,
+                "explanation": "The Sun's core temperature is about 15 million Kelvin, where nuclear fusion occurs."
+            },
+            {
+                "question": "What process powers the Sun?",
+                "options": [
+                    "Chemical burning",
+                    "Nuclear fission",
+                    "Nuclear fusion of hydrogen into helium",
+                    "Gravitational collapse"
+                ],
+                "correct": 2,
+                "explanation": "The Sun is powered by nuclear fusion, converting hydrogen into helium in its core."
+            },
+            {
+                "question": "How old is the Sun approximately?",
+                "options": [
+                    "1 billion years",
+                    "4.6 billion years",
+                    "10 billion years",
+                    "13.8 billion years"
+                ],
+                "correct": 1,
+                "explanation": "The Sun is about 4.6 billion years old and is roughly halfway through its main-sequence phase."
+            },
+            {
+                "question": "What are sunspots?",
+                "options": [
+                    "Holes in the Sun's surface",
+                    "Cooler, darker regions caused by magnetic activity",
+                    "Hot spots from solar flares",
+                    "Shadows from planets"
+                ],
+                "correct": 1,
+                "explanation": "Sunspots are temporary phenomena that appear as dark spots due to reduced surface temperature caused by magnetic field concentrations."
+            },
+            {
+                "question": "What is the solar wind?",
+                "options": [
+                    "Wind caused by the Sun's rotation",
+                    "A stream of charged particles released from the Sun's corona",
+                    "Sound waves from the Sun",
+                    "Light rays from the Sun"
+                ],
+                "correct": 1,
+                "explanation": "The solar wind is a stream of charged particles (mainly electrons and protons) released from the Sun's corona."
+            },
+            {
+                "question": "What is the outermost layer of the Sun's atmosphere called?",
+                "options": [
+                    "Photosphere",
+                    "Chromosphere",
+                    "Corona",
+                    "Radiative zone"
+                ],
+                "correct": 2,
+                "explanation": "The corona is the outermost layer of the Sun's atmosphere, visible during total solar eclipses."
+            },
+            {
+                "question": "How much hydrogen does the Sun convert to helium each second?",
+                "options": [
+                    "About 4 million tons",
+                    "About 600 million tons",
+                    "About 4 billion tons",
+                    "About 600 billion tons"
+                ],
+                "correct": 1,
+                "explanation": "The Sun converts about 600 million tons of hydrogen into helium every second through nuclear fusion."
+            },
+            {
+                "question": "What is a solar flare?",
+                "options": [
+                    "A cool spot on the Sun",
+                    "A sudden burst of radiation from the Sun",
+                    "The Sun's rotation",
+                    "A type of sunspot"
+                ],
+                "correct": 1,
+                "explanation": "A solar flare is a sudden, intense burst of radiation from the release of magnetic energy near sunspots."
+            },
+            {
+                "question": "What is a coronal mass ejection (CME)?",
+                "options": [
+                    "The Sun shrinking",
+                    "A massive burst of solar wind and magnetic fields",
+                    "The Sun's daily rotation",
+                    "Sunlight reaching Earth"
+                ],
+                "correct": 1,
+                "explanation": "A CME is a massive burst of solar wind, plasma, and magnetic fields released from the Sun's corona."
+            },
+            {
+                "question": "How long is the Sun's 11-year solar cycle?",
+                "options": [
+                    "The time for one rotation",
+                    "The period between maximum and minimum sunspot activity",
+                    "The Sun's orbital period",
+                    "The lifespan of a sunspot"
+                ],
+                "correct": 1,
+                "explanation": "The solar cycle is an approximately 11-year cycle of solar activity including variations in sunspot numbers."
+            },
+            {
+                "question": "What will the Sun become at the end of its life?",
+                "options": [
+                    "A black hole",
+                    "A neutron star",
+                    "A white dwarf",
+                    "A supernova"
+                ],
+                "correct": 2,
+                "explanation": "In about 5 billion years, the Sun will become a red giant, then shed its outer layers and become a white dwarf."
+            },
+            {
+                "question": "What is the photosphere?",
+                "options": [
+                    "The Sun's core",
+                    "The visible surface of the Sun",
+                    "The outermost atmosphere",
+                    "The magnetic field region"
+                ],
+                "correct": 1,
+                "explanation": "The photosphere is the visible surface of the Sun, about 500 km thick with a temperature of about 5,778 K."
             }
         ]
     }

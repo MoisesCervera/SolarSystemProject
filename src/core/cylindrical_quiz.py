@@ -1865,7 +1865,7 @@ def create_cylindrical_quiz(planet_name, quiz_manager):
         return None
 
     random.seed(time.time())
-    num_questions = min(5, len(questions))
+    num_questions = min(10, len(questions))
     selected = random.sample(questions, num_questions)
     random.shuffle(selected)
 
