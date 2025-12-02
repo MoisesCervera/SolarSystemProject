@@ -16,6 +16,7 @@ from src.graphics.ui_renderer import UIRenderer
 from src.core.session import GameContext
 from src.core.mission_manager import MissionManager, get_trophy_for_planet
 from src.states.planet_detail_state import PlanetDetailState
+from src.core.audio_manager import get_audio_manager
 
 
 class GameplayState(BaseState):
@@ -59,6 +60,9 @@ class GameplayState(BaseState):
 
         # Screen shake
         self.screen_shake = 0.0
+        
+        # Alarm sound channel (to stop when impact is imminent)
+        self.alarm_sound_channel = None
 
         # Speed lines effect for boost - OPTIMIZED
         self.speed_lines = []
@@ -109,13 +113,51 @@ class GameplayState(BaseState):
             self.camera.mode = Camera.MODE_ORBIT
             # Reset the flag
             GameContext.orbital_only = False
+
+            # Play orbital view music
+            self.audio = get_audio_manager()
+            self.audio.play_music('ORBIT')
         else:
             # Normal gameplay mode - with ship
-            self.ship = Ship(position=[15.0, 0.0, 0.0])
+            # Random spawn location within safe bounds
+            spawn_pos = self._get_random_spawn_position()
+            self.ship = Ship(position=spawn_pos)
             # Use follow camera for gameplay (not orbital)
             self.camera.mode = Camera.MODE_FOLLOW
             self.camera.follow_target = self.ship
             print("[Camera] Cambiando a Modo Nave (Follow)")
+
+            # Start ship-specific gameplay music
+            self.audio = get_audio_manager()
+            from src.core.audio_manager import get_gameplay_music_state
+            music_state = get_gameplay_music_state()
+            self.audio.play_music(music_state)
+
+            # Start thruster rumble audio (looping)
+            self.audio.play_sfx_looping(
+                'thruster', volume_scale=0.0)  # Start silent
+            self._thruster_channel = None  # Will be set when we have velocity
+
+    def exit(self):
+        """Called when leaving gameplay state - cleanup audio."""
+        print("[GameplayState] Saliendo de la simulación")
+        # Stop looping sounds when leaving gameplay
+        if hasattr(self, 'audio'):
+            self.audio.stop_sfx_looping('thruster', fade_ms=200)
+
+    def _get_random_spawn_position(self):
+        """Generate a random spawn position within safe bounds."""
+        # Spawn at random angle around the solar system
+        angle = random.uniform(0, 2 * math.pi)
+        # Random distance: not too close to sun (>20), not in warning zone (<150)
+        distance = random.uniform(30.0, 150.0)
+        
+        x = distance * math.cos(angle)
+        z = distance * math.sin(angle)
+        y = 0.0
+        
+        print(f"[GameplayState] Ship spawning at random position: ({x:.1f}, {y:.1f}, {z:.1f})")
+        return [x, y, z]
 
     def _init_entities(self):
         self.entities = []
@@ -201,6 +243,9 @@ class GameplayState(BaseState):
         x, y, z = self.ship.position
         dist = math.sqrt(x*x + y*y + z*z)
 
+        # Track previous warning level for alarm trigger
+        prev_warning_level = self.warning_level
+
         # Update warning level
         if dist < self.BOUNDARY_WARNING:
             self.warning_level = 0  # Safe
@@ -208,8 +253,14 @@ class GameplayState(BaseState):
         elif dist < self.BOUNDARY_DANGER:
             self.warning_level = 1  # Warning
             self.death_asteroid = None  # Clear asteroid if player moved back from danger
+            # Play alarm when first entering warning zone
+            if prev_warning_level == 0:
+                self.alarm_sound_channel = self.audio.play_sfx('alarm', volume_scale=0.6)
         elif dist < self.BOUNDARY_DEATH:
             self.warning_level = 2  # Danger - asteroid approaching
+            # Play alarm when entering danger zone
+            if prev_warning_level < 2:
+                self.alarm_sound_channel = self.audio.play_sfx('alarm', volume_scale=0.8)
             # Spawn incoming asteroid if not already
             if self.death_asteroid is None:
                 self._spawn_death_asteroid()
@@ -257,6 +308,11 @@ class GameplayState(BaseState):
         import random
         if not self.ship or self.asteroid_impact_pending:
             return
+
+        # Stop alarm sound - impact is imminent
+        if self.alarm_sound_channel and self.alarm_sound_channel.get_busy():
+            self.alarm_sound_channel.fadeout(200)
+            self.alarm_sound_channel = None
 
         self.asteroid_impact_pending = True
         self.impact_position = list(
@@ -311,6 +367,11 @@ class GameplayState(BaseState):
         self.screen_shake = 2.0
         self.death_animation_time = 0.0
         self.show_restart_menu = False
+
+        # Stop all looping ship sounds and play destroyed sound
+        if hasattr(self, 'audio'):
+            self.audio.stop_sfx_looping('thruster', fade_ms=100)
+            self.audio.play_sfx('ship_destroyed')
 
         # Create explosion particles at ship/impact position
         import random
@@ -598,6 +659,9 @@ class GameplayState(BaseState):
         if self.ship and self.camera.mode == Camera.MODE_FOLLOW and not self.asteroid_impact_pending:
             self.ship.update(dt)
 
+            # Update thruster rumble volume based on ship speed
+            self._update_thruster_audio()
+
             # Update speed lines effect based on boost state
             self._update_speed_lines(dt)
 
@@ -605,10 +669,10 @@ class GameplayState(BaseState):
             # the ship centered even at higher velocities - reduce perceived lag
             # by increasing the camera interpolation factor while boosting.
             if self.ship.is_boosting:
-                self.camera.follow_smoothness = 8.0
+                self.camera.follow_smoothness = 6.0
             else:
                 # Restore to a comfortable value (default 5.0) when not boosting
-                self.camera.follow_smoothness = 5.0
+                self.camera.follow_smoothness = 3.0
 
             # Check boundary distance
             self._check_boundary()
@@ -641,7 +705,10 @@ class GameplayState(BaseState):
             entity.update(dt)
 
         # 4. Verificar colisiones/proximidad con planetas (Solo en modo FOLLOW)
-        self.planet_in_range = None
+        # Track previous planet to detect when entering a new planet's range
+        prev_planet_in_range = self.planet_in_range
+        current_planet_in_range = None
+        
         if self.ship and self.camera.mode == Camera.MODE_FOLLOW:
             # Radio de la nave (visual es pequeña, pero usamos 1.0 para física)
             ship_radius = 1.0
@@ -684,9 +751,15 @@ class GameplayState(BaseState):
                     # Distancia de interacción
                     interaction_threshold = min_dist + interaction_margin
                     if dist < interaction_threshold:
-                        self.planet_in_range = entity
+                        current_planet_in_range = entity
                         # No hacemos break para permitir que la física se resuelva con otros si hubiera overlap (raro)
-                        # pero para UI nos quedamos con el último encontrado (o el más cercano si ordenáramos)
+                        # pero para UI nos quedamos con el último encontrado (o el más cercante si ordenáramos)
+
+        # Play scan sound only when entering a new planet's range (not already in range of this planet)
+        if current_planet_in_range and current_planet_in_range != prev_planet_in_range:
+            self.audio.play_sfx('scan_planet', volume_scale=0.25)
+        
+        self.planet_in_range = current_planet_in_range
 
     def draw(self):
         # 1. Configurar entorno 3D
@@ -1238,6 +1311,41 @@ class GameplayState(BaseState):
                                  size=16, color=(0.0, 0.8, 0.8), font_name="radiospace")
 
         UIRenderer.restore_3d()
+
+    def _update_thruster_audio(self):
+        """Update thruster rumble volume based on ship speed."""
+        if not self.ship or not hasattr(self, 'audio'):
+            return
+
+        # Calculate speed magnitude from velocity
+        vx, vy, vz = self.ship.velocity
+        speed = math.sqrt(vx*vx + vy*vy + vz*vz)
+
+        # Normalize speed to 0-1 range (max_speed is the reference)
+        max_speed = self.ship.max_speed * self.ship.speed_multiplier
+        if self.ship.is_boosting:
+            # During boost, max speed is higher
+            max_speed *= self.ship.boost_accel_multiplier * 0.5
+
+        # Calculate volume: min 0.15 (idle hum) to max 1.0 (full throttle)
+        # Increased base and max for more prominent rumble
+        speed_ratio = min(1.0, speed / max_speed) if max_speed > 0 else 0.0
+
+        # Use exponential curve for more natural feel (quiet at low speeds, loud at high)
+        volume = 0.15 + (speed_ratio ** 1.2) * 0.85
+
+        # Boost gives extra rumble
+        if self.ship.is_boosting:
+            volume = min(1.0, volume * 1.4)
+
+        # Update the looping sound volume
+        if 'thruster' in self.audio._looping_sounds:
+            info = self.audio._looping_sounds['thruster']
+            sound = info.get('sound')
+            if sound:
+                effective_vol = self.audio._get_effective_sfx_volume() * volume
+                sound.set_volume(effective_vol)
+                info['volume_scale'] = volume  # Update stored scale
 
     def _update_speed_lines(self, dt):
         """Update speed lines scroll and fade state."""

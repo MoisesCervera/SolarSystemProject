@@ -52,100 +52,107 @@ except ImportError:
 MUSIC_PLAYLISTS: Dict[str, List[str]] = {
     # Main menu and ship selection share this playlist
     'MENU': [
-        'music/menu_ambient_1.mp3',
-        'music/menu_ambient_2.mp3',
-        'music/menu_theme.mp3',
+        'music/menu_start_screen.mp3',
     ],
 
-    # Orbital view / exploration
+    # Orbital view / exploration (no ship)
     'ORBIT': [
-        'music/orbit_exploration_1.mp3',
-        'music/orbit_exploration_2.mp3',
-        'music/space_ambient_1.mp3',
+        'music/orbital_view.mp3',
     ],
 
-    # Active gameplay / flying around
-    'GAMEPLAY': [
-        'music/gameplay_action_1.mp3',
-        'music/gameplay_action_2.mp3',
-        'music/gameplay_ambient_1.mp3',
+    # Active gameplay - ship specific tracks
+    'GAMEPLAY_UFO': [
+        'music/gameplay_music_ufo.mp3',
+    ],
+    'GAMEPLAY_BUGCRAWLER': [
+        'music/gameplay_music_bugcrawler.mp3',
+    ],
+    'GAMEPLAY_STARFIGHTER': [
+        'music/gameplay_music_starfighter.mp3',
     ],
 
-    # Quiz/challenge state
+    # Quiz/challenge state - multiple tracks for variety
     'QUIZ': [
-        'music/quiz_tension_1.mp3',
-        'music/quiz_thinking_1.mp3',
+        'music/quiz_1.mp3',
+        'music/quiz_2.mp3',
+        'music/quiz_3.mp3',
+        'music/quiz_4.mp3',
+        'music/quiz_5.mp3',
+        'music/quiz_6.mp3',
+        'music/quiz_7.mp3',
+        'music/quiz_8.mp3',
     ],
 
-    # Victory / completion
+    # Victory / game complete
     'VICTORY': [
-        'music/victory_fanfare.mp3',
-        'music/victory_celebration.mp3',
-    ],
-
-    # Game over / failure
-    'DEFEAT': [
-        'music/defeat_somber.mp3',
-    ],
-
-    # Planet detail view
-    'PLANET_DETAIL': [
-        'music/planet_wonder_1.mp3',
-        'music/planet_ambient_1.mp3',
-    ],
-
-    # Pause menu (quieter, ambient)
-    'PAUSE': [
-        'music/pause_ambient.mp3',
+        'music/game_complete_music.mp3',
     ],
 }
+
+# Ship ID to gameplay music state mapping
+SHIP_MUSIC_MAP: Dict[str, str] = {
+    'shipM': 'GAMEPLAY_UFO',
+    'shipS': 'GAMEPLAY_BUGCRAWLER',
+    'shipZ': 'GAMEPLAY_STARFIGHTER',
+}
+
+
+def get_gameplay_music_state(ship_id: str = None) -> str:
+    """
+    Get the gameplay music state key based on the selected ship.
+
+    Args:
+        ship_id: Ship ID ('shipM', 'shipS', 'shipZ'). If None, tries to get from GameContext.
+
+    Returns:
+        Music state key (e.g., 'GAMEPLAY_UFO')
+    """
+    if ship_id is None:
+        try:
+            from src.core.session import GameContext
+            ship_id = getattr(GameContext, 'selected_ship', 'shipM')
+        except ImportError:
+            ship_id = 'shipM'
+
+    return SHIP_MUSIC_MAP.get(ship_id, 'GAMEPLAY_UFO')
+
 
 # Sound effects mapping
 # Key: event name used in code -> Value: path relative to assets/
 SFX_REGISTRY: Dict[str, str] = {
     # UI sounds
-    'click': 'sound/fx/ui_click.wav',
-    'hover': 'sound/fx/ui_hover.wav',
-    'select': 'sound/fx/ui_select.wav',
-    'back': 'sound/fx/ui_back.wav',
-    'error': 'sound/fx/ui_error.wav',
-    'success': 'sound/fx/ui_success.wav',
-    'notification': 'sound/fx/ui_notification.wav',
-
+    'click': 'sound/fx/button_click.wav',
+    
     # Ship/movement sounds
-    'thruster': 'sound/fx/ship_thruster.wav',
-    'thruster_boost': 'sound/fx/ship_thruster_boost.wav',
-    'ship_impact': 'sound/fx/ship_impact.wav',
-    'ship_damage': 'sound/fx/ship_damage.wav',
-
-    # Space/environment sounds
-    'asteroid_explosion': 'sound/fx/asteroid_explosion.wav',
-    'asteroid_hit': 'sound/fx/asteroid_hit.wav',
-    'whoosh': 'sound/fx/whoosh.wav',
-    'ambient_space': 'sound/fx/ambient_space.wav',
-
+    'thruster': 'sound/fx/spaceship_rumble.wav',
+    'ship_destroyed': 'sound/fx/ship_destroyed_by_asteroid.wav',
+    'boost': 'sound/fx/boost.wav',
+    
     # Quiz sounds
-    'quiz_start': 'sound/fx/quiz_start.wav',
-    'quiz_correct': 'sound/fx/quiz_correct.wav',
-    'quiz_wrong': 'sound/fx/quiz_wrong.wav',
-    'quiz_timeout': 'sound/fx/quiz_timeout.wav',
-    'quiz_direction_change': 'sound/fx/quiz_direction.wav',
-    'quiz_complete': 'sound/fx/quiz_complete.wav',
-
-    # Achievement/reward sounds
-    'trophy_earned': 'sound/fx/trophy_earned.wav',
-    'level_up': 'sound/fx/level_up.wav',
-    'coin_collect': 'sound/fx/coin_collect.wav',
-
+    'laser': 'sound/fx/laser_shoot.wav',
+    'asteroid_destroyed': 'sound/fx/asteroid_answer_destroyed_1.wav',
+    'asteroid_impact': 'sound/fx/asteroid_impact_during_quiz.wav',
+    'quiz_fail': 'sound/fx/quiz_fail.wav',
+    'cardinal_movement': 'sound/fx/cardinal_movement_quiz.wav',
+    
+    # Planet interaction sounds
+    'planet_detail': 'sound/fx/planet_detail.wav',
+    'scan_planet': 'sound/fx/scan_planet.wav',
+    
     # Transition sounds
-    'transition_whoosh': 'sound/fx/transition_whoosh.wav',
-    'warp': 'sound/fx/warp.wav',
+    'transition': 'sound/fx/ship_transition.wav',
+    
+    # Warning/alarm sounds
+    'alarm': 'sound/fx/alarm.mp3',
+
+    # Trophy sounds
+    'trophy_win': 'sound/fx/trophy_win.wav',
 }
 
 # Default volumes
 DEFAULT_MASTER_VOLUME = 0.8
-DEFAULT_MUSIC_VOLUME = 0.6
-DEFAULT_SFX_VOLUME = 0.8
+DEFAULT_MUSIC_VOLUME = 0.9  # Higher so music is more audible over SFX
+DEFAULT_SFX_VOLUME = 0.7    # Lowered so effects don't overpower music
 
 # Fade durations (in milliseconds)
 DEFAULT_FADE_OUT_MS = 500
@@ -375,21 +382,14 @@ class AudioManager:
                 if full_path is None:
                     return
 
-            # If music is currently playing, fade out first
-            if self._is_music_playing and fade_ms > 0:
-                self._fade_in_progress = True
+            # Fade out current music, then start new track with fade in
+            if self._is_music_playing:
                 pygame.mixer.music.fadeout(fade_ms)
+                # Wait for fadeout to complete before starting new track
+                pygame.time.wait(fade_ms)
 
-                # Schedule the new track to start after fade
-                # Using a simple approach - the update() method will handle this
-                self._pending_state = state_key
-                self._pending_track = track_path
-                self._pending_path = full_path
-                self._fade_start_time = time.time()
-                self._fade_duration = fade_ms / 1000.0
-            else:
-                # No current music, start immediately
-                self._start_track(state_key, track_path, full_path, fade_ms)
+            # Start the new track with fade in
+            self._start_track(state_key, track_path, full_path, fade_ms)
 
         except Exception as e:
             print(f"[AudioManager] Error transitioning to track: {e}")
@@ -758,6 +758,44 @@ class AudioManager:
         return self._sfx_volume
 
     # =========================================================================
+    # MUSIC VOLUME DUCKING (for pause/overlay states)
+    # =========================================================================
+
+    def lower_music_volume(self, factor: float = 0.3):
+        """
+        Temporarily lower music volume (e.g., for pause menu overlay).
+
+        Args:
+            factor: Multiply current volume by this factor (0.0 to 1.0)
+        """
+        if not self._enabled:
+            return
+
+        # Store original volume if not already stored
+        if not hasattr(self, '_pre_duck_music_volume'):
+            self._pre_duck_music_volume = self._music_volume
+
+        # Apply ducking
+        self._music_volume = self._pre_duck_music_volume * factor
+        self._apply_volume_changes()
+        print(
+            f"[AudioManager] Music volume lowered to {self._music_volume:.2f}")
+
+    def restore_music_volume(self):
+        """
+        Restore music volume after ducking.
+        """
+        if not self._enabled:
+            return
+
+        if hasattr(self, '_pre_duck_music_volume'):
+            self._music_volume = self._pre_duck_music_volume
+            delattr(self, '_pre_duck_music_volume')
+            self._apply_volume_changes()
+            print(
+                f"[AudioManager] Music volume restored to {self._music_volume:.2f}")
+
+    # =========================================================================
     # STATE QUERIES
     # =========================================================================
 
@@ -832,7 +870,7 @@ def get_audio_manager() -> AudioManager:
     """
     Get the global AudioManager singleton.
 
-    Creates the instance on first call.
+    Creates the instance on first call and preloads SFX.
 
     Returns:
         AudioManager instance
@@ -840,6 +878,8 @@ def get_audio_manager() -> AudioManager:
     global _audio_manager_instance
     if _audio_manager_instance is None:
         _audio_manager_instance = AudioManager()
+        # Preload SFX immediately to avoid delay on first play
+        _audio_manager_instance.load_assets(preload_sfx=True)
     return _audio_manager_instance
 
 

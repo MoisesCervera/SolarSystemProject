@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 def main():
     # 1. Instanciar WindowManager
     window = WindowManager(
+
         title="Solar Explorer", width=3000, height=2000)
 
     # 2. Inicializar subsistemas (GLUT, OpenGL)

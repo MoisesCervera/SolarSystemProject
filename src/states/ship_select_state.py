@@ -7,6 +7,7 @@ from src.graphics.skybox import Skybox
 from src.core.resource_loader import ResourceManager
 from src.graphics.draw_utils import draw_sphere, draw_cylinder, draw_torus, draw_cone, set_material_color
 from src.core.session import GameContext
+from src.core.audio_manager import get_audio_manager
 # Import actual ship models
 from src.entities.player.ships.shipM import ShipModel
 from src.entities.player.ships.shipS import dibujar_nave as draw_ship_s
@@ -91,6 +92,10 @@ class ShipSelectState(BaseState):
 
     def enter(self):
         print("[ShipSelectState] Ship selection screen")
+
+        # Continue menu music (seamless from welcome state)
+        audio = get_audio_manager()
+        audio.play_music('MENU')  # Won't restart if already playing
 
         # Load skybox
         bg_texture = ResourceManager.load_texture("background/stars.jpg")
@@ -242,6 +247,11 @@ class ShipSelectState(BaseState):
                 return
             self.last_input_time = self.animation_time
 
+            # Play transition sound for ship switching
+            from src.core.audio_manager import get_audio_manager
+            audio = get_audio_manager()
+            audio.play_sfx('transition')
+
             self.current_index = (self.current_index - 1) % len(self.SHIPS)
             self.target_angle = self.current_index * (360.0 / len(self.SHIPS))
 
@@ -251,6 +261,11 @@ class ShipSelectState(BaseState):
             if self.animation_time - self.last_input_time < 0.7:
                 return
             self.last_input_time = self.animation_time
+
+            # Play transition sound for ship switching
+            from src.core.audio_manager import get_audio_manager
+            audio = get_audio_manager()
+            audio.play_sfx('transition')
 
             self.current_index = (self.current_index + 1) % len(self.SHIPS)
             self.target_angle = self.current_index * (360.0 / len(self.SHIPS))
@@ -265,6 +280,11 @@ class ShipSelectState(BaseState):
         """Confirm ship selection and proceed to game."""
         self.selected = True
         selected_ship = self.SHIPS[self.current_index]
+
+        # Play click sound
+        from src.core.audio_manager import get_audio_manager
+        audio = get_audio_manager()
+        audio.play_sfx('click')
 
         # Store in session
         GameContext.selected_ship = selected_ship['id']

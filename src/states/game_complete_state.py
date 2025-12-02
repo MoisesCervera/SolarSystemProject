@@ -10,6 +10,7 @@ from src.graphics.skybox import Skybox
 from src.core.resource_loader import ResourceManager
 from src.core.mission_manager import MissionManager, get_trophy_for_planet
 from src.entities.trophies.trophy_base import TrophyRenderer
+from src.core.audio_manager import get_audio_manager
 import math
 import random
 
@@ -44,6 +45,10 @@ class GameCompleteState(BaseState):
 
     def enter(self):
         print("[GameCompleteState] Entering victory screen!")
+
+        # Play victory music
+        audio = get_audio_manager()
+        audio.play_music('VICTORY')
 
         # Load skybox
         bg_texture = ResourceManager.load_texture("background/stars.jpg")
@@ -120,6 +125,11 @@ class GameCompleteState(BaseState):
             # Return to main menu
             elif key == b'\r' or key == b' ' or key == b'm' or key == b'M':
                 if hasattr(self, 'state_machine'):
+                    # Play click sound
+                    from src.core.audio_manager import get_audio_manager
+                    audio = get_audio_manager()
+                    audio.play_sfx('click')
+
                     from src.states.welcome_state import WelcomeState
                     # Reset mission manager for new game
                     self.mission_manager.reset()

@@ -13,6 +13,7 @@ from src.core.quiz_manager import QuizManager
 from src.entities.trophies.trophy_base import TrophyRenderer
 from src.core.cylindrical_quiz import CylindricalQuizState
 from src.core.transition_manager import get_transition_manager
+from src.core.audio_manager import get_audio_manager
 import math
 
 
@@ -80,6 +81,9 @@ class PlanetDetailState(BaseState):
         self.quiz_launch_timer = 0.0  # Brief delay before launching
         self.start_mission_button_rect = None
         self.retry_mission_button_rect = None
+        
+        # Planet detail sound channel (to stop when entering quiz)
+        self.planet_detail_channel = None
 
         # Cargar texturas para cada capa
         for layer in self.layers:
@@ -90,6 +94,14 @@ class PlanetDetailState(BaseState):
     def enter(self):
         print(
             f"[PlanetDetailState] Entering detail view for {self.planet_name}")
+
+        # Lower gameplay music volume while viewing planet
+        audio = get_audio_manager()
+        audio.lower_music_volume(0.4)
+
+        # Play planet detail sound (lower volume, store channel to stop later)
+        self.planet_detail_channel = audio.play_sfx('planet_detail', volume_scale=0.4)
+
         self.quadric = gluNewQuadric()
         gluQuadricNormals(self.quadric, GLU_SMOOTH)
         gluQuadricTexture(self.quadric, GL_TRUE)
@@ -163,6 +175,10 @@ class PlanetDetailState(BaseState):
             self.trophy_awarded = True
             self.show_trophy_animation = True
             self.trophy_animation_time = 0.0
+            
+            # Play trophy win sound
+            get_audio_manager().play_sfx('trophy_win')
+            
             print(f"[PlanetDetailState] Trophy awarded: {trophy_type}")
 
             if game_complete:
@@ -171,6 +187,10 @@ class PlanetDetailState(BaseState):
 
     def _launch_cylindrical_quiz(self):
         """Launch the cylindrical quiz state with a fade transition."""
+        # Stop planet detail sound before entering quiz
+        if self.planet_detail_channel and self.planet_detail_channel.get_busy():
+            self.planet_detail_channel.fadeout(300)
+        
         if hasattr(self, 'state_machine') and self.state_machine:
             quiz_state = CylindricalQuizState(
                 self.planet_name,
@@ -183,6 +203,10 @@ class PlanetDetailState(BaseState):
             self.waiting_for_quiz_start = False
 
     def exit(self):
+        # Restore music volume
+        audio = get_audio_manager()
+        audio.restore_music_volume()
+
         if self.quadric:
             gluDeleteQuadric(self.quadric)
             self.quadric = None
@@ -240,6 +264,10 @@ class PlanetDetailState(BaseState):
                         self.trophy_awarded = True
                         self.show_trophy_animation = True
                         self.trophy_animation_time = 0.0
+                        
+                        # Play trophy win sound
+                        get_audio_manager().play_sfx('trophy_win')
+                        
                         print(
                             f"[PlanetDetailState] Trophy awarded: {trophy_type}")
 

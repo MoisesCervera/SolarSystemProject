@@ -3,6 +3,7 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from src.states.base_state import BaseState
 from src.graphics.ui_renderer import UIRenderer
+from src.core.audio_manager import get_audio_manager
 import math
 
 
@@ -25,8 +26,17 @@ class PauseState(BaseState):
         print("[PauseState] Game paused")
         self.fade_in = 0.0
 
+        # Lower music volume while paused and play click sound
+        audio = get_audio_manager()
+        audio.lower_music_volume(0.3)
+        audio.play_sfx('click')
+
     def exit(self):
         print("[PauseState] Resuming game")
+
+        # Restore music volume
+        audio = get_audio_manager()
+        audio.restore_music_volume()
 
     def update(self, dt):
         self.animation_time += dt
@@ -154,11 +164,17 @@ class PauseState(BaseState):
 
     def _resume(self):
         """Resume the game by popping this state (no transition for instant resume)."""
+        # Play click sound
+        audio = get_audio_manager()
+        audio.play_sfx('click')
         if hasattr(self, 'state_machine'):
             self.state_machine.pop_immediate()
 
     def _go_to_main_menu(self):
         """Return to the main menu (welcome state) with transition."""
+        # Play click sound
+        audio = get_audio_manager()
+        audio.play_sfx('click')
         if hasattr(self, 'state_machine'):
             # Import here to avoid circular imports
             from src.states.welcome_state import WelcomeState
@@ -172,6 +188,9 @@ class PauseState(BaseState):
 
     def _quit_game(self):
         """Quit the game entirely."""
+        # Play click sound
+        audio = get_audio_manager()
+        audio.play_sfx('click')
         import os
         os._exit(0)
 

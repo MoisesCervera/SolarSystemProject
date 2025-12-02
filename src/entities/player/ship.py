@@ -3,6 +3,7 @@ from OpenGL.GLUT import *
 from src.entities.base.renderable import Renderable
 from src.core.input_manager import InputManager
 from src.core.session import GameContext
+from src.core.audio_manager import get_audio_manager
 # Import actual ship models
 from src.entities.player.ships.shipM import ShipModel
 from src.entities.player.ships.shipS import dibujar_nave as draw_ship_s
@@ -53,6 +54,7 @@ class Ship(Renderable):
         self.boost_duration_max = 1.8
         self.boost_cooldown_time = 3.5
         self.boost_accel_multiplier = 6.0
+        self.boost_sound_channel = None  # Track boost sound for fadeout
 
         # Apply ship-specific stats
         if self.selected_ship == 'shipS':  # Bug Crawler - Fast & Agile
@@ -160,13 +162,19 @@ class Ship(Renderable):
             self.boost_duration -= dt
             if self.boost_duration <= 0:
                 self.is_boosting = False
+                # Fade out boost sound when boost ends
+                if self.boost_sound_channel and self.boost_sound_channel.get_busy():
+                    self.boost_sound_channel.fadeout(300)
 
         # Activar Boost (Espacio)
         if self.input_manager.is_key_pressed(' ') and self.boost_cooldown <= 0:
+            # Play boost sound immediately (before setting state for snappier response)
+            audio = get_audio_manager()
+            self.boost_sound_channel = audio.play_sfx('boost', volume_scale=1.0)
+            
             self.is_boosting = True
             self.boost_duration = self.boost_duration_max
             self.boost_cooldown = self.boost_cooldown_time
-            print("BOOST ACTIVATED!")
 
         # 1. Rotación (A/D o Flechas Izq/Der)
         target_tilt = 0.0

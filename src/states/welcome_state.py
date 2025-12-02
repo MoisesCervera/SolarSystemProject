@@ -6,6 +6,7 @@ from src.graphics.ui_renderer import UIRenderer
 from src.graphics.skybox import Skybox
 from src.core.resource_loader import ResourceManager
 from src.graphics.draw_utils import draw_sphere, draw_torus, set_material_color
+from src.core.audio_manager import get_audio_manager
 import math
 import random
 
@@ -75,6 +76,10 @@ class WelcomeState(BaseState):
 
     def enter(self):
         print("[WelcomeState] Entrando al estado de bienvenida")
+
+        # Start menu music
+        audio = get_audio_manager()
+        audio.play_music('MENU')
 
         # Cargar skybox (no longer used but kept for compatibility)
         bg_texture = ResourceManager.load_texture("background/stars.jpg")
@@ -275,6 +280,9 @@ class WelcomeState(BaseState):
 
     def _go_to_ship_select(self):
         from src.states.ship_select_state import ShipSelectState
+        # Play button click sound
+        audio = get_audio_manager()
+        audio.play_sfx('click')
         if hasattr(self, 'state_machine') and self.state_machine:
             new_state = ShipSelectState()
             new_state.state_machine = self.state_machine
@@ -285,6 +293,9 @@ class WelcomeState(BaseState):
         """Go directly to orbital view without ship selection."""
         from src.states.gameplay_state import GameplayState
         from src.core.session import GameContext
+        # Play button click sound
+        audio = get_audio_manager()
+        audio.play_sfx('click')
         # Set flag for orbital-only mode (no ship)
         GameContext.orbital_only = True
         if hasattr(self, 'state_machine') and self.state_machine:
@@ -295,6 +306,9 @@ class WelcomeState(BaseState):
 
     def _quit_game(self):
         """Exit the application."""
+        # Play button click sound
+        audio = get_audio_manager()
+        audio.play_sfx('click')
         import os
         os._exit(0)
 

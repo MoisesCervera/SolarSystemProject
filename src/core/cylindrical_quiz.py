@@ -22,6 +22,7 @@ from src.core.session import GameContext
 from src.entities.player.ship import get_ufo_model
 from src.entities.player.ships.shipS import dibujar_nave as draw_ship_s
 from src.entities.player.ships.shipZ import draw_nave as draw_ship_z
+from src.core.audio_manager import get_audio_manager
 
 
 # Cardinal directions as angles (radians)
@@ -114,6 +115,9 @@ class CardinalShip:
         """Start movement toward the requested cardinal."""
         self.target_cardinal_index = target_index % 4
         self.transition_progress = 0.0
+        # Play movement sound
+        audio = get_audio_manager()
+        audio.play_sfx('cardinal_movement', volume_scale=0.5)
 
     def update(self, dt, input_manager):
         """Update ship position based on input."""
@@ -181,6 +185,10 @@ class CardinalShip:
 
     def shoot(self):
         """Fire a projectile."""
+        # Play laser sound
+        audio = get_audio_manager()
+        audio.play_sfx('laser')
+
         pos = self.get_world_position()
         projectile = {
             'x': pos[0] * 0.75,  # Start slightly inside cylinder
@@ -400,6 +408,11 @@ class CardinalAsteroid:
         """Destroy the asteroid with explosion effect (fire/debris)."""
         self.destroyed = True
         self.destruction_time = 0.0
+
+        # Play asteroid destroyed sound
+        from src.core.audio_manager import get_audio_manager
+        audio = get_audio_manager()
+        audio.play_sfx('asteroid_destroyed')
 
         pos = self.get_world_position()
         self.destruction_particles = []
@@ -1083,6 +1096,11 @@ class CylindricalQuizManager:
         """Handle a strike."""
         self.strikes += 1
         self.screen_shake = 1.5
+
+        # Play impact sound when ship collides with asteroid
+        audio = get_audio_manager()
+        audio.play_sfx('asteroid_impact')
+
         # Map common reason strings to a more cinematic sci-fi phrasing
         cinematic_reason_map = {
             "Missed the correct answer!": "TARGET LOCK FAILURE",
@@ -1100,6 +1118,8 @@ class CylindricalQuizManager:
             self.state = self.STATE_FAILED
             self.message = "CRITICAL FAILURE"
             self.message_timer = 3.0
+            # Play quiz fail sound
+            audio.play_sfx('quiz_fail')
         else:
             self.state = self.STATE_QUESTION_TRANSITION
             self.transition_timer = self.transition_duration
@@ -1892,6 +1912,11 @@ class CylindricalQuizState(BaseState):
         """Initialize the quiz."""
         print(f"[CylindricalQuizState] Entering quiz for {self.planet_name}")
 
+        # Play quiz music (random track from quiz playlist)
+        self.audio = get_audio_manager()
+        self.audio.restore_music_volume()  # Restore from planet detail lowered volume
+        self.audio.play_music('QUIZ')
+
         self.quiz = create_cylindrical_quiz(
             self.planet_name, self.quiz_manager_ref)
         if not self.quiz:
@@ -1906,6 +1931,15 @@ class CylindricalQuizState(BaseState):
     def exit(self):
         """Clean up."""
         print(f"[CylindricalQuizState] Exiting quiz for {self.planet_name}")
+
+        # Return to gameplay music (ship-specific)
+        from src.core.audio_manager import get_gameplay_music_state
+        audio = get_audio_manager()
+        music_state = get_gameplay_music_state()
+        audio.play_music(music_state)
+        # Lower volume again since we're returning to planet detail
+        audio.lower_music_volume(0.4)
+
         self.input_manager.key_state.clear()
         self.input_manager.special_key_state.clear()
 
